@@ -1,0 +1,29 @@
+{
+  "name": "xslider",
+  "version": "1.0.0",
+  "main": "dist/xslider.js",
+  "repository": "https://github.com/112KA/xslider.git",
+  "author": "112KA",
+  "license": "MIT",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "develop": "parcel src/index.html -d develop"
+  },
+  "dependencies": {
+    "dom-to-image": "^2.6.0",
+    "three": "^0.89.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "css-loader": "^0.28.8",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.19.1",
+    "webpack": "^3.10.0",
+    "webpack-concat-plugin": "^2.4.2",
+    "webpack-dev-server": "^2.10.1"
+  }
+}

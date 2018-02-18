@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>xslide demos index</title>
+	<meta name="viewport" content="width=device-width">
+	<!-- 
+		//https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet
+		//In some browsers, if a stylesheet is loaded from a different domain, calling cssRules results in SecurityError.
+		<link href="https://fonts.googleapis.com/css?family=Noto+Sans:700i" rel="stylesheet"> 
+	-->
+	<link href="../dist/xslider.css" rel="stylesheet">
+
+	<style>
+
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Noto Sans Bold Italic'), local('NotoSans-BoldItalic'), url(https://fonts.gstatic.com/s/notosans/v7/o-0TIpQlx3QUlC5A4PNr4Az5ZuyDzW1IPrie.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+	    html, body {
+	      height: 100%;
+	      width: 100%;
+	      overflow: hidden;
+	    }
+	    body {
+	    	margin: 0; padding: 0;
+	    }
+
+	    .xslider-view {
+	    	font-family: 'Noto Sans', sans-serif;
+
+	    }
+
+	    .xslider-layer-texture {
+	    }
+
+	    .xslider-layer-texture p {
+	    	position: absolute;
+	    	display: inline-block;
+	    	background: white;
+	    	padding: 3px 8px;
+	    	left: 50%; bottom: 25px;
+	    	margin-left: -80px;
+	    }
+
+	    .xslider-layer-ui {
+	    	color: white;
+	    }
+
+	    .xslider-view .xslider-slide:nth-child(1) .xslider-layer-texture {
+	    	background: url('images/slide1.jpg') no-repeat center;
+	    	background-size: cover;
+	    }
+
+	    .xslider-view .xslider-slide:nth-child(2) .xslider-layer-texture {
+	    	background: url('images/slide2.jpg') no-repeat center;
+	    	background-size: cover;
+	    }
+
+	    .xslider-view .xslider-slide:nth-child(3) .xslider-layer-texture {
+	    	background: url('images/slide3.jpg') no-repeat center;
+	    	background-size: cover;
+	    }
+
+	    .xslider-view .xslider-slide:nth-child(4) .xslider-layer-texture {
+	    	background: url('images/slide4.jpg') no-repeat center;
+	    	background-size: cover;
+	    }
+	</style>
+</head>
+
+<body>
+	<div id="xslider">
+		<div class="xslider-view">
+			<div class="xslider-slide">
+				<div class="xslider-layer-texture"><p>Slider1 Texture Text</p></div>
+				<div class="xslider-layer-ui">Slide1</div>
+			</div>
+			<div class="xslider-slide">
+				<div class="xslider-layer-texture"><p>Slider2 Texture Text</p></div>
+				<div class="xslider-layer-ui">Slide2</div>
+			</div>
+			<div class="xslider-slide">
+				<div class="xslider-layer-texture"><p>Slider3 Texture Text</p></div>
+				<div class="xslider-layer-ui">Slide3</div>
+			</div>
+			<div class="xslider-slide">
+				<div class="xslider-layer-texture"><p>Slider4 Texture Text</p></div>
+				<div class="xslider-layer-ui">Slide4</div>
+			</div>
+		</div>
+		<div class="xslider-pager"></div>
+		<div class="xslider-prev"></div>
+		<div class="xslider-next"></div>
+	</div>
+
+	<script src="./vendor.js"></script>
+	<script src="../dist/xslider.js"></script>
+	<script>
+	// console.log('TestTransition: ', XSlider.transition.TestTransition);
+		XSlider.stage.ready()
+			.then(function() {
+				var slider = new XSlider({
+					selector: "#xslider",
+					// debug: true,
+					getTransition : function() {
+						// return XSlider.transition.BaseTransition;
+						// return XSlider.transition.CrossWarpTransition;
+						return XSlider.transition.TestTransition;
+					}
+				});
+			});
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,105 @@
+$color: #007aff;
+
+
+.xslider-container {
+	position: relative;
+	width: 100%; height: 100%;
+
+	>canvas {
+		position: absolute;
+		top: 0; left: 0;
+	}
+}
+
+.xslider-view {
+	overflow: hidden;
+	width: 100%; height: 100%;
+
+	.xslider-slide {
+		display: none;
+		position: absolute;
+		top: 0; left: 0;
+		width: 100%; height: 100%;
+
+		&.xslider-slide-active {
+			display: block;
+		}
+
+		&.xslider-slide-next {
+			
+		}
+	}
+}
+
+.xslider-slide-image {
+	display: none;
+	position: absolute;
+}
+
+.xslider-layer-texture {
+	position: absolute;
+	display: none;
+	width: 100%; height: 100%;
+
+	&.xslider-texture-capture {
+		display: block;
+		z-index: -99999;
+	}
+}
+
+.xslider-layer-ui {
+	position: absolute;
+	top: 0; left: 0;
+	width: 100%; height: 100%;
+	display: flex;
+
+	justify-content: center;
+	align-items: center;
+}
+
+.xslider-pager {
+	position: absolute;
+	left: 0; bottom: 10px;
+	text-align: center;
+	width: 100%;
+
+	>span {
+		display: inline-block;
+		width: 8px; height: 8px;
+		background: black;
+		opacity: 0.2;
+		border-radius: 50%;
+		margin: 0 4px;
+		cursor: pointer;
+
+		&.xslider-active {
+			background: $color;
+			opacity: 1;
+		}
+	}
+}
+
+.xslider-prev, .xslider-next {
+	width: 27px; height: 44px;
+	position: absolute;
+	top: 50%;
+	cursor: pointer;
+	background-repeat: no-repeat;
+	margin-top: -22px;
+
+	&.xslider-disabled {
+		opacity: 0.3;
+		cursor: auto;
+		pointer-events: none;
+	}
+}
+
+.xslider-prev {
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2027%2044'%3E%3Cpath%20d%3D'M0%2C22L22%2C0l2.1%2C2.1L4.2%2C22l19.9%2C19.9L22%2C44L0%2C22L0%2C22L0%2C22z'%20fill%3D'%23007aff'%2F%3E%3C%2Fsvg%3E");
+	left: 10px;
+}
+
+.xslider-next {
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2027%2044'%3E%3Cpath%20d%3D'M27%2C22L27%2C22L5%2C44l-2.1-2.1L22.8%2C22L2.9%2C2.1L5%2C0L27%2C22L27%2C22z'%20fill%3D'%23007aff'%2F%3E%3C%2Fsvg%3E");
+	right: 10px;
+}
