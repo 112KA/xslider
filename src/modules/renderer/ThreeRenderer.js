@@ -70,6 +70,9 @@ export class ThreeRenderer extends BaseRenderer {
 
 		this.model.set({ slide0:slide0, slide1:slide1 });
 		this.model.uniforms.progress.value = indexer.progress;
+		if(this.model.uniforms.time) {
+			this.model.uniforms.time.value = this.data.time;
+		}
       	this.renderer.render( this.scene, this.camera );
 	}
 

@@ -71,6 +71,7 @@
 	    	background-size: cover;
 	    }
 	</style>
+	
 </head>
 
 <body>
@@ -101,16 +102,19 @@
 	<script src="./vendor.js"></script>
 	<script src="../dist/xslider.js"></script>
 	<script>
-	// console.log('TestTransition: ', XSlider.transition.TestTransition);
 		XSlider.stage.ready()
 			.then(function() {
 				var slider = new XSlider({
 					selector: "#xslider",
 					// debug: true,
 					getTransition : function() {
-						// return XSlider.transition.BaseTransition;
-						// return XSlider.transition.CrossWarpTransition;
-						return XSlider.transition.TestTransition;
+						// return XSlider.transition.Base;
+						// return XSlider.transition.CrossWarp;
+						// return XSlider.transition.CrossZoom;
+						// return XSlider.transition.Cube;
+						// return XSlider.transition.Pixelate;
+						// return XSlider.transition.Morph;
+						return XSlider.transition.Test;
 					}
 				});
 			});

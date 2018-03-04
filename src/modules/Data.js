@@ -1,7 +1,11 @@
 
+import {cloner} from './converter/Cloner'
+import {Inliner} from './converter/Inliner'
+import {converter} from './converter/SvgConverter'
 import {Dom} from './display/Dom'
 import {DefaultRenderer} from './renderer/DefaultRenderer'
 import {ThreeRenderer} from './renderer/ThreeRenderer'
+import {net} from './utils/Net'
 import {Option} from './utils/Option'
 import {Utils} from './utils/Utils'
 import {Bench} from './debug/Bench'
@@ -39,23 +43,41 @@ export class SlideData {
 			else {
 				this.layer.texture.classList.add("xslider-texture-capture");
 
-				Utils.toSvg(this.layer.texture)
-					.then((svg) => {
-						this.svg = svg;
-						// console.log('svg: ', svg);
+				const dom = this.layer.texture;
+				const w = dom.scrollWidth;
+				const h = dom.scrollHeight;
+
+				Inliner.resolveFonts()
+					.then(() => {
+						return Inliner.inlineNode(dom);
+					})
+					.then((inlined) => {
+						this.inlinedNode = inlined;
+
+						this.svg = converter.convert(this.inlinedNode, w, h);
 						this.layer.texture.classList.remove("xslider-texture-capture");
-						this.needsResize = true;
-						// document.querySelector('#xslider').appendChild(this.svg.documentElement.cloneNode(true));
+
 						resolve();
 					});
+
+				// // Utils.toSvg(this.layer.texture)
+				// converter.from(this.layer.texture)
+				// 	.then((svg) => {
+				// 		this.svg = svg;
+				// 		this.layer.texture.classList.remove("xslider-texture-capture");
+				// 		this.needsResize = true;
+				// 		// document.querySelector('#xslider').appendChild(this.svg.documentElement.cloneNode(true));
+				// 		resolve();
+				// 	});
 			}
 		})
 	}
 
+
 	loadSvg() {
 		const uri = "data:image/svg+xml;charset=utf-8," + new XMLSerializer().serializeToString(this.svg);
 
-		return Utils.loadImage(this.image, uri);
+		return net.loadImage(this.image, uri);
 	}
 
 	resize(w, h) {
@@ -71,13 +93,19 @@ export class SlideData {
 				this.canvas.width = w;
 				this.canvas.height = h;
 
-				this.svg.documentElement.setAttribute("width", w);
-				this.svg.documentElement.setAttribute("height", h);
-				const div = this.svg.querySelector(".xslider-layer-texture");
-				div.style.width = w+"px";
-				div.style.height = h+"px";
+				Promise.resolve()
+					.then(() => {
+						this.layer.texture.classList.add("xslider-texture-capture");
 
-				this.loadSvg()
+						cloner.copyStyleExcludeBackground(this.layer.texture, this.inlinedNode);
+
+						this.layer.texture.classList.remove("xslider-texture-capture");
+
+						this.svg = converter.convert(this.inlinedNode, w, h);
+
+
+						return this.loadSvg()
+					})
 					.then(() => {
 						const c = this.canvas.getContext('2d');
 						c.drawImage(this.image,0,0,w,h);
@@ -86,36 +114,13 @@ export class SlideData {
 					});
 			}
 		});
-
-
-
-		// Bench.end(this.tag, "resize");
-
-		// let s, d;
-		// let sx, sy, sw, sh;
-
-		// if(this.aspect > w / h) {
-		// 	s = this.height / h;
-
-		// 	sx = (this.width - w*s)/2;
-		// 	sy = 0;
-		// 	sw = w*s;
-		// 	sh = this.height;
-		// }
-		// else {
-		// 	s = this.width / w;
-
-		// 	sx = 0;
-		// 	sy = (this.height - h*s)/2;
-		// 	sw = this.width;
-		// 	sh = h*s;
-		// }
 	}
 }
 
 export class Data {
 	constructor() {
 		this.dom = new Dom();
+		this.time = 0;
 	}
 
 	setup(...args) {

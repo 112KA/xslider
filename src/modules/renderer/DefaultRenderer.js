@@ -11,16 +11,6 @@ export class DefaultRenderer extends BaseRenderer {
 
 	_defineHandlers() {
 
-		// this._onChangeSlide = (e) => {
-
-		// 	if(e.value0 !== undefined) {
-		// 		this.data.list[e.value0].container.classList.remove("xslider-slide-active");
-		// 	}
-
-		// 	this.data.list[e.value].container.classList.add("xslider-slide-active");
-		// }
-
-
 		this.dx = 0;
 		this._onTick = (e) => {
 			console.log('e: ', e);
@@ -56,12 +46,12 @@ export class DefaultRenderer extends BaseRenderer {
 
 		let opacity = 1.0 - Utils.clamp(indexer.progress,0,0.5) / 0.5;
 		let dx = -indexer.progress * this.width;
-		this.updateSlide(slide0, opacity, dx);
+		this.updateSlide(slide0, opacity, dx, 0);
 
 		if(slide0 != slide1) {
 			opacity = Utils.clamp(indexer.progress-0.5,0,0.5) / 0.5;
 			dx = (1-indexer.progress) * this.width;
-			this.updateSlide(slide1, opacity, dx);
+			this.updateSlide(slide1, opacity, dx, 1);
 		}
 
 		// stage.on("tick", this._onTick);
@@ -72,9 +62,12 @@ export class DefaultRenderer extends BaseRenderer {
 		super.resize(e);
 	}
 
-	updateSlide(slide, opacity, dx) {
+	updateSlide(slide, opacity, dx, index) {
 
 		if(!slide || !slide.layer.ui)  return;
+		if(slide.tag == "Slide1") {
+			console.log(slide.tag, index, dx);
+		}
 
 		slide.layer.ui.style.webkitTransform = "translate("+dx+"px, 0) scale(1)";
 		// slide.layer.ui.style.opacity = opacity;

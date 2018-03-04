@@ -52,6 +52,7 @@ export class SlideController extends InteractiveObject {
 		}
 
 		this._onTick = (e) => {
+			this.data.time = e.time;
 			this.indexer.tick();
 			this.renderer.default.render(this.indexer);
 			this.ready()

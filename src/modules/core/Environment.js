@@ -3,6 +3,14 @@ import {EventDispatcher} from './EventDispatcher'
 class Environment extends EventDispatcher {
 	constructor() {
 		super();
+
+		console.info("xslider ver.",XSLIDER_VERSION);
+		if(!THREE) {
+			console.error("xslider depend on three");
+		}
+		if(!domtoimage) {
+			console.error("xslider depend on dom-to-image");
+		}
 	}
 
 	get support() {

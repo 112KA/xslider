@@ -49,6 +49,9 @@ module.exports = {
 		        async: false
 		    }
 		}),
+		new webpack.DefinePlugin({
+	      XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
+	    }),
 		new ExtractTextPlugin('dist/xslider.css'),
 		// new webpack.optimize.UglifyJsPlugin()
 	],

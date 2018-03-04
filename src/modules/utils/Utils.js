@@ -1,3 +1,5 @@
+import {converter} from '../converter/SvgConverter'
+
 export const Utils = {
 
 	extend(base, o) {
@@ -16,38 +18,24 @@ export const Utils = {
 		return Math.max(min,Math.min(max,v));
 	},
 
-	loadImage(image, src) {
-		return new Promise((resolve, reject) => {
+	// toSvg(dom) {
+	// 	const svg = converter.from(dom);
+	// 	console.log('dom: ', dom);
 
-			const check = () => {
-				if(!image.complete) {
-					setTimeout(check, 10);
-				}
-				else {
-					resolve();
-				}
-			}
 
-			image.src = src;
 
-			check();
-		})
-	},
+	// 	return new Promise((resolve, reject) => {
 
-	toSvg(dom) {
+	// 		domtoimage.toSvg(dom)
+	// 			.then((uri) => {
+	// 				// console.log('uri: ', uri);
+	// 				const svgString = uri.replace("data:image/svg+xml;charset=utf-8,","");
 
-		return new Promise((resolve, reject) => {
+	// 				const parser = new DOMParser();
+	// 				const svg = parser.parseFromString(svgString, "image/svg+xml");
 
-			domtoimage.toSvg(dom)
-				.then((uri) => {
-					// console.log('uri: ', uri);
-					const svgString = uri.replace("data:image/svg+xml;charset=utf-8,","");
-
-					const parser = new DOMParser();
-					const svg = parser.parseFromString(svgString, "image/svg+xml");
-
-					resolve(svg);
-				});
-		});
-	}
+	// 				resolve(svg);
+	// 			});
+	// 	});
+	// }
 }
