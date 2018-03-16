@@ -22,9 +22,9 @@ export class EventDispatcher {
 
 		for(let key in properties) {
 
-			if(this._properties[key] != properties[key]) {
+			if(this._properties[key] == undefined || this._properties[key] != properties[key]) {
 				let v0 = this._properties[key];
-				this._properties[key] = properties[key]
+				this._properties[key] = properties[key];
 
 				this.dispatch(key, {
 					type : key,
@@ -39,7 +39,8 @@ export class EventDispatcher {
 	dispatch(type, options) {
 		if(this._listeners.hasOwnProperty(type)) {
 			for(const o of this._listeners[type]) {
-				o.listener(options);
+				let tmp = options || {type:type};
+				o.listener(tmp);
 			}
 		}
 	}

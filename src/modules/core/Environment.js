@@ -6,11 +6,11 @@ class Environment extends EventDispatcher {
 
 		console.info("xslider ver.",XSLIDER_VERSION);
 		if(!THREE) {
-			console.error("xslider depend on three");
+			console.error("xslider depend on three.js");
 		}
-		if(!domtoimage) {
-			console.error("xslider depend on dom-to-image");
-		}
+		// if(!domtoimage) {
+		// 	console.error("xslider depend on dom-to-image");
+		// }
 	}
 
 	get support() {

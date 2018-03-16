@@ -1,7 +1,7 @@
 import {Event, TouchEvent} from '../core/Event'
-import {InteractiveObject} from '../display/InteractiveObject'
+import {InteractiveObject} from '../core/InteractiveObject'
 import {env} from '../core/Environment'
-import {Ticker} from '../utils/Ticker'
+import {Ticker} from './Ticker'
 
 class Stage extends InteractiveObject {
 
@@ -13,31 +13,16 @@ class Stage extends InteractiveObject {
 		this.set({target:window});
 	}
 
-	_defineHandlers() {
-
-		super._defineHandlers();
-
-		this._handler.tick = (o) => {
-			this.dispatch("tick", o);
-		}
-
-		this._handler.resize = (e) => {
-			this.dispatch(e.type, e);
-		}
-	}
-
 	ready() {
 		return new Promise((resolve,reject) => {
 
 			const loaded = () => {
-				console.log('loaded: ');
 			    document.removeEventListener('DOMContentLoaded', loaded), 
 			    window.removeEventListener('load', loaded);
 
 			    resolve();
 			};
 
-				console.log('document.readyState: ', document.readyState);
 			if(document.readyState === 'complete') {
 				resolve();
 			}
@@ -65,11 +50,11 @@ class Stage extends InteractiveObject {
 		if(this._listeners[type].length == 1) {
 			switch(type) {
 				case 'tick':
-					this.ticker.on('tick', this._handler.tick);
+					this.ticker.on(type, this._on.bubble);
 					this.ticker.start();
 					break;
 				case 'resize':
-					target.addEventListener(type, this._handler.resize);
+					target.addEventListener(type, this._on.bubble);
 					break;
 			}
 		}
@@ -84,11 +69,11 @@ class Stage extends InteractiveObject {
 		if(!this._listeners[type] || this._listeners[type].length == 0) {
 			switch(type) {
 				case 'tick':
-					this.ticker.off('tick', this._handler.tick);
+					this.ticker.off(type, this._on.bubble);
 					this.ticker.stop();
 					break;
 				case 'resize':
-					target.removeEventListener(type, this._handler.resize);
+					target.removeEventListener(type, this._on.bubble);
 					break;
 			}
 		}

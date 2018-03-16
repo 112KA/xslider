@@ -33,19 +33,22 @@ uniform float progress;
 uniform vec2 resolution;
 
 void main(void) {
-	vec2 p = gl_FragCoord.xy /resolution.xy;
+	vec2 p = gl_FragCoord.xy /resolution;
 	float aspect = resolution.x / resolution.y;
-	// float step = smoothstep(0.0, 1.0, progress * (1.0+fade.x+fade.y) - ((1.0-p.x)*fade.x+p.y*fade.y));
 	float v = min(progress, 1.0 - progress);	//0.0-0.5
 	vec2 steps = vec2(aspect * N, N);
 	steps = floor(v * steps) / steps * 2.0;
 	vec2 size = steps / vec2(aspect * 10.0, 10.0);
 	size = max(size, 1.0/resolution.xy);
 
+	p -= 0.5;
 	p = (floor(p / size) + 0.5) * size;
-	vec4 color0 = texture2D(texture0, p);
-	vec4 color1 = texture2D(texture1, p);
-	gl_FragColor = mix(color0, color1, progress);
+	p += 0.5;
+
+	vec4 c0 = texture2D(texture0, p);
+	vec4 c1 = texture2D(texture1, p);
+
+	gl_FragColor = mix(c0, c1, progress);
 }
 `,
 
@@ -54,7 +57,6 @@ void main(void) {
 		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
 		progress:{ value: 0 },
 		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		// fade: { value: new THREE.Vector2(1.0, 1.0) },
 	}
 });
 

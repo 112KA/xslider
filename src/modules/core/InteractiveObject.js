@@ -1,6 +1,6 @@
-import {env} from '../core/Environment'
-import {Event, TouchEvent} from '../core/Event'
-import {EventDispatcher} from '../core/EventDispatcher'
+import {env} from './Environment'
+import {Event, TouchEvent} from './Event'
+import {EventDispatcher} from './EventDispatcher'
 
 export class InteractiveObject extends EventDispatcher {
 
@@ -9,12 +9,17 @@ export class InteractiveObject extends EventDispatcher {
 
 		this._defineHandlers();
 
-		this.on('target', this._handler.changeTarget);
+		this.on('target', this._on.changeTarget);
 	}
+
 
 	_defineHandlers() {
 
-		this._handler = {
+		this._on = {
+			bubble : (e) => {
+				this.dispatch(e.type, e);
+			},
+
 			changeTarget : (o) => {
 				if(o.value0) {
 					for(let type in this._listeners) {
@@ -58,9 +63,11 @@ export class InteractiveObject extends EventDispatcher {
 		}
 	}
 
+
 	dispose() {
 		this.off();
 	}
+
 
 	on(type, listener, options) {
 
@@ -72,6 +79,7 @@ export class InteractiveObject extends EventDispatcher {
 		return this;
 	}
 
+
 	off(type, listener) {
 
 		super.off(type, listener);
@@ -82,6 +90,7 @@ export class InteractiveObject extends EventDispatcher {
 		return this;
 	}
 
+
 	_autoAddListener(target, type) {
 
 		if(!target) return;
@@ -91,15 +100,19 @@ export class InteractiveObject extends EventDispatcher {
 				case TouchEvent.START:
 				case TouchEvent.MOVE:
 				case TouchEvent.END:
-					target.addEventListener(type, this._handler.touch);
+					target.addEventListener(type, this._on.touch);
+					break;
+				case 'click':
+					target.addEventListener(type, this._on.bubble);
 					break;
 			}
 
 			if(type == TouchEvent.MOVE) {
-				target.addEventListener(TouchEvent.START, this._handler.touchStart);
+				target.addEventListener(TouchEvent.START, this._on.touchStart);
 			}
 		}
 	}
+
 
 	_autoRemoveListener(target, type) {
 
@@ -110,12 +123,15 @@ export class InteractiveObject extends EventDispatcher {
 				case TouchEvent.START:
 				case TouchEvent.MOVE:
 				case TouchEvent.END:
-					target.removeEventListener(type, this._handler.touch);
+					target.removeEventListener(type, this._on.touch);
+					break;
+				case 'click':
+					target.removeEventListener(type, this._on.bubble);
 					break;
 			}
 
 			if(type == TouchEvent.MOVE) {
-				target.removeEventListener(TouchEvent.START, this._handler.touchStart);
+				target.removeEventListener(TouchEvent.START, this._on.touchStart);
 			}
 		}
 	}

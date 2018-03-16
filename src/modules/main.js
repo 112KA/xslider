@@ -11,6 +11,8 @@ export class XSlider extends EventDispatcher {
 		this.data = new Data();
 		this.controller = new SlideController();
 
+		this.transition = "Base";
+
 		this.setup(...args);
 	}
 
@@ -19,14 +21,11 @@ export class XSlider extends EventDispatcher {
 
 		this.data.setup(...args);
 
-		this.renderer = this.data.getRenderer();
-		this.renderer.setup(this.data);
-
 		this.controller.setup(this.renderer, this.data);
 	}
 
 	dispose() {
-		this.renderer.dispose();
+		this.controller.dispose();
 		this.data.dispose();
 	}
 }

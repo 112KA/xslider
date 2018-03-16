@@ -1,12 +1,67 @@
-.xslider {
+.xslider-container {
   position: relative;
   width: 100%;
   height: 100%; }
+  .xslider-container > canvas {
+    position: absolute;
+    top: 0;
+    left: 0; }
 
-.xslider-slide {
+.xslider-view {
+  overflow: hidden;
+  width: 100%;
+  height: 100%; }
+  .xslider-view .xslider-slide {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; }
+    .xslider-view .xslider-slide.xslider-slide-active {
+      display: block; }
+
+.xslider-slide-image {
+  display: none;
+  position: absolute; }
+
+.xslider-layer-texture {
+  position: absolute;
+  display: none;
+  width: 100%;
+  height: 100%; }
+  .xslider-layer-texture.xslider-texture-capture {
+    display: block;
+    z-index: -99999; }
+
+.xslider-layer-ui {
   position: absolute;
   top: 0;
-  left: 0; }
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+
+.xslider-pager {
+  position: absolute;
+  left: 0;
+  bottom: 10px;
+  text-align: center;
+  width: 100%; }
+  .xslider-pager > span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: black;
+    opacity: 0.2;
+    border-radius: 50%;
+    margin: 0 4px;
+    cursor: pointer; }
+    .xslider-pager > span.xslider-active {
+      background: #007aff;
+      opacity: 1; }
 
 .xslider-prev, .xslider-next {
   width: 27px;

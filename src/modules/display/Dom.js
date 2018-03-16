@@ -37,6 +37,7 @@ export class Dom extends EventDispatcher {
 	}
 
 	dispose() {
+		this.width = this.height = undefined;
 		stage.off('resize', this._onResize);
 		this.container.classList.remove("xslider-container");
 	}

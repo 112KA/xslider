@@ -17,17 +17,21 @@ export class SlideModel extends EventDispatcher {
 	_defineHandlers() {
 		this._onChangeSlide = (e) => {
 
-			if(e.value0 !== undefined) {
-				e.value0.container.classList.remove("xslider-slide-active");
-			}
+			let removeOld = false;
 
 			switch(e.type) {
 				case 'slide0':
 					this.updateSlide(0);
+					removeOld = e.value0 !== undefined;
 					break;
 				case 'slide1':
 					this.updateSlide(1);
+					removeOld = e.value0 !== undefined && e.value0 !== this.get('slide0');
 					break;
+			}
+
+			if(removeOld) {
+				e.value0.container.classList.remove("xslider-slide-active");
 			}
 		}
 	}
@@ -45,6 +49,11 @@ export class SlideModel extends EventDispatcher {
 	dispose() {
 		this.off('slide0', this._onChangeSlide);
 		this.off('slide1', this._onChangeSlide);
+
+		const slide0 = this.get('slide0');
+		const slide1 = this.get('slide1');
+		slide0.container.classList.remove("xslider-slide-active");
+		slide1.container.classList.remove("xslider-slide-active");
 	}
 
 	resize(w, h) {
@@ -61,6 +70,8 @@ export class SlideModel extends EventDispatcher {
 		const slide = this.get('slide'+slideIndex);
 
 		if(!slide)  return;
+
+		slide.container.classList.add("xslider-slide-active");
 
 		slide.resize(this.width, this.height)
 			.then(() => {

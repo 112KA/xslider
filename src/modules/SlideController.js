@@ -1,14 +1,17 @@
 
 import {Event, TouchEvent} from './core/Event'
+import {EventDispatcher} from './core/EventDispatcher'
 import {stage} from './core/Stage'
-import {InteractiveObject} from './display/InteractiveObject'
-import {Pager} from './display/Pager'
+import {AutoPlay} from './components/AutoPlay'
+import {Indexer} from './components/Indexer'
+import {Button} from './display/Button'
+import {UI} from './display/UI'
 import {DefaultRenderer} from './renderer/DefaultRenderer'
-import {Indexer} from './utils/Indexer'
 import {Bench} from './debug/Bench'
 
 
-export class SlideController extends InteractiveObject {
+
+export class SlideController extends EventDispatcher {
 
 	constructor() {
 		super();
@@ -19,11 +22,14 @@ export class SlideController extends InteractiveObject {
 			default : new DefaultRenderer()
 			, gl : undefined
 		};
+
+		this.ui = new UI();
+		this.autoplay = new AutoPlay();
+
+		this._defineHandlers();
 	}
 
 	_defineHandlers() {
-
-		super._defineHandlers();
 
 		this._onResize = (e) => {
 
@@ -35,21 +41,13 @@ export class SlideController extends InteractiveObject {
 			this.renderer.gl.resize(e);
 		}
 
-		this._onPrev = (e) => {
-			this.indexer.prev();
-			this.pager.set({index:this.indexer.current});
-		}
-
-		this._onNext = (e) => {
-			this.indexer.next();
-			this.pager.set({index:this.indexer.current});
-		}
-
 
 		this._onCompleteSlide = () => {
 			stage.off('tick', this._onTick);
-			this.pager.on('index', this._onChangePagerIndex);
+			this.ui.on(TouchEvent.START, this._onChange);
+			this.ui.on('index', this._onChange);
 		}
+
 
 		this._onTick = (e) => {
 			this.data.time = e.time;
@@ -58,46 +56,73 @@ export class SlideController extends InteractiveObject {
 			this.ready()
 				.then(() => {
 					this.renderer.gl.render(this.indexer);
+				},
+				(message) => {
+					console.log("reject ::", message);
 				});
-			
-			this.pager.set({index:this.indexer.current});
+			this.ui.pager.set({index:this.indexer.current});
 		}
 
-		this._onTouch = (e) => {
 
+		this._onChange = (e) => {
 			switch(e.type) {
-				case TouchEvent.START:
-					stage.on(TouchEvent.MOVE, this._onTouch);
-					stage.on(TouchEvent.END, this._onTouch);
+				case UI.EVENT.PREV:
+					this.ui.off(TouchEvent.START, this._onChange);
+					this.indexer.prev();
+					this.ui.pager.set({index:this.indexer.current});
+				break;
 
-					this.pager.off('index', this._onChangePagerIndex);
+				case UI.EVENT.NEXT:
+					this.ui.off(TouchEvent.START, this._onChange);
+					this.indexer.next();
+					this.ui.pager.set({index:this.indexer.current});
+				break;
+
+				case 'index':
+					this.indexer.to(e.value);
+
+					this.ready().then(() => {
+						stage.on('tick', this._onTick);
+					},
+					(message) => {
+						console.log('on index rejected : ', message);
+					});
+				break;
+				
+				case 'head':
+					this.ui.prev && (this.ui.prev.active = !this.indexer.get('head'));
+				break;
+
+				case 'tail':
+					this.ui.next && (this.ui.next.active = !this.indexer.get('tail'));
+				break;
+
+				case TouchEvent.START:
+					stage.on(TouchEvent.MOVE, this._onChange);
+					stage.on(TouchEvent.END, this._onChange);
+
+					this.ui.off('index', this._onChange);
 
 					this.indexer.down();
 
 					stage.on('tick', this._onTick);
-					break;
+				break;
+
 				case TouchEvent.MOVE:
 					const dx = (e.clientX - e.clientX0) / this.dom.width;
 					this.indexer.move(-dx);
+				break;
 
-					break;
 				case TouchEvent.END:
-					stage.off(TouchEvent.MOVE, this._onTouch);
-					stage.off(TouchEvent.END, this._onTouch);
+					stage.off(TouchEvent.MOVE, this._onChange);
+					stage.off(TouchEvent.END, this._onChange);
 
 					this.indexer.up();
-					break;
+				break;
 			}
 		}
-
-		this._onChangePagerIndex = (o) => {
-			this.indexer.to(o.value);
-
-			this.ready().then(() => {
-				stage.on('tick', this._onTick);
-			});
-		}
 	}
+
 
 	setup(renderer, data) {
 		this.renderer.gl = renderer;
@@ -105,32 +130,41 @@ export class SlideController extends InteractiveObject {
 		this.data = data;
 		this.dom = data.dom;
 
-		this.set({target:this.dom.view});
-
-		this.indexer.setup(this.data);
 		this.renderer.default.setup(this.data);
 
-		if(this.dom.pager) {
-			this.pager = this.pager || new Pager();
-			this.pager.setup(this.data);
+		this.renderer.gl = this.data.getRenderer();
+		this.renderer.gl.setup(this.data);
+
+		this.ui.setup(this.data);
+
+		if(!this.data.option.loop) {
+			this.indexer.on('head', this._onChange);
+			this.indexer.on('tail', this._onChange);
 		}
+		this.indexer.setup(this.data);
 
 		this.indexer.on('complete', this._onCompleteSlide);
 
+		this.autoplay.setup(this.data.option.autoplay);
+
 		this.dom.on('resize', this._onResize);
 
-		this.dom.prev && this.dom.prev.addEventListener('click', this._onPrev);
-		this.dom.next && this.dom.next.addEventListener('click', this._onNext);
-
-		this.pager.on('index', this._onChangePagerIndex);
-
-		this.on(TouchEvent.START, this._onTouch);
-
 		this.ready().then(() => {
+			this.ui.on('index', this._onChange);
+			this.ui.on(UI.EVENT.PREV, this._onChange);
+			this.ui.on(UI.EVENT.NEXT, this._onChange);
+
+			this.ui.on(TouchEvent.START, this._onChange);
+
+			this.autoplay.startTimer();
+
 			stage.on('tick', this._onTick);
 			this.dom._onResize();
+		}, (message) => {
+			console.log("first ready rejected : ", message);
 		});
 	}
+
 
 	ready() {
 		const slide0 = this.data.list[this.indexer.i0]
@@ -139,22 +173,29 @@ export class SlideController extends InteractiveObject {
 		return Promise.all([slide0.ready(), slide1.ready()]);
 	}
 
+
 	dispose() {
 
 		stage.off('tick', this._onTick);
-		stage.off(TouchEvent.MOVE, this._onTouch);
-		stage.off(TouchEvent.END, this._onTouch);
+		stage.off(TouchEvent.MOVE, this._onChange);
+		stage.off(TouchEvent.END, this._onChange);
 
-		this.off(TouchEvent.START, this._onTouch);
+		this.ui.off('index', this._onChange);
+		this.ui.off(UI.EVENT.PREV, this._onChange);
+		this.ui.off(UI.EVENT.NEXT, this._onChange);
 
-		this.dom.prev && this.dom.prev.removeEventListener('click', this._onPrev);
-		this.dom.next && this.dom.next.removeEventListener('click', this._onNext);
+		this.ui.off(TouchEvent.START, this._onChange);
+
+		this.ui.dispose();
 
 		this.dom.off('resize', this._onResize);
 
 		this.indexer.off('complete', this._onCompleteSlide);
 
-		this.pager.off('index', this._onChangePagerIndex);
+		if(!this.data.option.loop) {
+			this.indexer.off('head', this._onChange);
+			this.indexer.off('tail', this._onChange);
+		}
 
 		this.renderer.gl.dispose();
 		this.renderer.default.dispose();

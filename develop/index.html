@@ -102,21 +102,50 @@
 	<script src="./vendor.js"></script>
 	<script src="../dist/xslider.js"></script>
 	<script>
+		var listener;
 		XSlider.stage.ready()
 			.then(function() {
-				var slider = new XSlider({
+
+				var transitions = ['Base','CrossWarp',"CrossZoom","Cube","Pixelate","Morph","Test"];
+				var index = transitions.indexOf(location.hash.replace('#', ''));
+				index = index == -1 ? 0 : index;
+
+				var o = {
+					transition:transitions[index]
+				};
+
+				var getTransition = function() {
+					return XSlider.transition[o.transition];
+				};
+
+				var options = {
 					selector: "#xslider",
 					// debug: true,
-					getTransition : function() {
-						// return XSlider.transition.Base;
-						// return XSlider.transition.CrossWarp;
-						// return XSlider.transition.CrossZoom;
-						// return XSlider.transition.Cube;
-						// return XSlider.transition.Pixelate;
-						// return XSlider.transition.Morph;
-						return XSlider.transition.Test;
+					getTransition : getTransition,
+					loop : true,
+					throwable : true,
+					allowTouchMove : true,
+					autoplay : {
+						delay : 3000,
+						stopOnLastSlide : false,
+						disableOnInteraction : true
+					},
+					on : {
+						init : function() { console.log('option :: on init'); }
 					}
+				};
+
+				var slider = new XSlider(options);
+
+				var gui = new dat.GUI();
+				listener = gui.add(o, 'transition', transitions);
+				listener.onFinishChange(function(v) {
+					slider.dispose();
+					slider.setup(options);
+
+					location.hash = v;
 				});
+
 			});
 	</script>
 

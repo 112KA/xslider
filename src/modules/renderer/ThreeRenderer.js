@@ -59,7 +59,7 @@ export class ThreeRenderer extends BaseRenderer {
 		this.model.off('updateTexture', this._onUpdateTexture);
 		this.model.dispose();
 
-		this.data.dom.view.removeChild(this.canvas);
+		this.data.dom.container.removeChild(this.canvas);
 	}
 
 	render(indexer) {

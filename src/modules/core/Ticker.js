@@ -5,7 +5,6 @@ export const Ticker = class extends EventDispatcher {
 		super();
 
 		this.fps = 30;
-		// console.log('this._fps: ', this._fps);
 
 		this._defineFunctions();
 	}
@@ -19,7 +18,6 @@ export const Ticker = class extends EventDispatcher {
 			window.requestAnimationFrame = window[prefixes[i] + "RequestAnimationFrame"];
 			window.cancelAnimationFrame = window[prefixes[i] + "CancelAnimationFrame"] || window[prefixes[i] + "CancelRequestAnimationFrame"];
 		}
-			// console.log('this._RAF: ', this._RAF);
 
 
 		this._tickHandler = () => {
@@ -31,7 +29,7 @@ export const Ticker = class extends EventDispatcher {
 
 			if(overlap >= 0) {
 				this._nextMs += overlap + (overlap >= this._gap ? 1 : this._gap - overlap);
-				this.dispatch('tick', {time:this._lastMs - this._startMs});
+				this.dispatch('tick', {type:'tick', time:this._lastMs - this._startMs});
 			}
 		}
 	}

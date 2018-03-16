@@ -12,6 +12,7 @@ import {Bench} from './debug/Bench'
 
 
 export class SlideData {
+
 	constructor(slide) {
 		this.container = slide;
 		this.canvas = document.createElement('canvas');
@@ -26,9 +27,12 @@ export class SlideData {
 		this.tag = this.layer.ui.textContent;
 	}
 
-	ready() {
+	dispose() {
+		this.layer.texture && this.layer.texture.classList.remove("xslider-texture-capture");
+	}
+	
 
-		this.container.classList.add("xslider-slide-active");
+	ready() {
 
 		return new Promise((resolve, reject) => {
 
@@ -36,9 +40,13 @@ export class SlideData {
 			if(this.svg) {
 				resolve();
 			}
+			//textureなし
+			else if(!this.layer.texture) {
+				resolve();
+			}
 			//処理中
 			else if(this.layer.texture.classList.contains("xslider-texture-capture")) {
-				reject();
+				reject("in process");
 			}
 			else {
 				this.layer.texture.classList.add("xslider-texture-capture");
@@ -80,6 +88,7 @@ export class SlideData {
 		return net.loadImage(this.image, uri);
 	}
 
+
 	resize(w, h) {
 
 		return new Promise((resolve, reject) => {
@@ -93,29 +102,25 @@ export class SlideData {
 				this.canvas.width = w;
 				this.canvas.height = h;
 
-				Promise.resolve()
-					.then(() => {
-						this.layer.texture.classList.add("xslider-texture-capture");
+				this.layer.texture.classList.add("xslider-texture-capture");
 
-						cloner.copyStyleExcludeBackground(this.layer.texture, this.inlinedNode);
+				cloner.copyStyleExcludeBackground(this.layer.texture, this.inlinedNode);
 
-						this.layer.texture.classList.remove("xslider-texture-capture");
+				this.layer.texture.classList.remove("xslider-texture-capture");
 
-						this.svg = converter.convert(this.inlinedNode, w, h);
+				this.svg = converter.convert(this.inlinedNode, w, h);
 
+				this.loadSvg().then(() => {
+					const c = this.canvas.getContext('2d');
+					c.drawImage(this.image,0,0,w,h);
 
-						return this.loadSvg()
-					})
-					.then(() => {
-						const c = this.canvas.getContext('2d');
-						c.drawImage(this.image,0,0,w,h);
-
-						resolve();
-					});
+					resolve();
+				});
 			}
 		});
 	}
 }
+
 
 export class Data {
 	constructor() {
@@ -137,6 +142,9 @@ export class Data {
 	}
 
 	dispose() {
+		for(const slide of this.list) {
+			slide.dispose();
+		}
 		this.dom.dispose();
 	}
 

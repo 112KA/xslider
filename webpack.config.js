@@ -32,6 +32,7 @@ module.exports = {
 			}),
 		}],
 	},
+	
 	plugins: [
 		new ConcatPlugin({
 		    // examples
@@ -43,7 +44,9 @@ module.exports = {
 		    filesToConcat: [
 		    	'./node_modules/three/build/three.min.js', 
 		    	// './node_modules/dom-to-image/dist/dom-to-image.min.js'
-		    	'./node_modules/dom-to-image/src/dom-to-image.js'
+		    	// './node_modules/dom-to-image/src/dom-to-image.js'
+		    	'./node_modules/dat.gui/build/dat.gui.min.js',
+		    	'./node_modules/babel-polyfill/dist/polyfill.min.js'
 		    ],
 		    attributes: {
 		        async: false
@@ -55,9 +58,13 @@ module.exports = {
 		new ExtractTextPlugin('dist/xslider.css'),
 		// new webpack.optimize.UglifyJsPlugin()
 	],
+
 	devServer: {
 	    contentBase: __dirname,
+	    // watchContentBase: true,
 	    port: 3000,
+	    inline: true,
 	},
+
 	devtool: 'source-map'
 };

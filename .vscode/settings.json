@@ -1,0 +1,17 @@
+{
+"macros": {
+    "snippetWithDescription": [
+        "editor.action.clipboardCopyAction",
+        "editor.action.insertLineAfter",
+        "editor.action.clipboardPasteAction",
+        "cursorHomeSelect",
+        {
+            "command": "editor.action.insertSnippet",
+                "when": "editorTextFocus",
+                "args": {
+                    "snippet": "console.log(`${TM_SELECTED_TEXT}`, ${TM_SELECTED_TEXT})$0"
+                }
+        }
+    ]
+}
+}

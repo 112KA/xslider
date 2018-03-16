@@ -26,14 +26,10 @@ export class DefaultRenderer extends BaseRenderer {
 	
 	setup(data) {
 		super.setup(data);
-
-		this.on('index', this._onChangeSlide);
 	}
 
 	dispose() {
 		super.dispose();
-
-		this.off('index', this._onChangeSlide);
 	}
 
 	render(indexer) {
@@ -42,16 +38,14 @@ export class DefaultRenderer extends BaseRenderer {
 		const slide0 = this.data.list[indexer.i0]
 		, slide1 = this.data.list[indexer.i1];
 
-		// console.log('indexer.progress: ', indexer.progress);
-
 		let opacity = 1.0 - Utils.clamp(indexer.progress,0,0.5) / 0.5;
 		let dx = -indexer.progress * this.width;
-		this.updateSlide(slide0, opacity, dx, 0);
+		this.updateSlide(slide0, opacity, dx);
 
 		if(slide0 != slide1) {
 			opacity = Utils.clamp(indexer.progress-0.5,0,0.5) / 0.5;
 			dx = (1-indexer.progress) * this.width;
-			this.updateSlide(slide1, opacity, dx, 1);
+			this.updateSlide(slide1, opacity, dx);
 		}
 
 		// stage.on("tick", this._onTick);
@@ -62,12 +56,9 @@ export class DefaultRenderer extends BaseRenderer {
 		super.resize(e);
 	}
 
-	updateSlide(slide, opacity, dx, index) {
+	updateSlide(slide, opacity, dx) {
 
 		if(!slide || !slide.layer.ui)  return;
-		if(slide.tag == "Slide1") {
-			console.log(slide.tag, index, dx);
-		}
 
 		slide.layer.ui.style.webkitTransform = "translate("+dx+"px, 0) scale(1)";
 		// slide.layer.ui.style.opacity = opacity;
