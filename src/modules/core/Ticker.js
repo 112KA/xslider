@@ -28,8 +28,9 @@ export const Ticker = class extends EventDispatcher {
 			let overlap = this._lastMs - this._nextMs;
 
 			if(overlap >= 0) {
+				const t0 = this._nextMs;
 				this._nextMs += overlap + (overlap >= this._gap ? 1 : this._gap - overlap);
-				this.dispatch('tick', {type:'tick', time:this._lastMs - this._startMs});
+				this.dispatch('tick', {type:'tick', time:this._lastMs - this._startMs, dt:this._nextMs-t0});
 			}
 		}
 	}
