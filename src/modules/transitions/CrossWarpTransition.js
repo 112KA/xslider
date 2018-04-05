@@ -26,14 +26,28 @@ uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform float progress;
 uniform vec2 resolution;
-uniform vec2 fade;
+uniform vec2 gradient;
 
 void main(void) {
-	vec2 uv = gl_FragCoord.xy /resolution.xy;
+	vec2 p = gl_FragCoord.xy /resolution.xy;
 
-	float v = smoothstep(0.0, 1.0, progress * (1.0+fade.x+fade.y) - ((1.0-uv.x)*fade.x+uv.y*fade.y));
-	vec4 color0 = texture2D(texture0, (uv-0.5)*(1.0-v)+0.5);
-	vec4 color1 = texture2D(texture1, (uv-0.5)*v+0.5);
+	float v = mix(0.0, 1.0, progress * (1.0+gradient.x+gradient.y) - ((1.0-p.x)*gradient.x+p.y*gradient.y));
+	v = clamp(v, 0.0, 1.0);
+
+	vec2 p0 = p;
+	vec2 p1 = p;
+
+	p0 -= 0.5;
+	p0 *= (1.0 - v);
+	p0 += 0.5;
+
+	p1 -= 0.5;
+	p1 *= v;
+	p1 += 0.5;
+
+	vec4 color0 = texture2D(texture0, p0);
+	vec4 color1 = texture2D(texture1, p1);
+
 	gl_FragColor = mix(color0, color1, v);
 }
 `,
@@ -43,6 +57,6 @@ void main(void) {
 		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
 		progress:{ value: 0 },
 		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		fade: { value: new THREE.Vector2(0.5, 0.5) },
+		gradient: { value: new THREE.Vector2(0.5, 0.5) },
 	}
 });

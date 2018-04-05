@@ -102,48 +102,104 @@
 	<script src="./vendor.js"></script>
 	<script src="../dist/xslider.js"></script>
 	<script>
-		var listener;
+		
+		var query = {};
+
+		if(window.location.hash) {
+			var  tmp = window.location.hash.substring(1);
+			tmp = tmp.split( '&' );
+
+			for(var i = 0; i < tmp.length; i++) {
+				var element = tmp[i].split("=");
+				var paramName = decodeURIComponent( element[0] );
+				var paramValue = decodeURIComponent( element[1] );
+				query[paramName] = paramValue;
+			}
+		}
+		else {
+			query.touchMoveEnabled = true;
+			query.throwable = true;
+
+			query.loop = true;
+		}
+
+		var transitions = ['Base','CrossWarp',"CrossZoom","Cube","Morph","Noise","Pixelate","PixelateWipe","Test"];
+		var index = transitions.indexOf(query['transition']);
+		index = index == -1 ? 0 : index;
+
+		var target = {
+			transition:transitions[index],
+
+			loop : 'loop' in query,
+
+			touchMoveEnabled : 'touchMoveEnabled' in query,
+			throwable : 'throwable' in query,
+
+			autoplayEnabled : 'autoplayEnabled' in query,
+		};
+
+		var buildOptions = function() {
+			return {
+				selector: "#xslider",
+				// debug: true,
+				getTransition : function() {
+					return XSlider.transition[target.transition];
+				},
+				loop : target.loop,
+				touchMove : target.touchMoveEnabled ? {
+					throwable : target.throwable
+				} : false,
+				autoplay : target.autoplayEnabled ? {
+					delay : 3000
+				} : false,
+				on : {
+					init : function() { console.log('option :: on init'); }
+				}
+			}
+		}
+
+;
+		var gui = new dat.GUI();
+
+		var folders = {
+			touchMove : gui.addFolder('touchMove'),
+			autoplay : gui.addFolder('autoplay'),
+		}
+
+		var listeners = {
+			transition : gui.add(target, 'transition', transitions),
+
+			loop : gui.add(target, 'loop', true),
+
+			touchMoveEnabled : folders.touchMove.add(target, 'touchMoveEnabled', true),
+			throwable : folders.touchMove.add(target, 'throwable', true),
+
+			autoplayEnabled : folders.autoplay.add(target, 'autoplayEnabled', true),
+		};
+
 		XSlider.stage.ready()
 			.then(function() {
 
-				var transitions = ['Base','CrossWarp',"CrossZoom","Cube","Pixelate","Morph","Test"];
-				var index = transitions.indexOf(location.hash.replace('#', ''));
-				index = index == -1 ? 0 : index;
+				var slider = new XSlider(buildOptions());
 
-				var o = {
-					transition:transitions[index]
-				};
-
-				var getTransition = function() {
-					return XSlider.transition[o.transition];
-				};
-
-				var options = {
-					selector: "#xslider",
-					// debug: true,
-					getTransition : getTransition,
-					loop : true,
-					throwable : true,
-					allowTouchMove : true,
-					autoplay : {
-						delay : 3000,
-						stopOnLastSlide : false,
-						disableOnInteraction : true
-					},
-					on : {
-						init : function() { console.log('option :: on init'); }
-					}
-				};
-
-				var slider = new XSlider(options);
-
-				var gui = new dat.GUI();
-				listener = gui.add(o, 'transition', transitions);
-				listener.onFinishChange(function(v) {
+				var reset = function(v) {
 					slider.dispose();
-					slider.setup(options);
+					// slider.setup(XSlider.Utils.extend(options, o));
 
-					location.hash = v;
+					slider.setup(buildOptions());
+
+					var s = '';
+					s += 'transition='+target.transition;
+					target.loop && (s += '&loop');
+					target.touchMoveEnabled && (s += '&touchMoveEnabled');
+					target.throwable && (s += '&throwable');
+					target.autoplayEnabled && (s += '&autoplayEnabled');
+
+					location.hash = s;
+				}
+
+				Object.keys(listeners).forEach(function (key) {
+					listeners[key].onFinishChange(reset);
 				});
 
 			});

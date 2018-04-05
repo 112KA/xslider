@@ -16,6 +16,11 @@ export class Indexer extends EventDispatcher {
 
 		this.progress = 0;
 
+
+		this.set({
+			'head':undefined,
+			'tail':undefined
+		});
 		!this.data.option.loop && (this._target = this.constrain(this._target));
 
 		this.tick();
@@ -69,10 +74,8 @@ export class Indexer extends EventDispatcher {
 
 	up() {
 		this._state = Indexer.STATE.UP;
-
-		if(!this.data.option.throwable) {
-			this._move = 0;
-		}
+		
+		!this.data.option.get('throwable', 'touchMove') && (this._move = 0);
 	}
 
 	get current() {

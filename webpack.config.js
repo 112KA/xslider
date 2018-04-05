@@ -46,7 +46,7 @@ module.exports = {
 		    	// './node_modules/dom-to-image/dist/dom-to-image.min.js'
 		    	// './node_modules/dom-to-image/src/dom-to-image.js'
 		    	'./node_modules/dat.gui/build/dat.gui.min.js',
-		    	'./node_modules/babel-polyfill/dist/polyfill.min.js'
+		    	// './node_modules/babel-polyfill/dist/polyfill.min.js'
 		    ],
 		    attributes: {
 		        async: false

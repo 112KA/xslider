@@ -54,11 +54,15 @@ class Net {
 	}
 
 
-	async getDataURI(url) {
-		let blob;
-		blob = await this.get(url, 'blob');
-		blob = await this.readBlob(blob);
-		return blob;
+	// async getDataURI(url) {
+	// 	let blob;
+	// 	blob = await this.get(url, 'blob');
+	// 	blob = await this.readBlob(blob);
+	// 	return blob;
+	// }
+	getDataURI(url) {
+		return this.get(url, 'blob')
+			.then(this.readBlob);
 	}
 
 

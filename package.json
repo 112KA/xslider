@@ -9,8 +9,6 @@
     "start": "webpack-dev-server --progress --colors"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "dom-to-image": "^2.6.0",
     "three": "^0.89.0"
   },
   "devDependencies": {

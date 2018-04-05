@@ -1,6 +1,6 @@
 import {BaseRenderer} from './BaseRenderer'
 import {SlideModel} from '../display/SlideModel'
-import {Bench} from '../debug/Bench'
+import {Bench} from '../components/debug/Bench'
 
 export class ThreeRenderer extends BaseRenderer {
 	constructor() {

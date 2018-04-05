@@ -4,10 +4,10 @@ import {EventDispatcher} from './core/EventDispatcher'
 import {stage} from './core/Stage'
 import {AutoPlay} from './components/AutoPlay'
 import {Indexer} from './components/Indexer'
+import {Bench} from './components/debug/Bench'
 import {Button} from './display/Button'
 import {UI} from './display/UI'
 import {DefaultRenderer} from './renderer/DefaultRenderer'
-import {Bench} from './debug/Bench'
 
 
 
@@ -44,8 +44,10 @@ export class SlideController extends EventDispatcher {
 
 		this._onCompleteSlide = () => {
 			stage.off('tick', this._onTick);
-			this.ui.on(TouchEvent.START, this._onChange);
+			this.data.option.get('touchMove') && this.ui.on(TouchEvent.START, this._onChange);
 			this.ui.on('index', this._onChange);
+
+			this.autoplay.start();
 		}
 
 
@@ -67,15 +69,12 @@ export class SlideController extends EventDispatcher {
 		this._onChange = (e) => {
 			switch(e.type) {
 				case UI.EVENT.PREV:
-					this.ui.off(TouchEvent.START, this._onChange);
-					this.indexer.prev();
-					this.ui.pager.set({index:this.indexer.current});
+					this.prev();
 				break;
 
 				case UI.EVENT.NEXT:
-					this.ui.off(TouchEvent.START, this._onChange);
-					this.indexer.next();
-					this.ui.pager.set({index:this.indexer.current});
+				case AutoPlay.EVENT.TICK:
+					this.next();
 				break;
 
 				case 'index':
@@ -104,6 +103,8 @@ export class SlideController extends EventDispatcher {
 					this.ui.off('index', this._onChange);
 
 					this.indexer.down();
+
+					this.autoplay.stop();
 
 					stage.on('tick', this._onTick);
 				break;
@@ -145,6 +146,7 @@ export class SlideController extends EventDispatcher {
 
 		this.indexer.on('complete', this._onCompleteSlide);
 
+		this.autoplay.on(AutoPlay.EVENT.TICK, this._onChange);
 		this.autoplay.setup(this.data.option.autoplay);
 
 		this.dom.on('resize', this._onResize);
@@ -154,9 +156,9 @@ export class SlideController extends EventDispatcher {
 			this.ui.on(UI.EVENT.PREV, this._onChange);
 			this.ui.on(UI.EVENT.NEXT, this._onChange);
 
-			this.ui.on(TouchEvent.START, this._onChange);
+			this.data.option.get('touchMove') && this.ui.on(TouchEvent.START, this._onChange);
 
-			this.autoplay.startTimer();
+			this.autoplay.start();
 
 			stage.on('tick', this._onTick);
 			this.dom._onResize();
@@ -174,6 +176,22 @@ export class SlideController extends EventDispatcher {
 	}
 
 
+	prev() {
+		this.data.option.get('touchMove') && this.ui.off(TouchEvent.START, this._onChange);
+		this.autoplay.stop();
+		this.indexer.prev();
+		this.ui.pager.set({index:this.indexer.current});
+	}
+
+
+	next() {
+		this.data.option.get('touchMove') && this.ui.off(TouchEvent.START, this._onChange);
+		this.autoplay.stop();
+		this.indexer.next();
+		this.ui.pager.set({index:this.indexer.current});
+	}
+
+
 	dispose() {
 
 		stage.off('tick', this._onTick);
@@ -184,7 +202,7 @@ export class SlideController extends EventDispatcher {
 		this.ui.off(UI.EVENT.PREV, this._onChange);
 		this.ui.off(UI.EVENT.NEXT, this._onChange);
 
-		this.ui.off(TouchEvent.START, this._onChange);
+		this.data.option.get('touchMove') && this.ui.off(TouchEvent.START, this._onChange);
 
 		this.ui.dispose();
 

@@ -1,5 +1,5 @@
 import {cloner} from './Cloner'
-import {net} from '../utils/Net'
+import {net} from '../Net'
 
 
 export const Inliner = {

@@ -63,9 +63,6 @@ vec3 crossFade(in vec2 uv, in float dissolve) {
 
 void main(void) {
 	vec2 p = gl_FragCoord.xy /resolution.xy;
-	// vec4 c0 = texture2D(texture0, p);
-	// vec4 c1 = texture2D(texture1, p);
-	// gl_FragColor = mix(c0, c1, progress);
 
 	vec2 center = vec2(Linear_ease(0.25, 0.5, 1.0, progress), 0.5);
 	float dissolve = Exponential_easeInOut(0.0, 1.0, 1.0, progress);

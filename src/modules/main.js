@@ -1,7 +1,7 @@
-
-import {Data} from './Data'
+import {Data} from './components/Data'
 import {SlideController} from './SlideController'
 import {EventDispatcher} from './core/EventDispatcher'
+import {Utils} from './components/Utils'
 
 
 export class XSlider extends EventDispatcher {
@@ -11,7 +11,14 @@ export class XSlider extends EventDispatcher {
 		this.data = new Data();
 		this.controller = new SlideController();
 
-		this.transition = "Base";
+		Utils.delegate(this, {
+			prev:this.controller.prev,
+			next:this.controller.next,
+			autoplay: {
+				start:this.controller.autoplay.start,
+				stop:this.controller.autoplay.stop
+			}
+		});
 
 		this.setup(...args);
 	}

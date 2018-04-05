@@ -60,11 +60,46 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 15);
+/******/ 	return __webpack_require__(__webpack_require__.s = 14);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.BaseTransition = undefined;
+
+var _Utils = __webpack_require__(2);
+
+var BaseTransition = exports.BaseTransition = {
+
+	vertexShader: '\nprecision highp float;\n\nattribute vec3 position;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\nvoid main(void) {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n',
+
+	fragmentShader: '\nprecision highp float;\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\nuniform vec2 gradient;\n\nvoid main(void) {\n\tvec2 uv = gl_FragCoord.xy /resolution.xy;\n\tvec4 color0 = texture2D(texture0, uv);\n\tvec4 color1 = texture2D(texture1, uv);\n\tfloat v = smoothstep(0.0, 1.0, progress * (1.0+gradient.x+gradient.y) - ((1.0-uv.x)*gradient.x+uv.y*gradient.y));\n\tgl_FragColor = mix(color0, color1, v);\n}\n',
+
+	uniforms: {
+		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+		uv0: { value: new THREE.Vector4(0, 0, 1, 1) },
+		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+		uv1: { value: new THREE.Vector4(0, 0, 1, 1) },
+		progress: { value: 0 },
+		resolution: { value: new THREE.Vector2(0.0, 0.0) },
+		gradient: { value: new THREE.Vector2(1.0, 1.0) }
+	},
+
+	extend: function extend(o) {
+		return _Utils.Utils.extend(this, o);
+	}
+};
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -98,7 +133,7 @@ var EventDispatcher = exports.EventDispatcher = function () {
 
 			for (var key in properties) {
 
-				if (this._properties[key] != properties[key]) {
+				if (this._properties[key] == undefined || this._properties[key] != properties[key]) {
 					var v0 = this._properties[key];
 					this._properties[key] = properties[key];
 
@@ -122,7 +157,8 @@ var EventDispatcher = exports.EventDispatcher = function () {
 					for (var _iterator = this._listeners[type][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 						var o = _step.value;
 
-						o.listener(options);
+						var tmp = options || { type: type };
+						o.listener(tmp);
 					}
 				} catch (err) {
 					_didIteratorError = true;
@@ -191,7 +227,7 @@ var EventDispatcher = exports.EventDispatcher = function () {
 ;
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -200,33 +236,110 @@ var EventDispatcher = exports.EventDispatcher = function () {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.BaseTransition = undefined;
+var Utils = exports.Utils = {
+	extend: function extend(base, o) {
+		var ret = {};
+		Object.assign(ret, base);
 
-var _Utils = __webpack_require__(3);
+		var entries = Object.entries(o);
+		var _iteratorNormalCompletion = true;
+		var _didIteratorError = false;
+		var _iteratorError = undefined;
 
-var BaseTransition = exports.BaseTransition = {
+		try {
+			for (var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+				var entry = _step.value;
 
-	vertexShader: '\nprecision highp float;\n\nattribute vec3 position;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\nvoid main(void) {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n',
+				ret[entry[0]] = entry[1];
+			}
+		} catch (err) {
+			_didIteratorError = true;
+			_iteratorError = err;
+		} finally {
+			try {
+				if (!_iteratorNormalCompletion && _iterator.return) {
+					_iterator.return();
+				}
+			} finally {
+				if (_didIteratorError) {
+					throw _iteratorError;
+				}
+			}
+		}
 
-	fragmentShader: '\nprecision highp float;\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\nuniform vec2 fade;\n\nvoid main(void) {\n\tvec2 uv = gl_FragCoord.xy /resolution.xy;\n\tvec4 color0 = texture2D(texture0, uv);\n\tvec4 color1 = texture2D(texture1, uv);\n\tfloat v = smoothstep(0.0, 1.0, progress * (1.0+fade.x+fade.y) - ((1.0-uv.x)*fade.x+uv.y*fade.y));\n\tgl_FragColor = mix(color0, color1, v);\n}\n',
-
-	uniforms: {
-		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		uv0: { value: new THREE.Vector4(0, 0, 1, 1) },
-		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		uv1: { value: new THREE.Vector4(0, 0, 1, 1) },
-		progress: { value: 0 },
-		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		fade: { value: new THREE.Vector2(1.0, 1.0) }
+		return ret;
 	},
+	delegate: function delegate(base, o) {
+		var entries = Object.entries(o);
+		var _iteratorNormalCompletion2 = true;
+		var _didIteratorError2 = false;
+		var _iteratorError2 = undefined;
 
-	extend: function extend(o) {
-		return _Utils.Utils.extend(this, o);
+		try {
+			for (var _iterator2 = entries[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+				var entry = _step2.value;
+
+				base[entry[0]] = entry[1];
+			}
+		} catch (err) {
+			_didIteratorError2 = true;
+			_iteratorError2 = err;
+		} finally {
+			try {
+				if (!_iteratorNormalCompletion2 && _iterator2.return) {
+					_iterator2.return();
+				}
+			} finally {
+				if (_didIteratorError2) {
+					throw _iteratorError2;
+				}
+			}
+		}
+	},
+	clamp: function clamp(v, min, max) {
+		return Math.max(min, Math.min(max, v));
+	},
+	getQuery: function getQuery(key) {
+		var cached = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+
+		if (!this._query || !cached) {
+			this._query = {};
+			//最初の?を除いた文字列を取得
+			var query = window.location.search.substring(1);
+			var parameters = query.split('&');
+			for (var i = 0; i < parameters.length; i++) {
+				var element = parameters[i].split("=");
+				var paramName = decodeURIComponent(element[0]);
+				var paramValue = decodeURIComponent(element[1]);
+				this._query[paramName] = paramValue;
+			}
+		}
+		return this._query[key];
 	}
+
+	// toSvg(dom) {
+
+
+	// 	return new Promise((resolve, reject) => {
+
+	// 		domtoimage.toSvg(dom)
+	// 			.then((uri) => {
+	// 				// console.log('uri: ', uri);
+	// 				const svgString = uri.replace("data:image/svg+xml;charset=utf-8,","");
+
+	// 				const parser = new DOMParser();
+	// 				const svg = parser.parseFromString(svgString, "image/svg+xml");
+
+	// 				resolve(svg);
+	// 			});
+	// 	});
+	// }
+
 };
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -270,33 +383,16 @@ var Stage = function (_InteractiveObject) {
 	}
 
 	_createClass(Stage, [{
-		key: '_defineHandlers',
-		value: function _defineHandlers() {
-			var _this2 = this;
-
-			_get(Stage.prototype.__proto__ || Object.getPrototypeOf(Stage.prototype), '_defineHandlers', this).call(this);
-
-			this._handler.tick = function (o) {
-				_this2.dispatch("tick", o);
-			};
-
-			this._handler.resize = function (e) {
-				_this2.dispatch(e.type, e);
-			};
-		}
-	}, {
 		key: 'ready',
 		value: function ready() {
 			return new Promise(function (resolve, reject) {
 
 				var loaded = function loaded() {
-					// console.log('loaded: ');
 					document.removeEventListener('DOMContentLoaded', loaded), window.removeEventListener('load', loaded);
 
 					resolve();
 				};
 
-				// console.log('document.readyState: ', document.readyState);
 				if (document.readyState === 'complete') {
 					resolve();
 				} else {
@@ -315,11 +411,11 @@ var Stage = function (_InteractiveObject) {
 			if (this._listeners[type].length == 1) {
 				switch (type) {
 					case 'tick':
-						this.ticker.on('tick', this._handler.tick);
+						this.ticker.on(type, this._on.bubble);
 						this.ticker.start();
 						break;
 					case 'resize':
-						target.addEventListener(type, this._handler.resize);
+						target.addEventListener(type, this._on.bubble);
 						break;
 				}
 			}
@@ -335,11 +431,11 @@ var Stage = function (_InteractiveObject) {
 			if (!this._listeners[type] || this._listeners[type].length == 0) {
 				switch (type) {
 					case 'tick':
-						this.ticker.off('tick', this._handler.tick);
+						this.ticker.off(type, this._on.bubble);
 						this.ticker.stop();
 						break;
 					case 'resize':
-						target.removeEventListener(type, this._handler.resize);
+						target.removeEventListener(type, this._on.bubble);
 						break;
 				}
 			}
@@ -363,58 +459,6 @@ var Stage = function (_InteractiveObject) {
 
 
 var stage = exports.stage = new Stage();
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.Utils = undefined;
-
-var _SvgConverter = __webpack_require__(11);
-
-var Utils = exports.Utils = {
-	extend: function extend(base, o) {
-		var ret = {};
-		Object.assign(ret, base);
-
-		var entries = Object.entries(o);
-		var _iteratorNormalCompletion = true;
-		var _didIteratorError = false;
-		var _iteratorError = undefined;
-
-		try {
-			for (var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-				var entry = _step.value;
-
-				ret[entry[0]] = entry[1];
-			}
-		} catch (err) {
-			_didIteratorError = true;
-			_iteratorError = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion && _iterator.return) {
-					_iterator.return();
-				}
-			} finally {
-				if (_didIteratorError) {
-					throw _iteratorError;
-				}
-			}
-		}
-
-		return ret;
-	},
-	clamp: function clamp(v, min, max) {
-		return Math.max(min, Math.min(max, v));
-	}
-};
 
 /***/ }),
 /* 4 */
@@ -465,7 +509,7 @@ exports.env = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _EventDispatcher2 = __webpack_require__(0);
+var _EventDispatcher2 = __webpack_require__(1);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -483,7 +527,7 @@ var Environment = function (_EventDispatcher) {
 
 		console.info("xslider ver.", "1.0.0");
 		if (!THREE) {
-			console.error("xslider depend on three");
+			console.error("xslider depend on three.js");
 		}
 		// if(!domtoimage) {
 		// 	console.error("xslider depend on dom-to-image");
@@ -529,7 +573,7 @@ var _Environment = __webpack_require__(5);
 
 var _Event = __webpack_require__(4);
 
-var _EventDispatcher2 = __webpack_require__(0);
+var _EventDispatcher2 = __webpack_require__(1);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -547,7 +591,7 @@ var InteractiveObject = exports.InteractiveObject = function (_EventDispatcher) 
 
 		_this._defineHandlers();
 
-		_this.on('target', _this._handler.changeTarget);
+		_this.on('target', _this._on.changeTarget);
 		return _this;
 	}
 
@@ -556,7 +600,7 @@ var InteractiveObject = exports.InteractiveObject = function (_EventDispatcher) 
 		value: function _defineHandlers() {
 			var _this2 = this;
 
-			this._handler = {
+			this._on = {
 				bubble: function bubble(e) {
 					_this2.dispatch(e.type, e);
 				},
@@ -640,15 +684,15 @@ var InteractiveObject = exports.InteractiveObject = function (_EventDispatcher) 
 					case _Event.TouchEvent.START:
 					case _Event.TouchEvent.MOVE:
 					case _Event.TouchEvent.END:
-						target.addEventListener(type, this._handler.touch);
+						target.addEventListener(type, this._on.touch);
 						break;
 					case 'click':
-						target.addEventListener(type, this._handler.bubble);
+						target.addEventListener(type, this._on.bubble);
 						break;
 				}
 
 				if (type == _Event.TouchEvent.MOVE) {
-					target.addEventListener(_Event.TouchEvent.START, this._handler.touchStart);
+					target.addEventListener(_Event.TouchEvent.START, this._on.touchStart);
 				}
 			}
 		}
@@ -663,15 +707,15 @@ var InteractiveObject = exports.InteractiveObject = function (_EventDispatcher) 
 					case _Event.TouchEvent.START:
 					case _Event.TouchEvent.MOVE:
 					case _Event.TouchEvent.END:
-						target.removeEventListener(type, this._handler.touch);
+						target.removeEventListener(type, this._on.touch);
 						break;
 					case 'click':
-						target.removeEventListener(type, this._handler.bubble);
+						target.removeEventListener(type, this._on.bubble);
 						break;
 				}
 
 				if (type == _Event.TouchEvent.MOVE) {
-					target.removeEventListener(_Event.TouchEvent.START, this._handler.touchStart);
+					target.removeEventListener(_Event.TouchEvent.START, this._on.touchStart);
 				}
 			}
 		}
@@ -736,6 +780,108 @@ Bench.list = {};
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Net = function () {
+	function Net() {
+		_classCallCheck(this, Net);
+	}
+
+	_createClass(Net, [{
+		key: 'construcor',
+		value: function construcor() {}
+	}, {
+		key: 'loadImage',
+		value: function loadImage(image, src) {
+			return new Promise(function (resolve, reject) {
+
+				var check = function check() {
+					if (!image.complete) {
+						setTimeout(check, 10);
+					} else {
+						resolve();
+					}
+				};
+
+				image.src = src;
+
+				check();
+			});
+		}
+	}, {
+		key: 'get',
+		value: function get(url, responseType) {
+			return new Promise(function (resolve, reject) {
+
+				var onChange = function onChange() {
+					switch (xhr.readyState) {
+						case 4:
+							if (xhr.status == 200 || xhr.status == 304) {
+								resolve(xhr.response);
+							} else {
+								reject();
+							}
+							break;
+					}
+				};
+
+				var onTimeout = function onTimeout() {
+					reject();
+				};
+
+				var xhr = new XMLHttpRequest();
+				xhr.onreadystatechange = onChange;
+				xhr.ontimeout = onTimeout;
+				xhr.responseType = responseType;
+				xhr.timeout = 30000;
+				xhr.open('GET', url, true);
+				xhr.send(null);
+			});
+		}
+
+		// async getDataURI(url) {
+		// 	let blob;
+		// 	blob = await this.get(url, 'blob');
+		// 	blob = await this.readBlob(blob);
+		// 	return blob;
+		// }
+
+	}, {
+		key: 'getDataURI',
+		value: function getDataURI(url) {
+			return this.get(url, 'blob').then(this.readBlob);
+		}
+	}, {
+		key: 'readBlob',
+		value: function readBlob(blob) {
+			var reader = new FileReader();
+			return new Promise(function (resolve, reject) {
+				reader.onloadend = function () {
+					resolve(reader.result);
+				};
+				reader.readAsDataURL(blob);
+			});
+		}
+	}]);
+
+	return Net;
+}();
+
+var net = exports.net = new Net();
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -818,7 +964,7 @@ var Cloner = function () {
 var cloner = exports.cloner = new Cloner();
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -829,9 +975,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Inliner = undefined;
 
-var _Cloner = __webpack_require__(8);
+var _Cloner = __webpack_require__(9);
 
-var _Net = __webpack_require__(10);
+var _Net = __webpack_require__(8);
 
 var Inliner = exports.Inliner = {
 
@@ -975,134 +1121,7 @@ var Inliner = exports.Inliner = {
 };
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Net = function () {
-  function Net() {
-    _classCallCheck(this, Net);
-  }
-
-  _createClass(Net, [{
-    key: 'construcor',
-    value: function construcor() {}
-  }, {
-    key: 'loadImage',
-    value: function loadImage(image, src) {
-      return new Promise(function (resolve, reject) {
-
-        var check = function check() {
-          if (!image.complete) {
-            setTimeout(check, 10);
-          } else {
-            resolve();
-          }
-        };
-
-        image.src = src;
-
-        check();
-      });
-    }
-  }, {
-    key: 'get',
-    value: function get(url, responseType) {
-      return new Promise(function (resolve, reject) {
-
-        var onChange = function onChange() {
-          switch (xhr.readyState) {
-            case 4:
-              // console.log('xhr: ', xhr);
-              if (xhr.status == 200 || xhr.status == 304) {
-                resolve(xhr.response);
-              } else {
-                reject();
-              }
-              break;
-          }
-        };
-
-        var onTimeout = function onTimeout() {
-          reject();
-        };
-
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = onChange;
-        xhr.ontimeout = onTimeout;
-        xhr.responseType = responseType;
-        xhr.timeout = 30000;
-        xhr.open('GET', url, true);
-        xhr.send(null);
-      });
-    }
-  }, {
-    key: 'getDataURI',
-    value: function getDataURI(url) {
-      return this.get(url, 'blob').then(this.readBlob, function () {
-        return url;
-      });
-    }
-  }, {
-    key: 'readBlob',
-    value: function readBlob(blob) {
-      var reader = new FileReader();
-      return new Promise(function (resolve, reject) {
-        reader.onloadend = function () {
-          resolve(reader.result);
-        };
-        reader.readAsDataURL(blob);
-      });
-    }
-  }]);
-
-  return Net;
-}();
-
-var net = exports.net = new Net();
-
-/***/ }),
 /* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.converter = undefined;
-
-var _Inliner = __webpack_require__(9);
-
-var converter = exports.converter = {
-	parser: new DOMParser(),
-
-	convert: function convert(node, width, height) {
-
-		var svgString = '\n\t\t<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">\n\t\t\t<foreignObject x="0" y="0" width="100%" height="100%">\n\t\t\t\t<style>' + _Inliner.Inliner.inlinedFontString + '</style>\n\t\t\t</foreignObject>\n\t\t</svg>\n\t\t';
-		var svg = this.parser.parseFromString(svgString, "text/xml");
-		var o = svg.getElementsByTagName('foreignObject')[0];
-		o.appendChild(node);
-
-		// console.log('svg: ', svg);
-
-		return svg;
-	}
-};
-
-/***/ }),
-/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1117,11 +1136,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _BaseRenderer2 = __webpack_require__(13);
+var _BaseRenderer2 = __webpack_require__(12);
 
-var _Utils = __webpack_require__(3);
+var _Utils = __webpack_require__(2);
 
-var _Stage = __webpack_require__(2);
+var _Stage = __webpack_require__(3);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1208,7 +1227,7 @@ var DefaultRenderer = exports.DefaultRenderer = function (_BaseRenderer) {
 }(_BaseRenderer2.BaseRenderer);
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1221,7 +1240,7 @@ exports.BaseRenderer = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _EventDispatcher2 = __webpack_require__(0);
+var _EventDispatcher2 = __webpack_require__(1);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1261,7 +1280,7 @@ var BaseRenderer = exports.BaseRenderer = function (_EventDispatcher) {
 }(_EventDispatcher2.EventDispatcher);
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1308,7 +1327,7 @@ var Button = exports.Button = function (_InteractiveObject) {
 			if (flag) {
 				target.classList.remove("xslider-disabled");
 			} else {
-				target.addList.remove("xslider-disabled");
+				target.classList.add("xslider-disabled");
 			}
 		}
 	}]);
@@ -1317,33 +1336,37 @@ var Button = exports.Button = function (_InteractiveObject) {
 }(_InteractiveObject2.InteractiveObject);
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(16);
+__webpack_require__(15);
 
-var _main = __webpack_require__(17);
+var _main = __webpack_require__(16);
 
-var _Stage = __webpack_require__(2);
+var _Stage = __webpack_require__(3);
 
-var _BaseTransition = __webpack_require__(1);
+var _BaseTransition = __webpack_require__(0);
 
-var _CrossWarpTransition = __webpack_require__(28);
+var _CrossWarpTransition = __webpack_require__(30);
 
-var _CrossZoomTransition = __webpack_require__(29);
+var _CrossZoomTransition = __webpack_require__(31);
 
-var _CubeTransition = __webpack_require__(30);
+var _CubeTransition = __webpack_require__(32);
 
-var _MorphTransition = __webpack_require__(31);
+var _MorphTransition = __webpack_require__(33);
 
-var _PixelateTransition = __webpack_require__(32);
+var _NoiseTransition = __webpack_require__(34);
 
-var _TestTransition = __webpack_require__(33);
+var _PixelateTransition = __webpack_require__(35);
 
-var _Utils = __webpack_require__(3);
+var _PixelateWipeTransition = __webpack_require__(36);
+
+var _TestTransition = __webpack_require__(37);
+
+var _Utils = __webpack_require__(2);
 
 //exports
 _main.XSlider.stage = _Stage.stage;
@@ -1354,7 +1377,9 @@ _main.XSlider.transition = {
 	CrossZoom: _CrossZoomTransition.CrossZoomTransition,
 	Cube: _CubeTransition.CubeTransition,
 	Morph: _MorphTransition.MorphTransition,
+	Noise: _NoiseTransition.NoiseTransition,
 	Pixelate: _PixelateTransition.PixelateTransition,
+	PixelateWipe: _PixelateWipeTransition.PixelateWipeTransition,
 	Test: _TestTransition.TestTransition
 };
 
@@ -1363,13 +1388,13 @@ _main.XSlider.Utils = _Utils.Utils;
 window.XSlider = _main.XSlider;
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1382,11 +1407,13 @@ exports.XSlider = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Data = __webpack_require__(18);
+var _Data = __webpack_require__(17);
 
-var _SlideController = __webpack_require__(24);
+var _SlideController = __webpack_require__(25);
 
-var _EventDispatcher2 = __webpack_require__(0);
+var _EventDispatcher2 = __webpack_require__(1);
+
+var _Utils = __webpack_require__(2);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1405,7 +1432,14 @@ var XSlider = exports.XSlider = function (_EventDispatcher) {
 		_this.data = new _Data.Data();
 		_this.controller = new _SlideController.SlideController();
 
-		_this.transition = "Base";
+		_Utils.Utils.delegate(_this, {
+			prev: _this.controller.prev,
+			next: _this.controller.next,
+			autoplay: {
+				start: _this.controller.autoplay.start,
+				stop: _this.controller.autoplay.stop
+			}
+		});
 
 		_this.setup.apply(_this, arguments);
 		return _this;
@@ -1438,7 +1472,7 @@ var XSlider = exports.XSlider = function (_EventDispatcher) {
 }(_EventDispatcher2.EventDispatcher);
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1447,147 +1481,23 @@ var XSlider = exports.XSlider = function (_EventDispatcher) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.Data = exports.SlideData = undefined;
+exports.Data = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Cloner = __webpack_require__(8);
+var _Option = __webpack_require__(18);
 
-var _Inliner = __webpack_require__(9);
-
-var _SvgConverter = __webpack_require__(11);
+var _Utils = __webpack_require__(2);
 
 var _Dom = __webpack_require__(19);
 
-var _DefaultRenderer = __webpack_require__(12);
+var _Slide = __webpack_require__(21);
 
-var _ThreeRenderer = __webpack_require__(21);
+var _DefaultRenderer = __webpack_require__(11);
 
-var _Net = __webpack_require__(10);
-
-var _Option = __webpack_require__(23);
-
-var _Utils = __webpack_require__(3);
-
-var _Bench = __webpack_require__(7);
+var _ThreeRenderer = __webpack_require__(23);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var SlideData = exports.SlideData = function () {
-	function SlideData(slide) {
-		_classCallCheck(this, SlideData);
-
-		this.container = slide;
-		this.canvas = document.createElement('canvas');
-		this.image = new Image();
-		this.layer = {
-			"texture": slide.querySelector(".xslider-layer-texture"),
-			"ui": slide.querySelector(".xslider-layer-ui")
-		};
-
-		this.needsResize = false;
-
-		this.tag = this.layer.ui.textContent;
-	}
-
-	_createClass(SlideData, [{
-		key: 'dispose',
-		value: function dispose() {
-			this.layer.texture && this.layer.texture.classList.remove("xslider-texture-capture");
-		}
-	}, {
-		key: 'ready',
-		value: function ready() {
-			var _this = this;
-
-			return new Promise(function (resolve, reject) {
-
-				//処理済
-				if (_this.svg) {
-					resolve();
-				}
-				//textureなし
-				else if (!_this.layer.texture) {
-						resolve();
-					}
-					//処理中
-					else if (_this.layer.texture.classList.contains("xslider-texture-capture")) {
-							reject("in process");
-						} else {
-							_this.layer.texture.classList.add("xslider-texture-capture");
-
-							var dom = _this.layer.texture;
-							var w = dom.scrollWidth;
-							var h = dom.scrollHeight;
-
-							_Inliner.Inliner.resolveFonts().then(function () {
-								return _Inliner.Inliner.inlineNode(dom);
-							}).then(function (inlined) {
-								_this.inlinedNode = inlined;
-
-								_this.svg = _SvgConverter.converter.convert(_this.inlinedNode, w, h);
-								_this.layer.texture.classList.remove("xslider-texture-capture");
-
-								resolve();
-							});
-
-							// // Utils.toSvg(this.layer.texture)
-							// converter.from(this.layer.texture)
-							// 	.then((svg) => {
-							// 		this.svg = svg;
-							// 		this.layer.texture.classList.remove("xslider-texture-capture");
-							// 		this.needsResize = true;
-							// 		// document.querySelector('#xslider').appendChild(this.svg.documentElement.cloneNode(true));
-							// 		resolve();
-							// 	});
-						}
-			});
-		}
-	}, {
-		key: 'loadSvg',
-		value: function loadSvg() {
-			var uri = "data:image/svg+xml;charset=utf-8," + new XMLSerializer().serializeToString(this.svg);
-
-			return _Net.net.loadImage(this.image, uri);
-		}
-	}, {
-		key: 'resize',
-		value: function resize(w, h) {
-			var _this2 = this;
-
-			return new Promise(function (resolve, reject) {
-
-				if (!_this2.needsResize) {
-					resolve();
-				} else {
-					_this2.needsResize = false;
-
-					_this2.canvas.width = w;
-					_this2.canvas.height = h;
-
-					Promise.resolve().then(function () {
-						_this2.layer.texture.classList.add("xslider-texture-capture");
-
-						_Cloner.cloner.copyStyleExcludeBackground(_this2.layer.texture, _this2.inlinedNode);
-
-						_this2.layer.texture.classList.remove("xslider-texture-capture");
-
-						_this2.svg = _SvgConverter.converter.convert(_this2.inlinedNode, w, h);
-
-						return _this2.loadSvg();
-					}).then(function () {
-						var c = _this2.canvas.getContext('2d');
-						c.drawImage(_this2.image, 0, 0, w, h);
-
-						resolve();
-					});
-				}
-			});
-		}
-	}]);
-
-	return SlideData;
-}();
 
 var Data = exports.Data = function () {
 	function Data() {
@@ -1613,9 +1523,9 @@ var Data = exports.Data = function () {
 
 			try {
 				for (var _iterator = this.dom.slides[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-					var slide = _step.value;
+					var element = _step.value;
 
-					this.list.push(new SlideData(slide));
+					this.list.push(new _Slide.Slide(element));
 				}
 			} catch (err) {
 				_didIteratorError = true;
@@ -1677,6 +1587,52 @@ var Data = exports.Data = function () {
 }();
 
 /***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.Option = undefined;
+
+var _BaseTransition = __webpack_require__(0);
+
+var Option = exports.Option = {
+
+	//default value
+	selector: "#xslider",
+	initialSlideIndex: 0,
+	autoplay: false,
+	loop: true,
+	touchMove: {
+		throwable: true
+	},
+	// throwable : true,
+	// allowTouchMove : true,
+	renderer: undefined,
+	debug: false,
+
+	getTransition: function getTransition() {
+		return _BaseTransition.BaseTransition;
+	},
+
+	get: function get(property, module) {
+		if (module) {
+			if (!this[module]) {
+				return undefined;
+			} else {
+				return this[module][property];
+			}
+		} else {
+			return this[property];
+		}
+	}
+};
+
+/***/ }),
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1690,9 +1646,9 @@ exports.Dom = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _EventDispatcher2 = __webpack_require__(0);
+var _EventDispatcher2 = __webpack_require__(1);
 
-var _Stage = __webpack_require__(2);
+var _Stage = __webpack_require__(3);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1769,7 +1725,7 @@ exports.TweenMaxTicker = exports.Ticker = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _EventDispatcher2 = __webpack_require__(0);
+var _EventDispatcher2 = __webpack_require__(1);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1786,7 +1742,6 @@ var Ticker = exports.Ticker = function (_EventDispatcher) {
 		var _this = _possibleConstructorReturn(this, (Ticker.__proto__ || Object.getPrototypeOf(Ticker)).call(this));
 
 		_this.fps = 30;
-		// console.log('this._fps: ', this._fps);
 
 		_this._defineFunctions();
 		return _this;
@@ -1804,8 +1759,6 @@ var Ticker = exports.Ticker = function (_EventDispatcher) {
 				window.requestAnimationFrame = window[prefixes[i] + "RequestAnimationFrame"];
 				window.cancelAnimationFrame = window[prefixes[i] + "CancelAnimationFrame"] || window[prefixes[i] + "CancelRequestAnimationFrame"];
 			}
-			// console.log('this._RAF: ', this._RAF);
-
 
 			this._tickHandler = function () {
 				_this2._requestId = window.requestAnimationFrame(_this2._tickHandler);
@@ -1816,7 +1769,7 @@ var Ticker = exports.Ticker = function (_EventDispatcher) {
 
 				if (overlap >= 0) {
 					_this2._nextMs += overlap + (overlap >= _this2._gap ? 1 : _this2._gap - overlap);
-					_this2.dispatch('tick', { time: _this2._lastMs - _this2._startMs });
+					_this2.dispatch('tick', { type: 'tick', time: _this2._lastMs - _this2._startMs });
 				}
 			};
 		}
@@ -1884,15 +1837,185 @@ var TweenMaxTicker = exports.TweenMaxTicker = function (_Ticker) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+exports.Slide = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Net = __webpack_require__(8);
+
+var _Cloner = __webpack_require__(9);
+
+var _Inliner = __webpack_require__(10);
+
+var _SvgConverter = __webpack_require__(22);
+
+var _Bench = __webpack_require__(7);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Slide = exports.Slide = function () {
+	function Slide(slide) {
+		_classCallCheck(this, Slide);
+
+		this.container = slide;
+		this.canvas = document.createElement('canvas');
+		this.image = new Image();
+		this.layer = {
+			"texture": slide.querySelector(".xslider-layer-texture"),
+			"ui": slide.querySelector(".xslider-layer-ui")
+		};
+
+		this.needsResize = false;
+
+		this.tag = this.layer.ui.textContent;
+	}
+
+	_createClass(Slide, [{
+		key: 'dispose',
+		value: function dispose() {
+			this.layer.texture && this.layer.texture.classList.remove("xslider-texture-capture");
+		}
+	}, {
+		key: 'ready',
+		value: function ready() {
+			var _this = this;
+
+			return new Promise(function (resolve, reject) {
+
+				//処理済
+				if (_this.svg) {
+					resolve();
+				}
+				//textureなし
+				else if (!_this.layer.texture) {
+						resolve();
+					}
+					//処理中
+					else if (_this.layer.texture.classList.contains("xslider-texture-capture")) {
+							reject("in process");
+						} else {
+							_this.layer.texture.classList.add("xslider-texture-capture");
+
+							var dom = _this.layer.texture;
+							var w = dom.scrollWidth;
+							var h = dom.scrollHeight;
+
+							_Inliner.Inliner.resolveFonts().then(function () {
+								return _Inliner.Inliner.inlineNode(dom);
+							}).then(function (inlined) {
+								_this.inlinedNode = inlined;
+
+								_this.svg = _SvgConverter.converter.convert(_this.inlinedNode, w, h);
+								_this.layer.texture.classList.remove("xslider-texture-capture");
+
+								resolve();
+							});
+
+							// // Utils.toSvg(this.layer.texture)
+							// converter.from(this.layer.texture)
+							// 	.then((svg) => {
+							// 		this.svg = svg;
+							// 		this.layer.texture.classList.remove("xslider-texture-capture");
+							// 		this.needsResize = true;
+							// 		// document.querySelector('#xslider').appendChild(this.svg.documentElement.cloneNode(true));
+							// 		resolve();
+							// 	});
+						}
+			});
+		}
+	}, {
+		key: 'loadSvg',
+		value: function loadSvg() {
+			var uri = "data:image/svg+xml;charset=utf-8," + new XMLSerializer().serializeToString(this.svg);
+
+			return _Net.net.loadImage(this.image, uri);
+		}
+	}, {
+		key: 'resize',
+		value: function resize(w, h) {
+			var _this2 = this;
+
+			return new Promise(function (resolve, reject) {
+
+				if (!_this2.needsResize) {
+					resolve();
+				} else {
+					_this2.needsResize = false;
+
+					_this2.canvas.width = w;
+					_this2.canvas.height = h;
+
+					_this2.layer.texture.classList.add("xslider-texture-capture");
+
+					_Cloner.cloner.copyStyleExcludeBackground(_this2.layer.texture, _this2.inlinedNode);
+
+					_this2.layer.texture.classList.remove("xslider-texture-capture");
+
+					_this2.svg = _SvgConverter.converter.convert(_this2.inlinedNode, w, h);
+
+					_this2.loadSvg().then(function () {
+						var c = _this2.canvas.getContext('2d');
+						c.drawImage(_this2.image, 0, 0, w, h);
+
+						resolve();
+					});
+				}
+			});
+		}
+	}]);
+
+	return Slide;
+}();
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.converter = undefined;
+
+var _Inliner = __webpack_require__(10);
+
+var converter = exports.converter = {
+	parser: new DOMParser(),
+
+	convert: function convert(node, width, height) {
+
+		var svgString = '\n\t\t<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">\n\t\t\t<foreignObject x="0" y="0" width="100%" height="100%">\n\t\t\t\t<style>' + _Inliner.Inliner.inlinedFontString + '</style>\n\t\t\t</foreignObject>\n\t\t</svg>\n\t\t';
+		var svg = this.parser.parseFromString(svgString, "text/xml");
+		var o = svg.getElementsByTagName('foreignObject')[0];
+		o.appendChild(node);
+
+		// console.log('svg: ', svg);
+
+		return svg;
+	}
+};
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
 exports.ThreeRenderer = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _BaseRenderer2 = __webpack_require__(13);
+var _BaseRenderer2 = __webpack_require__(12);
 
-var _SlideModel = __webpack_require__(22);
+var _SlideModel = __webpack_require__(24);
 
 var _Bench = __webpack_require__(7);
 
@@ -2006,7 +2129,7 @@ var ThreeRenderer = exports.ThreeRenderer = function (_BaseRenderer) {
 ThreeRenderer.CZ = 1 / Math.tan(30 * Math.PI / 180) * 0.5;
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2019,9 +2142,9 @@ exports.SlideModel = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _EventDispatcher2 = __webpack_require__(0);
+var _EventDispatcher2 = __webpack_require__(1);
 
-var _BaseTransition = __webpack_require__(1);
+var _BaseTransition = __webpack_require__(0);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2127,37 +2250,7 @@ var SlideModel = exports.SlideModel = function (_EventDispatcher) {
 }(_EventDispatcher2.EventDispatcher);
 
 /***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.Option = undefined;
-
-var _BaseTransition = __webpack_require__(1);
-
-var Option = exports.Option = {
-
-	//default value
-	selector: "#xslider",
-	initialSlideIndex: 0,
-	autoplay: false,
-	loop: true,
-	allowTouchMove: true,
-	renderer: undefined,
-	debug: false,
-
-	getTransition: function getTransition() {
-		return _BaseTransition.BaseTransition;
-	}
-};
-
-/***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2172,19 +2265,21 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _Event = __webpack_require__(4);
 
-var _EventDispatcher2 = __webpack_require__(0);
+var _EventDispatcher2 = __webpack_require__(1);
 
-var _Stage = __webpack_require__(2);
+var _Stage = __webpack_require__(3);
 
-var _Button = __webpack_require__(14);
-
-var _UI = __webpack_require__(25);
-
-var _DefaultRenderer = __webpack_require__(12);
+var _AutoPlay = __webpack_require__(26);
 
 var _Indexer = __webpack_require__(27);
 
 var _Bench = __webpack_require__(7);
+
+var _Button = __webpack_require__(13);
+
+var _UI = __webpack_require__(28);
+
+var _DefaultRenderer = __webpack_require__(11);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2208,6 +2303,7 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 		};
 
 		_this.ui = new _UI.UI();
+		_this.autoplay = new _AutoPlay.AutoPlay();
 
 		_this._defineHandlers();
 		return _this;
@@ -2230,7 +2326,10 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 
 			this._onCompleteSlide = function () {
 				_Stage.stage.off('tick', _this2._onTick);
-				_this2.ui.pager.on('index', _this2._onChange);
+				_this2.data.option.get('touchMove') && _this2.ui.on(_Event.TouchEvent.START, _this2._onChange);
+				_this2.ui.on('index', _this2._onChange);
+
+				_this2.autoplay.start();
 			};
 
 			this._onTick = function (e) {
@@ -2242,21 +2341,18 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 				}, function (message) {
 					console.log("reject ::", message);
 				});
-
 				_this2.ui.pager.set({ index: _this2.indexer.current });
 			};
 
 			this._onChange = function (e) {
-
 				switch (e.type) {
-					case 'prev':
-						_this2.indexer.prev();
-						_this2.ui.pager.set({ index: _this2.indexer.current });
+					case _UI.UI.EVENT.PREV:
+						_this2.prev();
 						break;
 
-					case 'next':
-						_this2.indexer.next();
-						_this2.ui.pager.set({ index: _this2.indexer.current });
+					case _UI.UI.EVENT.NEXT:
+					case _AutoPlay.AutoPlay.EVENT.TICK:
+						_this2.next();
 						break;
 
 					case 'index':
@@ -2270,20 +2366,22 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 						break;
 
 					case 'head':
-						_this2.ui.prev && (_this2.ui.prev.active = _this2.indexer.get('head'));
+						_this2.ui.prev && (_this2.ui.prev.active = !_this2.indexer.get('head'));
 						break;
 
 					case 'tail':
-						_this2.ui.next && (_this2.ui.prev.active = _this2.indexer.get('tail'));
+						_this2.ui.next && (_this2.ui.next.active = !_this2.indexer.get('tail'));
 						break;
 
 					case _Event.TouchEvent.START:
 						_Stage.stage.on(_Event.TouchEvent.MOVE, _this2._onChange);
 						_Stage.stage.on(_Event.TouchEvent.END, _this2._onChange);
 
-						_this2.ui.pager.off('index', _this2._onChangePagerIndex);
+						_this2.ui.off('index', _this2._onChange);
 
 						_this2.indexer.down();
+
+						_this2.autoplay.stop();
 
 						_Stage.stage.on('tick', _this2._onTick);
 						break;
@@ -2291,7 +2389,6 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 					case _Event.TouchEvent.MOVE:
 						var dx = (e.clientX - e.clientX0) / _this2.dom.width;
 						_this2.indexer.move(-dx);
-
 						break;
 
 					case _Event.TouchEvent.END:
@@ -2320,23 +2417,27 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 
 			this.ui.setup(this.data);
 
+			if (!this.data.option.loop) {
+				this.indexer.on('head', this._onChange);
+				this.indexer.on('tail', this._onChange);
+			}
 			this.indexer.setup(this.data);
 
 			this.indexer.on('complete', this._onCompleteSlide);
+
+			this.autoplay.on(_AutoPlay.AutoPlay.EVENT.TICK, this._onChange);
+			this.autoplay.setup(this.data.option.autoplay);
 
 			this.dom.on('resize', this._onResize);
 
 			this.ready().then(function () {
 				_this3.ui.on('index', _this3._onChange);
-				_this3.ui.on('prev', _this3._onChange);
-				_this3.ui.on('next', _this3._onChange);
+				_this3.ui.on(_UI.UI.EVENT.PREV, _this3._onChange);
+				_this3.ui.on(_UI.UI.EVENT.NEXT, _this3._onChange);
 
-				_this3.ui.on(_Event.TouchEvent.START, _this3._onChange);
+				_this3.data.option.get('touchMove') && _this3.ui.on(_Event.TouchEvent.START, _this3._onChange);
 
-				if (_this3.data.option.loop) {
-					_this3.indexer.on('head', _this3._onChange);
-					_this3.indexer.on('tail', _this3._onChange);
-				}
+				_this3.autoplay.start();
 
 				_Stage.stage.on('tick', _this3._onTick);
 				_this3.dom._onResize();
@@ -2353,6 +2454,22 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 			return Promise.all([slide0.ready(), slide1.ready()]);
 		}
 	}, {
+		key: 'prev',
+		value: function prev() {
+			this.data.option.get('touchMove') && this.ui.off(_Event.TouchEvent.START, this._onChange);
+			this.autoplay.stop();
+			this.indexer.prev();
+			this.ui.pager.set({ index: this.indexer.current });
+		}
+	}, {
+		key: 'next',
+		value: function next() {
+			this.data.option.get('touchMove') && this.ui.off(_Event.TouchEvent.START, this._onChange);
+			this.autoplay.stop();
+			this.indexer.next();
+			this.ui.pager.set({ index: this.indexer.current });
+		}
+	}, {
 		key: 'dispose',
 		value: function dispose() {
 
@@ -2360,22 +2477,22 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 			_Stage.stage.off(_Event.TouchEvent.MOVE, this._onChange);
 			_Stage.stage.off(_Event.TouchEvent.END, this._onChange);
 
+			this.ui.off('index', this._onChange);
+			this.ui.off(_UI.UI.EVENT.PREV, this._onChange);
+			this.ui.off(_UI.UI.EVENT.NEXT, this._onChange);
+
+			this.data.option.get('touchMove') && this.ui.off(_Event.TouchEvent.START, this._onChange);
+
+			this.ui.dispose();
+
 			this.dom.off('resize', this._onResize);
 
 			this.indexer.off('complete', this._onCompleteSlide);
 
-			if (this.data.option.loop) {
+			if (!this.data.option.loop) {
 				this.indexer.off('head', this._onChange);
 				this.indexer.off('tail', this._onChange);
 			}
-
-			this.ui.off('index', this._onChange);
-			this.ui.off('prev', this._onChange);
-			this.ui.off('next', this._onChange);
-
-			this.ui.off(_Event.TouchEvent.START, this._onChange);
-
-			this.ui.dispose();
 
 			this.renderer.gl.dispose();
 			this.renderer.default.dispose();
@@ -2386,7 +2503,281 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 }(_EventDispatcher2.EventDispatcher);
 
 /***/ }),
-/* 25 */
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.AutoPlay = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _EventDispatcher2 = __webpack_require__(1);
+
+var _Stage = __webpack_require__(3);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var AutoPlay = exports.AutoPlay = function (_EventDispatcher) {
+    _inherits(AutoPlay, _EventDispatcher);
+
+    function AutoPlay() {
+        _classCallCheck(this, AutoPlay);
+
+        var _this = _possibleConstructorReturn(this, (AutoPlay.__proto__ || Object.getPrototypeOf(AutoPlay)).call(this));
+
+        _this._defineHandlers();
+        return _this;
+    }
+
+    _createClass(AutoPlay, [{
+        key: '_defineHandlers',
+        value: function _defineHandlers() {
+            var _this2 = this;
+
+            this._on = {
+                tick: function tick(e) {
+                    if (e.time > _this2.option.delay) {
+                        _this2.dispatch(AutoPlay.EVENT.TICK);
+                    }
+                }
+            };
+        }
+    }, {
+        key: 'setup',
+        value: function setup(option) {
+            this.option = option;
+        }
+    }, {
+        key: 'start',
+        value: function start() {
+            if (this.enabled) {
+                _Stage.stage.on('tick', this._on.tick);
+            }
+        }
+    }, {
+        key: 'stop',
+        value: function stop() {
+            if (this.enabled) {
+                _Stage.stage.off('tick', this._on.tick);
+            }
+        }
+    }, {
+        key: 'enabled',
+        get: function get() {
+            return this.option != undefined;
+        }
+    }]);
+
+    return AutoPlay;
+}(_EventDispatcher2.EventDispatcher);
+
+AutoPlay.EVENT = {
+    TICK: "autoplay_tick"
+};
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.Indexer = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _EventDispatcher2 = __webpack_require__(1);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Indexer = exports.Indexer = function (_EventDispatcher) {
+	_inherits(Indexer, _EventDispatcher);
+
+	function Indexer() {
+		_classCallCheck(this, Indexer);
+
+		return _possibleConstructorReturn(this, (Indexer.__proto__ || Object.getPrototypeOf(Indexer)).call(this));
+	}
+
+	_createClass(Indexer, [{
+		key: 'setup',
+		value: function setup(data) {
+			this.data = data;
+
+			this._target = data.option.initialSlideIndex;
+			this._v = this._target - 1;
+			this._length = data.dom.slides.length;
+
+			this._state = Indexer.STATE.DEFAULT;
+
+			this.progress = 0;
+
+			this.set({
+				'head': undefined,
+				'tail': undefined
+			});
+			!this.data.option.loop && (this._target = this.constrain(this._target));
+
+			this.tick();
+		}
+	}, {
+		key: 'prev',
+		value: function prev() {
+			this._target--;
+
+			!this.data.option.loop && (this._target = this.constrain(this._target));
+		}
+	}, {
+		key: 'next',
+		value: function next() {
+			this._target++;
+
+			!this.data.option.loop && (this._target = this.constrain(this._target));
+		}
+	}, {
+		key: 'to',
+		value: function to(index) {
+			if (this.data.option.loop) {
+				var d0 = index - this.current,
+				    d1 = void 0,
+				    diff = void 0;
+
+				if (d0 > 0) {
+					d1 = d0 - this._length;
+					diff = d0 > -d1 ? d1 : d0;
+				} else {
+					d1 = d0 + this._length;
+					diff = -d0 > d1 ? d1 : d0;
+				}
+
+				this._target += diff;
+			} else {
+				this._target = index;
+			}
+		}
+	}, {
+		key: 'down',
+		value: function down() {
+			this._state = Indexer.STATE.DOWN;
+			this._move = 0;
+		}
+	}, {
+		key: 'move',
+		value: function move(v) {
+			this._v += v;
+			this._move = v;
+
+			!this.data.option.loop && (this._v = this.constrain(this._v));
+
+			this._target = this._v;
+		}
+	}, {
+		key: 'up',
+		value: function up() {
+			this._state = Indexer.STATE.UP;
+
+			!this.data.option.get('throwable', 'touchMove') && (this._move = 0);
+		}
+	}, {
+		key: 'constrain',
+		value: function constrain(v) {
+			var ret = v < 0 ? 0 : this._length - 1 < v ? this._length - 1 : v;
+			this.set({
+				'head': ret == 0,
+				'tail': ret == this._length - 1
+			});
+			return ret;
+		}
+	}, {
+		key: 'tick',
+		value: function tick() {
+
+			var complete = false;
+
+			switch (this._state) {
+				case Indexer.STATE.DOWN:
+					break;
+
+				case Indexer.STATE.UP:
+					this._target += this._move;
+
+					!this.data.option.loop && (this._target = this.constrain(this._target));
+
+					this._move *= 0.95;
+					this._v = this._target;
+
+					if (Math.abs(this._move) < 0.01) {
+						this._target = Math.round(this._v);
+						this._state = Indexer.STATE.DEFAULT;
+					}
+					break;
+
+				default:
+					!this.data.option.loop && (this._target = this.constrain(this._target));
+
+					this._v += (this._target - this._v) * Indexer.EASING;
+
+					if (Math.abs(this._target - this._v) < 0.001) {
+						this._v = this._target;
+						complete = true;
+					}
+					break;
+			}
+
+			var v = this._v % this._length + this._length;
+			this.progress = v % 1;
+			this._i0 = Math.floor(v) % this._length;
+			this._i1 = Math.ceil(v) % this._length;
+
+			complete && this.dispatch('complete');
+		}
+	}, {
+		key: 'current',
+		get: function get() {
+			var v = this._target % this._length + this._length;
+			return Math.round(v) % this._length;
+		}
+	}, {
+		key: 'i0',
+		get: function get() {
+			return this._i0;
+		}
+	}, {
+		key: 'i1',
+		get: function get() {
+			return this._i1;
+		}
+	}]);
+
+	return Indexer;
+}(_EventDispatcher2.EventDispatcher);
+
+Indexer.EASING = 0.15;
+
+Indexer.STATE = {
+	DEFAULT: 'DEFAULT',
+	DOWN: 'DOWN',
+	UP: 'UP'
+};
+
+/***/ }),
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2403,9 +2794,9 @@ var _get = function get(object, property, receiver) { if (object === null) objec
 
 var _InteractiveObject2 = __webpack_require__(6);
 
-var _Button = __webpack_require__(14);
+var _Button = __webpack_require__(13);
 
-var _Pager = __webpack_require__(26);
+var _Pager = __webpack_require__(29);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2430,11 +2821,13 @@ var UI = exports.UI = function (_InteractiveObject) {
 			_get(UI.prototype.__proto__ || Object.getPrototypeOf(UI.prototype), '_defineHandlers', this).call(this);
 
 			this._onPrev = function (e) {
-				_this2.dispatch('prev', { type: 'prev' });
+				e.preventDefault();
+				_this2.dispatch(UI.EVENT.PREV);
 			};
 
 			this._onNext = function (e) {
-				_this2.dispatch('next', { type: 'next' });
+				e.preventDefault();
+				_this2.dispatch(UI.EVENT.NEXT);
 			};
 		}
 	}, {
@@ -2447,7 +2840,7 @@ var UI = exports.UI = function (_InteractiveObject) {
 			if (dom.pager) {
 				this.pager = this.pager || new _Pager.Pager();
 				this.pager.setup(data);
-				this.pager.on('index', this._handler.bubble);
+				this.pager.on('index', this._on.bubble);
 			}
 
 			if (dom.prev) {
@@ -2466,7 +2859,7 @@ var UI = exports.UI = function (_InteractiveObject) {
 		key: 'dispose',
 		value: function dispose() {
 			if (this.pager) {
-				this.pager.off('index', this._handler.bubble);
+				this.pager.off('index', this._on.bubble);
 				this.pager.dispose();
 			}
 
@@ -2485,8 +2878,13 @@ var UI = exports.UI = function (_InteractiveObject) {
 	return UI;
 }(_InteractiveObject2.InteractiveObject);
 
+UI.EVENT = {
+	PREV: "ui_prev",
+	NEXT: "ui_next"
+};
+
 /***/ }),
-/* 26 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2499,7 +2897,7 @@ exports.Pager = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _EventDispatcher2 = __webpack_require__(0);
+var _EventDispatcher2 = __webpack_require__(1);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2530,7 +2928,6 @@ var Pager = exports.Pager = function (_EventDispatcher) {
 			};
 
 			this._onChangeIndex = function (e) {
-
 				if (e.value0 !== undefined) {
 					_this2.list[e.value0].classList.remove("xslider-active");
 				}
@@ -2576,178 +2973,7 @@ var Pager = exports.Pager = function (_EventDispatcher) {
 }(_EventDispatcher2.EventDispatcher);
 
 /***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.Indexer = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _EventDispatcher2 = __webpack_require__(0);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Indexer = exports.Indexer = function (_EventDispatcher) {
-	_inherits(Indexer, _EventDispatcher);
-
-	function Indexer() {
-		_classCallCheck(this, Indexer);
-
-		var _this = _possibleConstructorReturn(this, (Indexer.__proto__ || Object.getPrototypeOf(Indexer)).call(this));
-
-		_this._down = false;
-		_this._throw = false;
-		return _this;
-	}
-
-	_createClass(Indexer, [{
-		key: 'setup',
-		value: function setup(data) {
-			this._target = data.option.initialSlideIndex;
-			this._v = this._target - 1;
-			this._length = data.dom.slides.length;
-
-			this.progress = 0;
-
-			this._loop = data.option.loop;
-
-			this.tick();
-		}
-	}, {
-		key: 'prev',
-		value: function prev() {
-			this._target--;
-		}
-	}, {
-		key: 'next',
-		value: function next() {
-			this._target++;
-		}
-	}, {
-		key: 'to',
-		value: function to(index) {
-			var d0 = index - this.current,
-			    d1 = void 0,
-			    diff = void 0;
-
-			if (d0 > 0) {
-				d1 = d0 - this._length;
-				diff = d0 > -d1 ? d1 : d0;
-			} else {
-				d1 = d0 + this._length;
-				diff = -d0 > d1 ? d1 : d0;
-			}
-
-			this._target += diff;
-		}
-	}, {
-		key: 'down',
-		value: function down() {
-			this._down = true;
-			this._throw = false;
-			this._move = 0;
-		}
-	}, {
-		key: 'move',
-		value: function move(v) {
-			this._v += v;
-			this._move = v;
-			if (!this._loop) {
-				this._v = this.constrain(this._v);
-			}
-		}
-	}, {
-		key: 'up',
-		value: function up() {
-			this._down = false;
-			this._throw = true;
-		}
-	}, {
-		key: 'constrain',
-		value: function constrain(v) {
-			var ret = v < 0 ? 0 : this._length - 1 < v ? this._length - 1 : v;
-			this.set({
-				'head': ret == 0,
-				'tail': ret == this._length - 1
-			});
-			return ret;
-		}
-	}, {
-		key: 'tick',
-		value: function tick() {
-
-			var complete = false;
-
-			if (this._down) {
-				this._target = this._v;
-				if (!this._loop) {
-					this._target = this.constrain(this._target);
-				}
-			} else if (this._throw) {
-				this._target += this._move;
-				if (!this._loop) {
-					this._target = this.constrain(this._target);
-				}
-				this._move *= 0.95;
-				this._v = this._target;
-
-				if (Math.abs(this._move) < 0.01) {
-					this._target = Math.round(this._v);
-					this._throw = false;
-				}
-			} else {
-				this._v += (this._target - this._v) * Indexer.EASING;
-
-				if (Math.abs(this._target - this._v) < 0.001) {
-					this._v = this._target;
-					complete = true;
-				}
-			}
-
-			var v = this._v % this._length + this._length;
-			this.progress = v % 1;
-			this._i0 = Math.floor(v) % this._length;
-			this._i1 = Math.ceil(v) % this._length;
-
-			if (complete) {
-				this.dispatch('complete');
-			}
-		}
-	}, {
-		key: 'current',
-		get: function get() {
-			var v = this._target % this._length + this._length;
-			return Math.round(v) % this._length;
-		}
-	}, {
-		key: 'i0',
-		get: function get() {
-			return this._i0;
-		}
-	}, {
-		key: 'i1',
-		get: function get() {
-			return this._i1;
-		}
-	}]);
-
-	return Indexer;
-}(_EventDispatcher2.EventDispatcher);
-
-Indexer.EASING = 0.15;
-
-/***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2758,7 +2984,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.CrossWarpTransition = undefined;
 
-var _BaseTransition = __webpack_require__(1);
+var _BaseTransition = __webpack_require__(0);
 
 var CrossWarpTransition = exports.CrossWarpTransition = _BaseTransition.BaseTransition.extend({
 
@@ -2767,19 +2993,19 @@ var CrossWarpTransition = exports.CrossWarpTransition = _BaseTransition.BaseTran
 
 	vertexShader: '\nprecision highp float;\n\nattribute vec3 position;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\nvoid main(void) {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n',
 
-	fragmentShader: '\nprecision highp float;\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\nuniform vec2 fade;\n\nvoid main(void) {\n\tvec2 uv = gl_FragCoord.xy /resolution.xy;\n\n\tfloat v = smoothstep(0.0, 1.0, progress * (1.0+fade.x+fade.y) - ((1.0-uv.x)*fade.x+uv.y*fade.y));\n\tvec4 color0 = texture2D(texture0, (uv-0.5)*(1.0-v)+0.5);\n\tvec4 color1 = texture2D(texture1, (uv-0.5)*v+0.5);\n\tgl_FragColor = mix(color0, color1, v);\n}\n',
+	fragmentShader: '\nprecision highp float;\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\nuniform vec2 gradient;\n\nvoid main(void) {\n\tvec2 p = gl_FragCoord.xy /resolution.xy;\n\n\tfloat v = mix(0.0, 1.0, progress * (1.0+gradient.x+gradient.y) - ((1.0-p.x)*gradient.x+p.y*gradient.y));\n\tv = clamp(v, 0.0, 1.0);\n\n\tvec2 p0 = p;\n\tvec2 p1 = p;\n\n\tp0 -= 0.5;\n\tp0 *= (1.0 - v);\n\tp0 += 0.5;\n\n\tp1 -= 0.5;\n\tp1 *= v;\n\tp1 += 0.5;\n\n\tvec4 color0 = texture2D(texture0, p0);\n\tvec4 color1 = texture2D(texture1, p1);\n\n\tgl_FragColor = mix(color0, color1, v);\n}\n',
 
 	uniforms: {
 		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
 		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
 		progress: { value: 0 },
 		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		fade: { value: new THREE.Vector2(0.5, 0.5) }
+		gradient: { value: new THREE.Vector2(0.5, 0.5) }
 	}
 });
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2790,13 +3016,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.CrossZoomTransition = undefined;
 
-var _BaseTransition = __webpack_require__(1);
+var _BaseTransition = __webpack_require__(0);
 
 var CrossZoomTransition = exports.CrossZoomTransition = _BaseTransition.BaseTransition.extend({
 
 				vertexShader: '\nprecision highp float;\n\nattribute vec3 position;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\n\nvoid main(void) {\n\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n',
 
-				fragmentShader: '\nprecision highp float;\n\n#define PI 3.141592653589793\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\n// uniform vec2 fade;\nuniform float strength;\n\n\nfloat Linear_ease(in float begin, in float change, in float duration, in float time) {\n    return change * time / duration + begin;\n}\n\nfloat Exponential_easeInOut(in float begin, in float change, in float duration, in float time) {\n    if (time == 0.0)\n        return begin;\n    else if (time == duration)\n        return begin + change;\n    time = time / (duration / 2.0);\n    if (time < 1.0)\n        return change / 2.0 * pow(2.0, 10.0 * (time - 1.0)) + begin;\n    return change / 2.0 * (-pow(2.0, -10.0 * (time - 1.0)) + 2.0) + begin;\n}\n\nfloat Sinusoidal_easeInOut(in float begin, in float change, in float duration, in float time) {\n    return -change / 2.0 * (cos(PI * time / duration) - 1.0) + begin;\n}\n\n/* random number between 0 and 1 */\nfloat hash(in vec3 scale, in float seed) {\n    /* use the fragment position for randomness */\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvec3 crossFade(in vec2 uv, in float dissolve) {\n    return mix(texture2D(texture0, uv).rgb, texture2D(texture1, uv).rgb, dissolve);\n}\n\nvoid main(void) {\n\tvec2 p = gl_FragCoord.xy /resolution.xy;\n\t// vec4 c0 = texture2D(texture0, p);\n\t// vec4 c1 = texture2D(texture1, p);\n\t// gl_FragColor = mix(c0, c1, progress);\n\n\tvec2 center = vec2(Linear_ease(0.25, 0.5, 1.0, progress), 0.5);\n\tfloat dissolve = Exponential_easeInOut(0.0, 1.0, 1.0, progress);\n\tfloat strength = Sinusoidal_easeInOut(0.0, strength, 0.5, progress);\n\tvec3 color = vec3(0.0);\n\tfloat total = 0.0;\n\tvec2 toCenter = center - p;\n\tfloat offset = hash(vec3(12.9898, 78.233, 151.7182), 0.0);\n\n\tfor (float t = 0.0; t <= 40.0; t++) {\n\t  float percent = (t + offset) / 40.0;\n\t  float weight = 4.0 * (percent - percent * percent);\n\t  color += crossFade(p + toCenter * percent * strength, dissolve) * weight;\n\t  total += weight;\n\t  gl_FragColor = vec4(color / total, 1.0);\n\t}\n}\n',
+				fragmentShader: '\nprecision highp float;\n\n#define PI 3.141592653589793\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\n// uniform vec2 fade;\nuniform float strength;\n\n\nfloat Linear_ease(in float begin, in float change, in float duration, in float time) {\n    return change * time / duration + begin;\n}\n\nfloat Exponential_easeInOut(in float begin, in float change, in float duration, in float time) {\n    if (time == 0.0)\n        return begin;\n    else if (time == duration)\n        return begin + change;\n    time = time / (duration / 2.0);\n    if (time < 1.0)\n        return change / 2.0 * pow(2.0, 10.0 * (time - 1.0)) + begin;\n    return change / 2.0 * (-pow(2.0, -10.0 * (time - 1.0)) + 2.0) + begin;\n}\n\nfloat Sinusoidal_easeInOut(in float begin, in float change, in float duration, in float time) {\n    return -change / 2.0 * (cos(PI * time / duration) - 1.0) + begin;\n}\n\n/* random number between 0 and 1 */\nfloat hash(in vec3 scale, in float seed) {\n    /* use the fragment position for randomness */\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvec3 crossFade(in vec2 uv, in float dissolve) {\n    return mix(texture2D(texture0, uv).rgb, texture2D(texture1, uv).rgb, dissolve);\n}\n\nvoid main(void) {\n\tvec2 p = gl_FragCoord.xy /resolution.xy;\n\n\tvec2 center = vec2(Linear_ease(0.25, 0.5, 1.0, progress), 0.5);\n\tfloat dissolve = Exponential_easeInOut(0.0, 1.0, 1.0, progress);\n\tfloat strength = Sinusoidal_easeInOut(0.0, strength, 0.5, progress);\n\tvec3 color = vec3(0.0);\n\tfloat total = 0.0;\n\tvec2 toCenter = center - p;\n\tfloat offset = hash(vec3(12.9898, 78.233, 151.7182), 0.0);\n\n\tfor (float t = 0.0; t <= 40.0; t++) {\n\t  float percent = (t + offset) / 40.0;\n\t  float weight = 4.0 * (percent - percent * percent);\n\t  color += crossFade(p + toCenter * percent * strength, dissolve) * weight;\n\t  total += weight;\n\t  gl_FragColor = vec4(color / total, 1.0);\n\t}\n}\n',
 
 				uniforms: {
 								texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
@@ -2810,7 +3036,7 @@ var CrossZoomTransition = exports.CrossZoomTransition = _BaseTransition.BaseTran
 });
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2821,7 +3047,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.CubeTransition = undefined;
 
-var _BaseTransition = __webpack_require__(1);
+var _BaseTransition = __webpack_require__(0);
 
 var CubeTransition = exports.CubeTransition = _BaseTransition.BaseTransition.extend({
 
@@ -2843,7 +3069,7 @@ var CubeTransition = exports.CubeTransition = _BaseTransition.BaseTransition.ext
 });
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2854,7 +3080,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.MorphTransition = undefined;
 
-var _BaseTransition = __webpack_require__(1);
+var _BaseTransition = __webpack_require__(0);
 
 var MorphTransition = exports.MorphTransition = _BaseTransition.BaseTransition.extend({
 
@@ -2873,7 +3099,47 @@ var MorphTransition = exports.MorphTransition = _BaseTransition.BaseTransition.e
 });
 
 /***/ }),
-/* 32 */
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.NoiseTransition = undefined;
+
+var _uniforms;
+
+var _BaseTransition = __webpack_require__(0);
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var NoiseTransition = exports.NoiseTransition = _BaseTransition.BaseTransition.extend({
+
+	vertexShader: '\n    precision highp float;\n\nattribute vec3 position;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\n\nvoid main(void) {\n\n    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n',
+
+	fragmentShader: '\nprecision highp float;\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\n// uniform vec2 fade;\n\nuniform float dark_low, dark_high, light_low, light_high;\nuniform float brightness, contrast, saturation;\nuniform vec3 light_tint, dark_tint;\n\nuniform float rgbOffsetOpt;\nuniform float horzFuzzOpt;\nuniform float zoom;\nuniform float time;\n\nuniform float t_amount, exposure;\n\nconst vec3 lumc = vec3(0.2125, 0.7154, 0.0721);\nconst vec3 avg_lum = vec3(0.5, 0.5, 0.5);\n\n\nvec3 tint(vec3 col)\n{\n\tfloat bri = (col.x + col.y + col.z)/3.0;\n\n\tfloat v = smoothstep(dark_low, dark_high, bri);\n\tcol = mix(dark_tint * bri, col, v);\n\n\tv = smoothstep(light_low, light_high, bri);\n\tcol = mix(col, min(light_tint * col, 1.0), v);\n\n\tvec3 intensity = vec3(dot(col.rgb, lumc));\n\tvec3 sat_color = mix(intensity, col.rgb, saturation);\n\tvec3 con_color = mix(avg_lum, sat_color, contrast);\n\t\n\treturn (con_color - 1.0 + brightness) * exposure;\n}\n\n// Noise generation functions borrowed from:\n// https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec2 mod289(vec2 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec3 permute(vec3 x) {\n  return mod289(((x*34.0)+1.0)*x);\n}\n\nfloat snoise(vec2 v)\n  {\n  const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0\n                      0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)\n                     -0.577350269189626,  // -1.0 + 2.0 * C.x\n                      0.024390243902439); // 1.0 / 41.0\n\t// First corner\n  vec2 i  = floor(v + dot(v, C.yy) );\n  vec2 x0 = v -   i + dot(i, C.xx);\n\n\t// Other corners\n  vec2 i1;\n  //i1.x = step( x0.y, x0.x ); // x0.x > x0.y ? 1.0 : 0.0\n  //i1.y = 1.0 - i1.x;\n  i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);\n  // x0 = x0 - 0.0 + 0.0 * C.xx ;\n  // x1 = x0 - i1 + 1.0 * C.xx ;\n  // x2 = x0 - 1.0 + 2.0 * C.xx ;\n  vec4 x12 = x0.xyxy + C.xxzz;\n  x12.xy -= i1;\n\n\t// Permutations\n  i = mod289(i); // Avoid truncation effects in permutation\n  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))\n\t\t+ i.x + vec3(0.0, i1.x, 1.0 ));\n\n  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);\n  m = m*m ;\n  m = m*m ;\n\n\t// Gradients: 41 points uniformly over a line, mapped onto a diamond.\n\t// The ring size 17*17 = 289 is close to a multiple of 41 (41*7 = 287)\n\n  vec3 x = 2.0 * fract(p * C.www) - 1.0;\n  vec3 h = abs(x) - 0.5;\n  vec3 ox = floor(x + 0.5);\n  vec3 a0 = x - ox;\n\n\t// Normalise gradients implicitly by scaling m\n\t// Approximation of: m *= inversesqrt( a0*a0 + h*h );\n  m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );\n\n\t// Compute final noise value at P\n  vec3 g;\n  g.x  = a0.x  * x0.x  + h.x  * x0.y;\n  g.yz = a0.yz * x12.xz + h.yz * x12.yw;\n  return 130.0 * dot(m, g);\n}\n\nvoid main(void) {\n\n\tvec2 p =  gl_FragCoord.xy/resolution.xy;\n\tvec2 p0 = p;\n\tvec2 p1 = p;\n\n\tp0 -= 0.5;\n\tp1 -= 0.5;\n\tp0 *= 1.0 - progress * zoom;\n\tp1 *= 1.0 - (1.0 - progress) * zoom;\n\tp0 += 0.5;\n\tp1 += 0.5;\n\n\tfloat v = min(progress, 1.0 - progress) * 2.0;\t//0.0-1.0\n\n\tfloat fuzzOffset = snoise(vec2(time*15.0, p.y * 20.0)) * 0.0015;\n\tfloat largeFuzzOffset = snoise(vec2(time*1.0, p.y * 1.0)) * (0.003 + v * 0.01);\n\tfloat f_xoff = (fuzzOffset + largeFuzzOffset) * horzFuzzOpt * progress;\n    float b_xoff = (fuzzOffset + largeFuzzOffset) * horzFuzzOpt * (1.0 - progress);\n    \n    // float rgbOffset = rgbOffsetOpt * fuzzOffset * 300.0;\n    // float rgbOffset = rgbOffsetOpt;\n    float rgbOffset = snoise(vec2(time*15.0, 1.0)) * rgbOffsetOpt;\n\n\tvec3 f_col = vec3(\n\t\ttexture2D(texture0,\tvec2(p0.x + f_xoff -0.01 * rgbOffset * progress, p0.y)).r,\n\t\ttexture2D(texture0, vec2(p0.x + f_xoff,\t  p0.y)).g,\n\t\ttexture2D(texture0, vec2(p0.x + f_xoff +0.01 * rgbOffset * progress, p0.y)).b\n\t);\n\n\tvec3 b_col = vec3(\n\t\ttexture2D(texture1, vec2(p1.x + b_xoff -0.01 * rgbOffset * (1.0 - progress), p1.y)).r,\n\t\ttexture2D(texture1, vec2(p1.x + b_xoff,\t  p1.y)).g,\n\t\ttexture2D(texture1, vec2(p1.x + b_xoff +0.01 * rgbOffset * (1.0 - progress), p1.y)).b\n\t);\n\n\tvec3 ff_col = f_col;\n\tff_col = tint(ff_col);\n\tff_col = mix(f_col, ff_col, t_amount * progress);\n\n\tvec3 bb_col = b_col;\n\tbb_col = tint(bb_col);\n\tbb_col = mix(b_col, bb_col, t_amount * (1.0 - progress));\n\n\tgl_FragColor = vec4(mix(ff_col, bb_col, progress), 1.0);\n}\n',
+
+	uniforms: (_uniforms = {
+		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+		progress: { value: 0 },
+		resolution: { value: new THREE.Vector2(0.0, 0.0) },
+		// fade: { value: new THREE.Vector2(0.5, 0.5) },
+		time: { value: 0 },
+
+		zoom: { value: 0.3 },
+
+		dark_low: { value: 100 },
+		dark_high: { value: 200 }
+	}, _defineProperty(_uniforms, 'dark_low', { value: 200 }), _defineProperty(_uniforms, 'dark_high', { value: 255 }), _defineProperty(_uniforms, 'contrast', { value: 1 }), _defineProperty(_uniforms, 'brightness', { value: 1 }), _defineProperty(_uniforms, 'saturation', { value: 100 }), _defineProperty(_uniforms, 'light_tint', { value: new THREE.Vector3(0.5, 0.5, 0.5) }), _defineProperty(_uniforms, 'dark_tint', { value: new THREE.Vector3(0.2, 0.2, 0.2) }), _defineProperty(_uniforms, 't_amount', { value: 0.5 }), _defineProperty(_uniforms, 'exposure', { value: 30 }), _defineProperty(_uniforms, 'horzFuzzOpt', { value: 10 }), _defineProperty(_uniforms, 'rgbOffsetOpt', { value: 20 }), _uniforms)
+
+});
+
+/***/ }),
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2884,16 +3150,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.PixelateTransition = undefined;
 
-var _BaseTransition = __webpack_require__(1);
+var _BaseTransition = __webpack_require__(0);
 
 var PixelateTransition = exports.PixelateTransition = _BaseTransition.BaseTransition.extend({
 
-	//Pixelate Transition 
-	//https://www.shadertoy.com/view/MtdXDM
-
 	vertexShader: '\nprecision highp float;\n\nattribute vec3 position;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\nvoid main(void) {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n',
 
-	fragmentShader: '\nprecision highp float;\n\n\n#define N 50.0\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\n// uniform vec2 fade;\nuniform vec2 resolution;\n\nvoid main(void) {\n\tvec2 p = gl_FragCoord.xy /resolution;\n\tfloat aspect = resolution.x / resolution.y;\n\tfloat v = min(progress, 1.0 - progress);\t//0.0-0.5\n\tvec2 steps = vec2(aspect * N, N);\n\tsteps = floor(v * steps) / steps * 2.0;\n\tvec2 size = steps / vec2(aspect * 10.0, 10.0);\n\tsize = max(size, 1.0/resolution.xy);\n\n\tp -= 0.5;\n\tp = (floor(p / size) + 0.5) * size;\n\tp += 0.5;\n\n\tvec4 c0 = texture2D(texture0, p);\n\tvec4 c1 = texture2D(texture1, p);\n\n\tgl_FragColor = mix(c0, c1, progress);\n}\n',
+	fragmentShader: '\nprecision highp float;\n\n\n#define N 10.0\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\n\nvoid main(void) {\n\tvec2 p = gl_FragCoord.xy /resolution;\n\tfloat aspect = resolution.x / resolution.y;\n\tfloat v = min(progress, 1.0 - progress) * 2.0;\t//0.0-1.0\n\tv = floor(v * 30.0) / 30.0;\n\t\n\tvec2 steps = vec2(aspect, 1.0) * N / v;\n\n\tp -= 0.5;\n\n\tsteps = min(steps, resolution.xy);\n\tp = (floor(p * steps) + 0.5) / steps;\n\n\tp += 0.5;\n\n\tvec4 c0 = texture2D(texture0, p);\n\tvec4 c1 = texture2D(texture1, p);\n\n\tgl_FragColor = mix(c0, c1, progress);\n}\n',
 
 	uniforms: {
 		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
@@ -2904,7 +3167,36 @@ var PixelateTransition = exports.PixelateTransition = _BaseTransition.BaseTransi
 });
 
 /***/ }),
-/* 33 */
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.PixelateWipeTransition = undefined;
+
+var _BaseTransition = __webpack_require__(0);
+
+var PixelateWipeTransition = exports.PixelateWipeTransition = _BaseTransition.BaseTransition.extend({
+
+	vertexShader: '\nprecision highp float;\n\nattribute vec3 position;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\nvoid main(void) {\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n',
+
+	fragmentShader: '\n\nprecision highp float;\n\n#define N 10.0\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\nuniform vec2 gradient;\n\nvoid main(void) {\n\tvec2 p = gl_FragCoord.xy /resolution;\n\tfloat aspect = resolution.x / resolution.y;\n\n\tfloat v = mix(0.0, 1.0, progress * (1.0+gradient.x+gradient.y) - ((1.0-p.x)*gradient.x+p.y*gradient.y));\n\tv = clamp(v, 0.0, 1.0);\n\tv = floor(v * 16.0) / 16.0;\n\n\tp -= 0.5;\n\n\tfloat pv = min(v, 1.0 - v) * 2.0;\t//0.0-1.0\n\tvec2 steps = vec2(aspect, 1.0) * N / pv;\n\tsteps = min(steps, resolution.xy);\n\tp = (floor(p * steps) + 0.5) / steps;\n\n\tp += 0.5;\n\n\tvec4 c0 = texture2D(texture0, p);\n\tvec4 c1 = texture2D(texture1, p);\n\n\t// v = step(0.5, v);\n\n\tgl_FragColor = mix(c0, c1, v);\n}\n',
+
+	uniforms: {
+		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+		progress: { value: 0 },
+		resolution: { value: new THREE.Vector2(0.0, 0.0) },
+		gradient: { value: new THREE.Vector2(0.5, 0) }
+	}
+});
+
+/***/ }),
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2915,11 +3207,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.TestTransition = undefined;
 
-var _uniforms;
-
-var _BaseTransition = __webpack_require__(1);
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var _BaseTransition = __webpack_require__(0);
 
 //glsl transition いっぱい
 //https://gl-transitions.com/gallery
@@ -2929,6 +3217,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 //Disintegration Transition 
 //https://www.shadertoy.com/view/lslSz7
+
+
+//tiling
+//http://glslsandbox.com/e#45579.0
+
+//pixelate
+//http://glslsandbox.com/e#45747.0
 
 //from beautifl
 //Pixel Wipe
@@ -2964,7 +3259,7 @@ uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform float progress;
 uniform vec2 resolution;
-uniform vec2 fade;
+uniform vec2 gradient;
 
 void main(void) {
 	vec2 p = gl_FragCoord.xy /resolution.xy;
@@ -2979,7 +3274,7 @@ void main(void) {
 		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
 		progress:{ value: 0 },
 		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		fade: { value: new THREE.Vector2(0.5, 0.5) },
+		gradient: { value: new THREE.Vector2(0.5, 0.5) },
 	}
 
 });
@@ -2987,19 +3282,17 @@ void main(void) {
 
 var TestTransition = exports.TestTransition = _BaseTransition.BaseTransition.extend({
 
-	vertexShader: '\nprecision highp float;\n\nattribute vec3 position;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\n\nvoid main(void) {\n\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n',
+	vertexShader: '\nprecision highp float;\n\nattribute vec3 position;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\nvoid main(void) {\n\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n',
 
-	fragmentShader: '\nprecision highp float;\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\n// uniform vec2 fade;\n\nuniform float dark_low, dark_high, light_low, light_high;\nuniform float brightness, contrast, saturation;\nuniform vec3 light_tint, dark_tint;\n\nuniform float rgbOffsetOpt;\nuniform float horzFuzzOpt;\nuniform float zoom;\nuniform float time;\n\nuniform float t_amount, exposure;\n\nconst vec3 lumc = vec3(0.2125, 0.7154, 0.0721);\nconst vec3 avg_lum = vec3(0.5, 0.5, 0.5);\n\n\nvec3 tint(vec3 col)\n{\n\tfloat bri = (col.x + col.y + col.z)/3.0;\n\n\tfloat v = smoothstep(dark_low, dark_high, bri);\n\tcol = mix(dark_tint * bri, col, v);\n\n\tv = smoothstep(light_low, light_high, bri);\n\tcol = mix(col, min(light_tint * col, 1.0), v);\n\n\tvec3 intensity = vec3(dot(col.rgb, lumc));\n\tvec3 sat_color = mix(intensity, col.rgb, saturation);\n\tvec3 con_color = mix(avg_lum, sat_color, contrast);\n\t\n\treturn (con_color - 1.0 + brightness) * exposure;\n}\n\n// Noise generation functions borrowed from:\n// https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl\n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec2 mod289(vec2 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec3 permute(vec3 x) {\n  return mod289(((x*34.0)+1.0)*x);\n}\n\nfloat snoise(vec2 v)\n  {\n  const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0\n                      0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)\n                     -0.577350269189626,  // -1.0 + 2.0 * C.x\n                      0.024390243902439); // 1.0 / 41.0\n\t// First corner\n  vec2 i  = floor(v + dot(v, C.yy) );\n  vec2 x0 = v -   i + dot(i, C.xx);\n\n\t// Other corners\n  vec2 i1;\n  //i1.x = step( x0.y, x0.x ); // x0.x > x0.y ? 1.0 : 0.0\n  //i1.y = 1.0 - i1.x;\n  i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);\n  // x0 = x0 - 0.0 + 0.0 * C.xx ;\n  // x1 = x0 - i1 + 1.0 * C.xx ;\n  // x2 = x0 - 1.0 + 2.0 * C.xx ;\n  vec4 x12 = x0.xyxy + C.xxzz;\n  x12.xy -= i1;\n\n\t// Permutations\n  i = mod289(i); // Avoid truncation effects in permutation\n  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))\n\t\t+ i.x + vec3(0.0, i1.x, 1.0 ));\n\n  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);\n  m = m*m ;\n  m = m*m ;\n\n\t// Gradients: 41 points uniformly over a line, mapped onto a diamond.\n\t// The ring size 17*17 = 289 is close to a multiple of 41 (41*7 = 287)\n\n  vec3 x = 2.0 * fract(p * C.www) - 1.0;\n  vec3 h = abs(x) - 0.5;\n  vec3 ox = floor(x + 0.5);\n  vec3 a0 = x - ox;\n\n\t// Normalise gradients implicitly by scaling m\n\t// Approximation of: m *= inversesqrt( a0*a0 + h*h );\n  m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );\n\n\t// Compute final noise value at P\n  vec3 g;\n  g.x  = a0.x  * x0.x  + h.x  * x0.y;\n  g.yz = a0.yz * x12.xz + h.yz * x12.yw;\n  return 130.0 * dot(m, g);\n}\n\nvoid main(void) {\n\n\tvec2 p =  gl_FragCoord.xy/resolution.xy;\n\tvec2 p0 = p;\n\tvec2 p1 = p;\n\tp0 -= 0.5;\n\tp1 -= 0.5;\n\tp0 *= 1.0 - progress * zoom;\n\tp1 *= 1.0 - (1.0 - progress) * zoom;\n\tp0 += 0.5;\n\tp1 += 0.5;\n\n\t// float fuzzOffset = snoise(vec2(time*15.0, p.y*80.0)) * 0.003;\n\t// float largeFuzzOffset = snoise(vec2(time*1.0, p.y * 25.0)) * 0.004;\n\t// float f_xoff = (fuzzOffset + largeFuzzOffset) * horzFuzzOpt * progress;\n\t// float b_xoff = (fuzzOffset + largeFuzzOffset) * horzFuzzOpt * (1.0 - progress);\n\n\tfloat fuzzOffset = snoise(vec2(time*15.0, p.y*20.0)) * 0.003;\n\tfloat largeFuzzOffset = snoise(vec2(time*1.0, p.y * 3.0)) * 0.004;\n\tfloat f_xoff = (fuzzOffset + largeFuzzOffset) * horzFuzzOpt * progress;\n\tfloat b_xoff = (fuzzOffset + largeFuzzOffset) * horzFuzzOpt * (1.0 - progress);\n\n\tvec3 f_col = vec3(\n\t\ttexture2D(texture0,\tvec2(p0.x + f_xoff -0.01 * rgbOffsetOpt * progress, p0.y)).r,\n\t\ttexture2D(texture0, vec2(p0.x + f_xoff,\t  p0.y)).g,\n\t\ttexture2D(texture0, vec2(p0.x + f_xoff +0.01 * rgbOffsetOpt * progress, p0.y)).b\n\t);\n\n\tvec3 b_col = vec3(\n\t\ttexture2D(texture1, vec2(p1.x + b_xoff -0.01 * rgbOffsetOpt * (1.0 - progress), p1.y)).r,\n\t\ttexture2D(texture1, vec2(p1.x + b_xoff,\t  p1.y)).g,\n\t\ttexture2D(texture1, vec2(p1.x + b_xoff +0.01 * rgbOffsetOpt * (1.0 - progress), p1.y)).b\n\t);\n\n\tvec3 ff_col = f_col;\n\tff_col = tint(ff_col);\n\tff_col = mix(f_col, ff_col, t_amount * progress);\n\n\tvec3 bb_col = b_col;\n\tbb_col = tint(bb_col);\n\tbb_col = mix(b_col, bb_col, t_amount * (1.0 - progress));\n\n\tgl_FragColor = vec4(mix(ff_col, bb_col, progress), 1.0);\n}\n',
+	fragmentShader: '\nprecision highp float;\n\nuniform sampler2D texture0;\nuniform sampler2D texture1;\nuniform float progress;\nuniform vec2 resolution;\nuniform vec2 gradient;\n\nvoid main(void) {\n\tvec2 p = gl_FragCoord.xy /resolution.xy;\n\tvec4 c0 = texture2D(texture0, p);\n\tvec4 c1 = texture2D(texture1, p);\n\tgl_FragColor = mix(c0, c1, progress);\n}\n',
 
-	uniforms: (_uniforms = {
+	uniforms: {
 		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
 		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
 		progress: { value: 0 },
 		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		// fade: { value: new THREE.Vector2(0.5, 0.5) },
-		dark_low: { value: 100 },
-		dark_high: { value: 200 }
-	}, _defineProperty(_uniforms, 'dark_low', { value: 200 }), _defineProperty(_uniforms, 'dark_high', { value: 255 }), _defineProperty(_uniforms, 'contrast', { value: 1 }), _defineProperty(_uniforms, 'brightness', { value: 1 }), _defineProperty(_uniforms, 'saturation', { value: 100 }), _defineProperty(_uniforms, 'light_tint', { value: new THREE.Vector3(0.5, 0.5, 0.5) }), _defineProperty(_uniforms, 'dark_tint', { value: new THREE.Vector3(0.2, 0.2, 0.2) }), _defineProperty(_uniforms, 'zoom', { value: 0.3 }), _defineProperty(_uniforms, 'time', { value: 0 }), _defineProperty(_uniforms, 't_amount', { value: 0.5 }), _defineProperty(_uniforms, 'exposure', { value: 30 }), _defineProperty(_uniforms, 'horzFuzzOpt', { value: 10 }), _defineProperty(_uniforms, 'rgbOffsetOpt', { value: 20 }), _uniforms)
+		gradient: { value: new THREE.Vector2(0.5, 0.5) }
+	}
 
 });
 

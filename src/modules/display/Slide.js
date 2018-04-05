@@ -1,17 +1,10 @@
+import {net} from '../components/Net'
+import {cloner} from '../components/converter/Cloner'
+import {Inliner} from '../components/converter/Inliner'
+import {converter} from '../components/converter/SvgConverter'
+import {Bench} from '../components/debug/Bench'
 
-import {cloner} from './converter/Cloner'
-import {Inliner} from './converter/Inliner'
-import {converter} from './converter/SvgConverter'
-import {Dom} from './display/Dom'
-import {DefaultRenderer} from './renderer/DefaultRenderer'
-import {ThreeRenderer} from './renderer/ThreeRenderer'
-import {net} from './utils/Net'
-import {Option} from './utils/Option'
-import {Utils} from './utils/Utils'
-import {Bench} from './debug/Bench'
-
-
-export class SlideData {
+export class Slide {
 
 	constructor(slide) {
 		this.container = slide;
@@ -118,42 +111,5 @@ export class SlideData {
 				});
 			}
 		});
-	}
-}
-
-
-export class Data {
-	constructor() {
-		this.dom = new Dom();
-		this.time = 0;
-	}
-
-	setup(...args) {
-
-		this.option = Utils.extend(Option, args[0]);
-
-		this.dom.setup(this.option.selector);
-
-		this.list = [];
-
-		for(const slide of this.dom.slides) {
-			this.list.push(new SlideData(slide));
-		}
-	}
-
-	dispose() {
-		for(const slide of this.list) {
-			slide.dispose();
-		}
-		this.dom.dispose();
-	}
-
-	getRenderer() {
-		if(this.option.debug) {
-			return new DefaultRenderer();
-		}
-		else {
-			return this.option.renderer || new ThreeRenderer();
-		}
 	}
 }

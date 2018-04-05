@@ -12,31 +12,32 @@ export class AutoPlay extends EventDispatcher {
 	_defineHandlers() {
         this._on = {
             tick : (e) => {
-                if(e.time > this.option.duration) {
-                    this.dispatch(AutoPlay.EVENT.COMPLETE);
-                    this.stopTimer();
+                if(e.time > this.option.delay) {
+                    this.dispatch(AutoPlay.EVENT.TICK);
                 }
             }
         }
     }
 
+
     get enabled() {
         return this.option != undefined;
     }
+    
 
     setup(option) {
         this.option = option;
     }
 
 
-    startTimer() {
+    start() {
         if(this.enabled) {
             stage.on('tick', this._on.tick);
         }
     }
 
 
-    stopTimer() {
+    stop() {
         if(this.enabled) {
             stage.off('tick', this._on.tick);
         }
@@ -46,5 +47,5 @@ export class AutoPlay extends EventDispatcher {
 }
 
 AutoPlay.EVENT = {
-    COMPLETE:"autoplay_complete"
+    TICK:"autoplay_tick"
 }

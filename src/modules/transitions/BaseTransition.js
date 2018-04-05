@@ -1,4 +1,4 @@
-import {Utils} from '../utils/Utils'
+import {Utils} from '../components/Utils'
 
 
 export const BaseTransition = {
@@ -23,13 +23,13 @@ uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform float progress;
 uniform vec2 resolution;
-uniform vec2 fade;
+uniform vec2 gradient;
 
 void main(void) {
 	vec2 uv = gl_FragCoord.xy /resolution.xy;
 	vec4 color0 = texture2D(texture0, uv);
 	vec4 color1 = texture2D(texture1, uv);
-	float v = smoothstep(0.0, 1.0, progress * (1.0+fade.x+fade.y) - ((1.0-uv.x)*fade.x+uv.y*fade.y));
+	float v = smoothstep(0.0, 1.0, progress * (1.0+gradient.x+gradient.y) - ((1.0-uv.x)*gradient.x+uv.y*gradient.y));
 	gl_FragColor = mix(color0, color1, v);
 }
 `,
@@ -41,7 +41,7 @@ void main(void) {
 		uv1: { value: new THREE.Vector4(0, 0, 1, 1) },
 		progress:{ value: 0 },
 		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		fade: { value: new THREE.Vector2(1.0, 1.0) },
+		gradient: { value: new THREE.Vector2(1.0, 1.0) },
 	},
 
 	extend(o) {

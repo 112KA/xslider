@@ -8,12 +8,29 @@ export const Option = {
 	initialSlideIndex : 0,
 	autoplay : false,
 	loop : true,
-	throwable : true,
-	allowTouchMove : true,
+	touchMove : {
+		throwable : true
+	},
+	// throwable : true,
+	// allowTouchMove : true,
 	renderer : undefined,
 	debug : false,
 	
 	getTransition : function() {
 		return BaseTransition;
+	},
+
+	get : function(property, module) {
+		if(module) {
+			if(!this[module]) {
+				return undefined;
+			}
+			else {
+				return this[module][property];
+			}
+		}
+		else {
+			return this[property];
+		}
 	}
 }

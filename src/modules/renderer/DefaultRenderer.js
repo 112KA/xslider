@@ -1,5 +1,5 @@
 import {BaseRenderer} from './BaseRenderer'
-import {Utils} from '../utils/Utils'
+import {Utils} from '../components/Utils'
 import {stage} from '../core/Stage'
 
 export class DefaultRenderer extends BaseRenderer {
