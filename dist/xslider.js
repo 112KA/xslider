@@ -1768,8 +1768,9 @@ var Ticker = exports.Ticker = function (_EventDispatcher) {
 				var overlap = _this2._lastMs - _this2._nextMs;
 
 				if (overlap >= 0) {
+					var t0 = _this2._nextMs;
 					_this2._nextMs += overlap + (overlap >= _this2._gap ? 1 : _this2._gap - overlap);
-					_this2.dispatch('tick', { type: 'tick', time: _this2._lastMs - _this2._startMs });
+					_this2.dispatch('tick', { type: 'tick', time: _this2._lastMs - _this2._startMs, dt: _this2._nextMs - t0 });
 				}
 			};
 		}

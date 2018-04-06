@@ -1,12 +1,13 @@
 {
   "name": "xslider",
   "version": "1.0.0",
-  "main": "dist/xslider.js",
+  "main": "dist/xslider.min.js",
   "repository": "https://github.com/112KA/xslider.git",
   "author": "112KA",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server --progress --colors"
+    "start": "webpack-dev-server --progress --colors",
+    "webpack:prd": "NODE_ENV=production webpack -p"
   },
   "dependencies": {
     "three": "^0.89.0"

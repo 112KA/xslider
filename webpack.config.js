@@ -4,12 +4,15 @@ const ConcatPlugin = require('webpack-concat-plugin');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+
+const DEV = process.env.NODE_ENV !== 'production';
+
 module.exports = {
 	entry: {
 		xslider: './src/xslider.js',
 	},
 	output: {
-		filename: 'dist/[name].js',
+		filename: DEV ? 'dist/[name].js' : 'dist/[name].min.js',
 		// path: path.join(__dirname, 'dist')
 		path: __dirname
 	},
@@ -33,7 +36,7 @@ module.exports = {
 		}],
 	},
 	
-	plugins: [
+	plugins: DEV ? [
 		new ConcatPlugin({
 		    // examples
 		    uglify: false,
@@ -57,6 +60,14 @@ module.exports = {
 	    }),
 		new ExtractTextPlugin('dist/xslider.css'),
 		// new webpack.optimize.UglifyJsPlugin()
+	] : [
+		new webpack.DefinePlugin({
+	      XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
+		}),
+		new webpack.optimize.UglifyJsPlugin({
+			compress: { warnings: false }
+		}),
+		new ExtractTextPlugin(DEV?'dist/xslider.css':'dist/xslider.min.css'),
 	],
 
 	devServer: {
@@ -66,5 +77,5 @@ module.exports = {
 	    inline: true,
 	},
 
-	devtool: 'source-map'
+	devtool: DEV ? 'source-map' : ''
 };
