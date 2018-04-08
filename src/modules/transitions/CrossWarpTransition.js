@@ -1,10 +1,9 @@
 import {BaseTransition} from './BaseTransition'
 
-
+/**
+ * It's based on {@link https://gl-transitions.com/editor/crosswarp crosswarp by Eke Péter}.
+ */
 export const CrossWarpTransition = BaseTransition.extend({
-
-//Crosswarp Transition 
-//https://gl-transitions.com/editor/crosswarp
 
 	vertexShader : `
 precision highp float;

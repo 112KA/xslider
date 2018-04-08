@@ -1,6 +1,5 @@
 # Node #
 /node_modules/
 
-# precompress images
 
-# exe
+/src/modules/transitions/TestTransition.js

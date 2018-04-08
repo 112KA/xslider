@@ -1,5 +1,8 @@
 import {BaseTransition} from './BaseTransition'
 
+/**
+ * It's based on {@link https://logik-matchbook.org/shader/crok_transitions crok_transitions by Gaëtan Renaudeau}.
+ */
 export const NoiseTransition = BaseTransition.extend({
 
 

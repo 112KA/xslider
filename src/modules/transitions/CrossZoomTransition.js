@@ -1,5 +1,8 @@
 import {BaseTransition} from './BaseTransition'
 
+/**
+ * It's based on {@link https://gl-transitions.com/editor/CrossZoom CrossZoom by rectalogic}.
+ */
 export const CrossZoomTransition = BaseTransition.extend({
 
 

@@ -1,6 +1,8 @@
 import {Inliner} from './Inliner'
 
-
+/**
+ * It's based on {@link https://github.com/tsayen/dom-to-image dom-to-image by Anatolii Saienko}.
+ */
 export const converter = {
 	parser : new DOMParser(),
 

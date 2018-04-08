@@ -1,6 +1,9 @@
 import {BaseTransition} from './BaseTransition'
 
 
+/**
+ * It's based on {@link https://gl-transitions.com/editor/cube cube by gre}.
+ */
 export const CubeTransition = BaseTransition.extend({
 
 	vertexShader : `

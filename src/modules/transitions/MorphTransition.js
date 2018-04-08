@@ -1,5 +1,8 @@
 import {BaseTransition} from './BaseTransition'
 
+/**
+ * It's based on {@link https://gl-transitions.com/editor/morph morph by paniq}.
+ */
 export const MorphTransition = BaseTransition.extend({
 
 
