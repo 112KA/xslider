@@ -1,6 +1,7 @@
 import {BaseRenderer} from './BaseRenderer'
 import {SlideModel} from '../display/SlideModel'
 import {Bench} from '../components/debug/Bench'
+import {Vec2, Vec3, Vec4} from '../geom/Vec'
 
 export class ThreeRenderer extends BaseRenderer {
 	constructor() {
@@ -42,7 +43,7 @@ export class ThreeRenderer extends BaseRenderer {
 				transparent: true,
 				vertexShader: transition.vertexShader,
 				fragmentShader: transition.fragmentShader,
-				uniforms: transition.uniforms
+				uniforms: this._createUniforms(transition.uniforms),
 			})
 		)
 
@@ -51,6 +52,33 @@ export class ThreeRenderer extends BaseRenderer {
 		this.scene.add(this.model.mesh);
 
 		this.model.on('updateTexture', this._onUpdateTexture);
+	}
+
+	_createUniforms(setting) {
+		let ret = {
+			texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+			texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+			progress:{ value: 0 },
+			resolution: { value: new THREE.Vector2(0.0, 0.0) },
+		};
+
+		Object.keys(setting).forEach((key) => {
+			let v = setting[key];
+			if(v instanceof Vec4) {
+				ret[key] = new THREE.Vector4(v.x, v.y, v.z, v.w);
+			}
+			else if(v instanceof Vec3) {
+				ret[key] = new THREE.Vector3(v.x, v.y, v.z);
+			}
+			else if(v instanceof Vec2) {
+				ret[key] = new THREE.Vector2(v.x, v.y);
+			}
+			else {
+				ret[key] = v;
+			}
+		  })
+
+		return ret;
 	}
 
 	dispose() {

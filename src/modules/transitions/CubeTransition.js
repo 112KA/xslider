@@ -1,4 +1,5 @@
 import {BaseTransition} from './BaseTransition'
+import {Vec2, Vec3, Vec4} from '../geom/Vec'
 
 
 /**
@@ -101,11 +102,7 @@ void main(void) {
 `,
 
 	uniforms: {
-		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		progress:{ value: 0 },
-		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		bgColor: { value: new THREE.Vector4(0.1, 0.1, 0.1, 1.0) },
+		bgColor: { value: new Vec4(0.1, 0.1, 0.1, 1.0) },
 		unzoom:{ value: 0.3 },
 		floating:{ value: 3.0 },
 		perspective:{ value: 0.7 },

@@ -1,4 +1,5 @@
 import {Utils} from '../components/Utils'
+import {Vec2, Vec3, Vec4} from '../geom/Vec'
 
 
 export const BaseTransition = {
@@ -35,13 +36,7 @@ void main(void) {
 `,
 
 	uniforms: {
-		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		uv0: { value: new THREE.Vector4(0, 0, 1, 1) },
-		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		uv1: { value: new THREE.Vector4(0, 0, 1, 1) },
-		progress:{ value: 0 },
-		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		gradient: { value: new THREE.Vector2(1.0, 1.0) },
+		gradient: { value: new Vec2(1.0, 1.0) },
 	},
 
 	extend(o) {

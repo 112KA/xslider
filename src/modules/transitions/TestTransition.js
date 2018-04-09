@@ -1,4 +1,5 @@
 import {BaseTransition} from './BaseTransition'
+import {Vec2, Vec3, Vec4} from '../geom/Vec'
 
 //glsl transition いっぱい
 //https://gl-transitions.com/gallery
@@ -64,8 +65,8 @@ void main(void) {
 		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
 		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
 		progress:{ value: 0 },
-		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		gradient: { value: new THREE.Vector2(0.5, 0.5) },
+		resolution: { value: new Vec2(0.0, 0.0) },
+		gradient: { value: new Vec2(0.5, 0.5) },
 	}
 
 });
@@ -108,11 +109,7 @@ void main(void) {
 `,
 
 	uniforms: {
-		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		progress:{ value: 0 },
-		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		gradient: { value: new THREE.Vector2(0.5, 0.5) },
+		gradient: { value: new Vec2(0.5, 0.5) },
 	}
 
 });
