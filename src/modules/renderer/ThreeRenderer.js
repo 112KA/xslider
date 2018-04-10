@@ -94,7 +94,7 @@ export class ThreeRenderer extends BaseRenderer {
 		super.render(indexer);
 
 		const slide0 = this.data.list[indexer.i0]
-		, slide1 = this.data.list[indexer.i1];
+		, slide1 = indexer.i1 !== undefined ? this.data.list[indexer.i1] : undefined;
 
 		this.model.set({ slide0:slide0, slide1:slide1 });
 		this.model.uniforms.progress.value = indexer.progress;

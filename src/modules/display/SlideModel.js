@@ -53,7 +53,7 @@ export class SlideModel extends EventDispatcher {
 		const slide0 = this.get('slide0');
 		const slide1 = this.get('slide1');
 		slide0.container.classList.remove("xslider-slide-active");
-		slide1.container.classList.remove("xslider-slide-active");
+		slide1 && slide1.container.classList.remove("xslider-slide-active");
 	}
 
 	resize(w, h) {

@@ -137,7 +137,8 @@ export class Indexer extends EventDispatcher {
 		const v = this._v % this._length + this._length;
 		this.progress = v % 1;
 		this._i0 = Math.floor(v) % this._length;
-		this._i1 = Math.ceil(v) % this._length;
+		const i1 = Math.ceil(v) % this._length;
+		this._i1 = this._i0 !== i1 ? i1 : undefined;
 
 		complete &&	this.dispatch('complete');
 	}

@@ -169,10 +169,16 @@ export class SlideController extends EventDispatcher {
 
 
 	ready() {
-		const slide0 = this.data.list[this.indexer.i0]
-		, slide1 = this.data.list[this.indexer.i1];
+		const slide0 = this.data.list[this.indexer.i0];
 
-		return Promise.all([slide0.ready(), slide1.ready()]);
+		if(this.indexer.i1 !== undefined) {
+			const slide1 = this.data.list[this.indexer.i1];
+			return Promise.all([slide0.ready(), slide1.ready()]);
+		}
+		else {
+			return slide0.ready();
+		}
+
 	}
 
 
