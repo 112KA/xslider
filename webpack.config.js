@@ -42,7 +42,7 @@ module.exports = {
 		    uglify: false,
 		    sourceMap: false,
 		    name: 'vendor',
-		    outputPath: './develop/',
+		    outputPath: './samples/asset/js/',
 		    fileName: '[name].js',
 		    filesToConcat: [
 		    	'./node_modules/three/build/three.min.js', 
