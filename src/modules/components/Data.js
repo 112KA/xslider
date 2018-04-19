@@ -16,9 +16,8 @@ export class Data {
 
 	setup(...args) {
 
-		this.option = Utils.extend(Option, args[0]);
-
-		this.dom.setup(this.option.selector);
+		this.dom.setup(args[0]);
+		this.option = Utils.extend(Option, args[1] | {});
 
 		this.list = [];
 

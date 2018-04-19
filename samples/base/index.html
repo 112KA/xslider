@@ -14,7 +14,7 @@
             margin: 0; padding: 0;
         }
         .container {
-    width: 400px; height: 300px;
+            width: 400px; height: 300px;
             color: white;
             background: #666;
         }
@@ -29,7 +29,7 @@
 
 <body>
     <div class="container">
-        <div id="xslider">
+        <div class="xslider">
             <div class="xslider-view">
                 <div class="xslider-slide">
                     <div class="xslider-layer-texture"><p>Slider1 Texture Text</p></div>
@@ -73,9 +73,7 @@
 	<script src="../../samples/asset/js/vendor.js"></script>
     <script src="../../dist/xslider.min.js"></script>
     <script>
-        new XSlider({
-			selector: "#xslider",
-        })
+        new XSlider(".xslider");
     </script>
 </body>
 </html>

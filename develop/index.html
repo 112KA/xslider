@@ -139,7 +139,6 @@
 
 		var buildOptions = function() {
 			return {
-				selector: "#xslider",
 				// debug: true,
 				getTransition : function() {
 					return XSlider.transition[target.transition];
@@ -178,14 +177,12 @@
 
 		XSlider.stage.ready()
 			.then(function() {
-
-				var slider = new XSlider(buildOptions());
+				var slider = new XSlider('#xslider', buildOptions());
 
 				var reset = function(v) {
 					slider.dispose();
-					// slider.setup(XSlider.Utils.extend(options, o));
 
-					slider.setup(buildOptions());
+					slider.setup('#xslider', buildOptions());
 
 					var s = '';
 					s += 'transition='+target.transition;
