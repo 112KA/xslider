@@ -11,14 +11,16 @@ XSlider is a slider library using webgl shader for transition.
 
 ## Installing / Getting started
 
-Download and install
+Download and install:
+```shell
+yarn install xslider
+```
+or
 ```shell
 npm install xslider
 ```
 
-Include CSS and JS files.
-Includes three.js. Xslider depends on it.
-(In the near future, I plan to make it independent.)
+Include CSS and JS files:
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -33,17 +35,19 @@ Includes three.js. Xslider depends on it.
 </body>
 </html>
 ```
+Includes three.js. Xslider depends on it.
+(In the near future, I plan to make it independent.)
 
 ### Usage
-[Here](https://112ka.github.io/) is a minimum sample.
+A minimum sample is [Here](https://112ka.github.io/).
 
 html
 ```html
-<div id="xslider">
+<div class="xslider">
     <div class="xslider-view">
         <div class="xslider-slide">
-            <div class="xslider-layer-texture">Elements as texture.</div>
-            <div class="xslider-layer-ui">Elements as DOM.</div>
+            <div class="xslider-layer-texture">Elements as texture</div>
+            <div class="xslider-layer-ui">Elements as DOM</div>
         </div>
         <div class="xslider-slide"></div>
         ...
@@ -54,16 +58,14 @@ html
 
 css
 ```css
-#xslider {
+.xslider {
     width: 400px; height: 300px;
 }
 ```
 
 js
 ```js
-new XSlider({
-    selector: "#xslider"
-});
+new XSlider(".xslider");
 ```
 
 

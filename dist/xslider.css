@@ -8,11 +8,11 @@
     left: 0; }
 
 .xslider-view {
-  overflow: hidden;
   width: 100%;
   height: 100%; }
   .xslider-view .xslider-slide {
     display: none;
+    overflow: hidden;
     position: absolute;
     top: 0;
     left: 0;
