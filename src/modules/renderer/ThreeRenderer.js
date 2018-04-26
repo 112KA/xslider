@@ -18,8 +18,8 @@ export class ThreeRenderer extends BaseRenderer {
 		}
 	}
 
-	setup(data) {
-		super.setup(data);
+	setup(data, model) {
+		super.setup(data, model);
 
 		data.dom.container.insertBefore(this.canvas, data.dom.view);
 
@@ -47,9 +47,9 @@ export class ThreeRenderer extends BaseRenderer {
 			})
 		)
 
-		this.model = new SlideModel();
-		this.model.setup(this.mesh);
-		this.scene.add(this.model.mesh);
+		this.scene.add(this.mesh);
+
+		// this.model.setup(this.mesh);
 
 		this.model.on('updateTexture', this._onUpdateTexture);
 	}
@@ -85,7 +85,6 @@ export class ThreeRenderer extends BaseRenderer {
 		super.dispose();
 
 		this.model.off('updateTexture', this._onUpdateTexture);
-		this.model.dispose();
 
 		this.data.dom.container.removeChild(this.canvas);
 	}
@@ -93,10 +92,6 @@ export class ThreeRenderer extends BaseRenderer {
 	render(indexer) {
 		super.render(indexer);
 
-		const slide0 = this.data.list[indexer.i0]
-		, slide1 = indexer.i1 !== undefined ? this.data.list[indexer.i1] : undefined;
-
-		this.model.set({ slide0:slide0, slide1:slide1 });
 		this.model.uniforms.progress.value = indexer.progress;
 		if(this.model.uniforms.time) {
 			this.model.uniforms.time.value = this.data.time;
@@ -114,8 +109,6 @@ export class ThreeRenderer extends BaseRenderer {
 		this.camera.aspect = w / h;
 		this.camera.position.z = ThreeRenderer.CZ * h;
 		this.camera.updateProjectionMatrix();
-
-		this.model.resize(w, h);
 	}
 }
 

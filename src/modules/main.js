@@ -24,7 +24,7 @@ export class XSlider extends EventDispatcher {
 	}
 
 	setup(...args) {
-		// console.log('args: ', args);
+		console.log('args: ', args);
 
 		this.data.setup(...args);
 

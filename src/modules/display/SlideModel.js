@@ -38,9 +38,11 @@ export class SlideModel extends EventDispatcher {
 
 	setup(mesh) {
 		this.mesh = mesh;
-		this.geometry = this.mesh.geometry;
-		this.material = this.mesh.material;
-		this.uniforms = this.material.uniforms;
+		if(this.mesh) {
+			this.geometry = this.mesh.geometry;
+			this.material = this.mesh.material;
+			this.uniforms = this.material.uniforms;
+		}
 
 		this.on('slide0', this._onChangeSlide);
 		this.on('slide1', this._onChangeSlide);
@@ -59,8 +61,10 @@ export class SlideModel extends EventDispatcher {
 	resize(w, h) {
 		this.width = w; this.height = h;
 
-		this.mesh.scale.set(w, h, 1);
-		this.uniforms.resolution.value.set(w,h);
+		if(this.mesh) {
+			this.mesh.scale.set(w, h, 1);
+			this.uniforms.resolution.value.set(w,h);
+		}
 
 		this.updateSlide(0);
 		this.updateSlide(1);
@@ -75,10 +79,12 @@ export class SlideModel extends EventDispatcher {
 
 		slide.resize(this.width, this.height)
 			.then(() => {
-				const texture = this.uniforms['texture'+slideIndex].value;
-
-				texture.image = slide.canvas;
-				texture.needsUpdate = true;
+				if(this.uniforms) {
+					const texture = this.uniforms['texture'+slideIndex].value;
+	
+					texture.image = slide.canvas;
+					texture.needsUpdate = true;
+				}
 
 				this.dispatch('updateTexture');
 			});

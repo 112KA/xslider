@@ -5,8 +5,9 @@ export class BaseRenderer extends EventDispatcher {
 		super();
 	}
 	
-	setup(data) {
+	setup(data, model) {
 		this.data = data;
+		this.model = model;
 	}
 
 	dispose() {}

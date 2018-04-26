@@ -139,7 +139,7 @@
 
 		var buildOptions = function() {
 			return {
-				// debug: true,
+				debug: true,
 				getTransition : function() {
 					return XSlider.transition[target.transition];
 				},
@@ -154,9 +154,8 @@
 					init : function() { console.log('option :: on init'); }
 				}
 			}
-		}
+		};
 
-;
 		var gui = new dat.GUI();
 
 		var folders = {

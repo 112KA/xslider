@@ -5,8 +5,8 @@ export class XGraphics2DRenderer extends BaseRenderer {
 		super();
 	}
 	
-	setup(data) {
-		super.setup(data);
+	setup(data, model) {
+		super.setup(data, model);
 	}
 
 	dispose() {

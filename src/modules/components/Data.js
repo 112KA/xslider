@@ -17,7 +17,11 @@ export class Data {
 	setup(...args) {
 
 		this.dom.setup(args[0]);
-		this.option = Utils.extend(Option, args[1] | {});
+		this.option = Utils.extend(Option, args[1] || {});
+
+		if(this.option.debug) {
+			this.dom.container.classList.add("xslider-debug");
+		}
 
 		this.list = [];
 

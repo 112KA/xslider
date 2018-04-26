@@ -6,6 +6,7 @@ import {AutoPlay} from './components/AutoPlay'
 import {Indexer} from './components/Indexer'
 import {Bench} from './components/debug/Bench'
 import {Button} from './display/Button'
+import {SlideModel} from './display/SlideModel'
 import {UI} from './display/UI'
 import {DefaultRenderer} from './renderer/DefaultRenderer'
 
@@ -26,6 +27,8 @@ export class SlideController extends EventDispatcher {
 		this.ui = new UI();
 		this.autoplay = new AutoPlay();
 
+		this.model = new SlideModel();
+
 		this._defineHandlers();
 	}
 
@@ -39,6 +42,8 @@ export class SlideController extends EventDispatcher {
 
 			this.renderer.default.resize(e);
 			this.renderer.gl.resize(e);
+
+			this.model.resize(e.width, e.height);
 		}
 
 
@@ -134,7 +139,9 @@ export class SlideController extends EventDispatcher {
 		this.renderer.default.setup(this.data);
 
 		this.renderer.gl = this.data.getRenderer();
-		this.renderer.gl.setup(this.data);
+		this.renderer.gl.setup(this.data, this.model);
+
+		this.model.setup(this.renderer.gl.mesh);
 
 		this.ui.setup(this.data);
 
@@ -169,6 +176,16 @@ export class SlideController extends EventDispatcher {
 
 
 	ready() {
+		return this.readySlide().then(() => {
+			const slide0 = this.data.list[this.indexer.i0]
+			, slide1 = this.indexer.i1 !== undefined ? this.data.list[this.indexer.i1] : undefined;
+
+			this.model.set({ slide0:slide0, slide1:slide1 });
+		});
+
+	}
+
+	readySlide() {
 		const slide0 = this.data.list[this.indexer.i0];
 
 		if(this.indexer.i1 !== undefined) {
@@ -178,7 +195,6 @@ export class SlideController extends EventDispatcher {
 		else {
 			return slide0.ready();
 		}
-
 	}
 
 
@@ -223,6 +239,8 @@ export class SlideController extends EventDispatcher {
 
 		this.renderer.gl.dispose();
 		this.renderer.default.dispose();
+
+		this.model.dispose();
 	}
 }
 
