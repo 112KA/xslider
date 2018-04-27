@@ -118,7 +118,7 @@ export const Inliner = {
 
 		if(this.isDataURI(node.src)) return node;
 
-		return node;
+		// return node;
 
 		return new Promise((resolve, reject) => {
 

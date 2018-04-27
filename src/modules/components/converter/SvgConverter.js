@@ -19,7 +19,9 @@ export const converter = {
 		let o = svg.getElementsByTagName('foreignObject')[0];
 		o.appendChild(node);
 
-		// console.log('svg: ', svg);
+		console.log('o: ', o);
+		// console.log('svgString: ', svgString);
+		console.log('svg: ', svg);
 
 		return svg;
 	}
