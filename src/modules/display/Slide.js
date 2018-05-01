@@ -15,7 +15,7 @@ export class Slide {
 			, "ui" : slide.querySelector(".xslider-layer-ui")
 		}
 
-		this.container.insertBefore(this.image, this.layer.texture);
+		// this.container.insertBefore(this.image, this.layer.texture);
 
 		this.needsResize = false;
 
@@ -78,13 +78,8 @@ export class Slide {
 
 
 	loadSvg() {
-		const uri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(new XMLSerializer().serializeToString(this.svg));
-		// console.log("this.svg", this.svg);
-		console.log("uri", uri);
-		// console.log("uri.length", uri.length);
-
-		// this.container.insertBefore(this.svg, this.layer.texture);
-		// this.container.appendChild(this.svg);
+		const string = new XMLSerializer().serializeToString(this.svg);
+		const uri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(string);
 
 		return net.loadImage(this.image, uri);
 	}
@@ -105,7 +100,7 @@ export class Slide {
 
 				this.layer.texture.classList.add("xslider-texture-capture");
 
-				cloner.copyStyleExcludeBackground(this.layer.texture, this.inlinedNode);
+				cloner.cloneStyle(this.layer.texture, this.inlinedNode, ['background']);
 
 				this.layer.texture.classList.remove("xslider-texture-capture");
 
@@ -113,9 +108,7 @@ export class Slide {
 
 				this.loadSvg().then(() => {
 					const c = this.canvas.getContext('2d');
-					console.log(this.image);
 					c.drawImage(this.image,0,0,w,h);
-					this.container.insertBefore(this.image, this.layer.texture);
 
 					resolve();
 				});
