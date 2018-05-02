@@ -25,24 +25,15 @@ $color: #00ff7a;
 		&.xslider-slide-active {
 			display: block;
 		}
-
-		&.xslider-slide-next {
-			
-		}
 	}
 }
 
-.xslider-slide-image {
-	display: none;
-	position: absolute;
-}
-
-.xslider-layer-texture {
+.xslider-layer-gl {
 	position: absolute;
 	display: none;
 	width: 100%; height: 100%;
 
-	&.xslider-texture-capture {
+	&.xslider-capture {
 		display: block;
 		z-index: -99999;
 	}
@@ -106,7 +97,7 @@ $color: #00ff7a;
 }
 
 .xslider-debug {
-	.xslider-layer-texture {
+	.xslider-layer-gl {
 		display: block;
 	}
 }

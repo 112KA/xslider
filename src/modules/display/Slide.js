@@ -11,11 +11,11 @@ export class Slide {
 		this.canvas = document.createElement('canvas');
 		this.image = new Image();
 		this.layer = {
-			"texture" : slide.querySelector(".xslider-layer-texture")
+			"gl" : slide.querySelector(".xslider-layer-gl")
 			, "ui" : slide.querySelector(".xslider-layer-ui")
 		}
 
-		// this.container.insertBefore(this.image, this.layer.texture);
+		// this.container.insertBefore(this.image, this.layer.gl);
 
 		this.needsResize = false;
 
@@ -23,7 +23,7 @@ export class Slide {
 	}
 
 	dispose() {
-		this.layer.texture && this.layer.texture.classList.remove("xslider-texture-capture");
+		this.layer.gl && this.layer.gl.classList.remove("xslider-capture");
 	}
 	
 
@@ -36,17 +36,17 @@ export class Slide {
 				resolve();
 			}
 			//textureなし
-			else if(!this.layer.texture) {
+			else if(!this.layer.gl) {
 				resolve();
 			}
 			//処理中
-			else if(this.layer.texture.classList.contains("xslider-texture-capture")) {
+			else if(this.layer.gl.classList.contains("xslider-capture")) {
 				reject("in process");
 			}
 			else {
-				this.layer.texture.classList.add("xslider-texture-capture");
+				this.layer.gl.classList.add("xslider-capture");
 
-				const dom = this.layer.texture;
+				const dom = this.layer.gl;
 				const w = dom.scrollWidth;
 				const h = dom.scrollHeight;
 
@@ -58,16 +58,16 @@ export class Slide {
 						this.inlinedNode = inlined;
 
 						this.svg = converter.convert(this.inlinedNode, w, h);
-						this.layer.texture.classList.remove("xslider-texture-capture");
+						this.layer.gl.classList.remove("xslider-capture");
 
 						resolve();
 					});
 
-				// // Utils.toSvg(this.layer.texture)
-				// converter.from(this.layer.texture)
+				// // Utils.toSvg(this.layer.gl)
+				// converter.from(this.layer.gl)
 				// 	.then((svg) => {
 				// 		this.svg = svg;
-				// 		this.layer.texture.classList.remove("xslider-texture-capture");
+				// 		this.layer.gl.classList.remove("xslider-capture");
 				// 		this.needsResize = true;
 				// 		// document.querySelector('#xslider').appendChild(this.svg.documentElement.cloneNode(true));
 				// 		resolve();
@@ -98,11 +98,11 @@ export class Slide {
 				this.canvas.width = w;
 				this.canvas.height = h;
 
-				this.layer.texture.classList.add("xslider-texture-capture");
+				this.layer.gl.classList.add("xslider-capture");
 
 				cloner.cloneStyle(this.layer.texture, this.inlinedNode, ['background']);
 
-				this.layer.texture.classList.remove("xslider-texture-capture");
+				this.layer.gl.classList.remove("xslider-capture");
 
 				this.svg = converter.convert(this.inlinedNode, w, h);
 
