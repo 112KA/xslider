@@ -22,31 +22,33 @@ $color: #00ff7a;
 		top: 0; left: 0;
 		width: 100%; height: 100%;
 
-		&.xslider-slide-active {
+		&-active {
 			display: block;
 		}
 	}
 }
 
-.xslider-layer-gl {
-	position: absolute;
-	display: none;
-	width: 100%; height: 100%;
+.xslider-layer {
+	&-gl {
+		position: absolute;
+		display: none;
+		width: 100%; height: 100%;
 
-	&.xslider-capture {
-		display: block;
-		z-index: -99999;
+		&.xslider-capture {
+			display: block;
+			z-index: -99999;
+		}
 	}
-}
 
-.xslider-layer-ui {
-	position: absolute;
-	top: 0; left: 0;
-	width: 100%; height: 100%;
-	display: flex;
-
-	justify-content: center;
-	align-items: center;
+	&-ui {
+		position: absolute;
+		top: 0; left: 0;
+		width: 100%; height: 100%;
+		display: flex;
+	
+		justify-content: center;
+		align-items: center;
+	}
 }
 
 .xslider-pager {

@@ -11,6 +11,7 @@ import {NoiseTransition} from './modules/transitions/NoiseTransition'
 import {PixelateTransition} from './modules/transitions/PixelateTransition'
 import {PixelateWipeTransition} from './modules/transitions/PixelateWipeTransition'
 import {TestTransition} from './modules/transitions/TestTransition'
+import {Debug} from './modules/components/debug/Debug'
 import {Utils} from './modules/components/Utils'
 
 
@@ -30,5 +31,6 @@ XSlider.transition = {
 };
 
 XSlider.Utils = Utils;
+XSlider.Debug = Debug;
 
 window.XSlider = XSlider;

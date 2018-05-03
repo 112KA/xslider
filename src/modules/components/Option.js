@@ -11,8 +11,6 @@ export const Option = {
 	touchMove : {
 		throwable : true
 	},
-	// throwable : true,
-	// allowTouchMove : true,
 	renderer : undefined,
 	debug : false,
 	

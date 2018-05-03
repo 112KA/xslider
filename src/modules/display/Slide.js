@@ -3,6 +3,7 @@ import {cloner} from '../components/converter/Cloner'
 import {Inliner} from '../components/converter/Inliner'
 import {converter} from '../components/converter/SvgConverter'
 import {Bench} from '../components/debug/Bench'
+import {Debug} from '../components/debug/Debug'
 
 export class Slide {
 
@@ -15,7 +16,9 @@ export class Slide {
 			, "ui" : slide.querySelector(".xslider-layer-ui")
 		}
 
-		// this.container.insertBefore(this.image, this.layer.gl);
+		if(Debug.display == Debug.DISPLAY_IMG) {
+			this.container.insertBefore(this.image, this.layer.gl);
+		}
 
 		this.needsResize = false;
 
@@ -80,6 +83,18 @@ export class Slide {
 	loadSvg() {
 		const string = new XMLSerializer().serializeToString(this.svg);
 		const uri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(string);
+
+		if(Debug.display == Debug.DISPLAY_SVG) {
+
+			if(this._svg0 === undefined) {
+				this._svg0 = this.container.insertBefore(this.svg.childNodes[0], this.layer.gl);
+			}
+			else {
+				const node = this.svg.childNodes[0];
+				this.container.replaceChild(node, this._svg0);
+				this._svg0 = node;
+			}
+		}
 
 		return net.loadImage(this.image, uri);
 	}
