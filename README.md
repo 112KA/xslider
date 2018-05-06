@@ -71,8 +71,13 @@ new XSlider(".xslider");
 
 
 ## Browser Supports
-- SVG <foreignObject> tag
+- Chrome
+- Firefox
+- Safari
 
+- IE11 and below do not support SVG <foreignObject> tag.
+- In Microsoft Edge, the background image of foreignObject can not be drawn on canvas.
+https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/14695695/
 
 <!--
 ### Prerequisites
