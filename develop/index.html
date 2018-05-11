@@ -141,9 +141,7 @@
 		var buildOptions = function() {
 			return {
 				// debug: XSlider.Debug.DISPLAY_SVG,
-				getTransition : function() {
-					return XSlider.transition[target.transition];
-				},
+				transition: XSlider.transition[target.transition],
 				loop : target.loop,
 				touchMove : target.touchMoveEnabled ? {
 					throwable : target.throwable

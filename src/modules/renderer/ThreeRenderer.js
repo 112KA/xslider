@@ -32,7 +32,8 @@ export class ThreeRenderer extends BaseRenderer {
 			canvas: this.canvas
 		});
 
-		const transition = data.option.getTransition();
+		// const transition = data.option.getTransition();
+		const transition = data.option.transition;
 
 		this.mesh = new THREE.Mesh( 
 
