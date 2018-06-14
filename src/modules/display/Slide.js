@@ -28,7 +28,6 @@ export class Slide {
 	dispose() {
 		this.layer.gl && this.layer.gl.classList.remove("xslider-capture");
 	}
-	
 
 	ready() {
 
@@ -115,7 +114,7 @@ export class Slide {
 
 				this.layer.gl.classList.add("xslider-capture");
 
-				cloner.cloneStyle(this.layer.texture, this.inlinedNode, ['background']);
+				cloner.cloneStyle(this.layer.gl, this.inlinedNode, ['background']);
 
 				this.layer.gl.classList.remove("xslider-capture");
 

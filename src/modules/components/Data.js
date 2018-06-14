@@ -30,10 +30,14 @@ export class Data {
 	}
 
 	dispose() {
+		if(!this.option) return;
+
 		for(const slide of this.list) {
 			slide.dispose();
 		}
 		this.dom.dispose();
+
+		this.option = undefined;
 	}
 
 	getRenderer() {

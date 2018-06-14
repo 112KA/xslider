@@ -1,7 +1,4 @@
-![Logo of the project](./images/logo.sample.png)
-
-# XSlider &middot; [![Build Status](https://img.shields.io/travis/npm/npm/latest.svg?style=flat-square)](https://travis-ci.org/npm/npm) [![npm](https://img.shields.io/npm/v/npm.svg?style=flat-square)](https://www.npmjs.com/package/npm) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/your/your-project/blob/master/LICENSE)
-> Additional information or tag line
+# XSlider &middot; [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/your/your-project/blob/master/LICENSE)
 
 XSlider is a slider library using webgl shader for transition.
 
@@ -12,7 +9,7 @@ XSlider is a slider library using webgl shader for transition.
 
 ## Installing / Getting started
 
-Download and install:
+### Download and install:
 ```shell
 yarn install xslider
 ```
@@ -21,7 +18,7 @@ or
 npm install xslider
 ```
 
-Include CSS and JS files:
+### Include CSS and JS files:
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -39,10 +36,10 @@ Include CSS and JS files:
 Includes three.js. Xslider depends on it.
 (In the near future, I plan to make it independent.)
 
-### Usage
-A minimum sample is [Here](https://112ka.github.io/).
+## Usage
+A minimum sample is [Here](https://112ka.github.io/xslider/samples/base/).
 
-html
+### html
 ```html
 <div class="xslider">
     <div class="xslider-view">
@@ -57,27 +54,51 @@ html
 </div>
 ```
 
-css
+### css
 ```css
 .xslider {
     width: 400px; height: 300px;
 }
 ```
 
-js
+### js
 ```js
 new XSlider(".xslider");
 ```
 
 
-## Browser Supports
-- Chrome
-- Firefox
-- Safari
+## API
+### new XSlider(selector, options) or setup(selector, options)
 
-- IE11 and below do not support SVG <foreignObject> tag.
-- In Microsoft Edge, the background image of foreignObject can not be drawn on canvas.
-https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/14695695/
+```js
+/**
+ * @constructor
+ * @param {string} selector - CSS Selector
+ * @param {Object} options - XSlider options. See below.
+ */
+
+new XSlider(selector, options);
+```
+
+#### options
+| Name | Type | Default | Description |
+| - | - | - | - |
+| transition | Object | Xslider.BaseTransition | Transition effect. |
+| initialSlideIndex | Number | 0 | Index number of initial slide. |
+| loop | Boolean | true | Loop slide flag. |
+| touchMove | Boolean or Object | { <br>    throwable:true <br>} | Object with touch parameters.  |
+| autoplay | Boolean or Object | false | Object with autoplay parameters.<br> { <br>delay:3000 <br> } |
+
+## Browser Supports
+| Chrome | IE | Edge | Firefox | Safari |
+| :-: | :-: | :-: | :-: | :-: |
+| Yes | - | - | Yes | Yes |
+- IE11 and below do not support SVG &lt;foreignObject&gt; tag.
+- In Microsoft Edge, the background image of &lt;foreignObject&gt; tag can not be drawn on canvas.<br>https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/17408255/
+
+| Android | iOS |
+| :-: | :-: |
+| 5+ | 8+ |
 
 <!--
 ### Prerequisites

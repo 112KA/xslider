@@ -40,19 +40,20 @@ class Cloner {
 				
 				this.copyStyle(window.getComputedStyle(original), clone.style);
 
-        		const arr = [];
+				const arr = [];
 
 		        children.forEach((child, i, list) => {
 		        	let p = this.cloneNode(child)
 		        		.then((childClone) => {
-		        			clone.appendChild(childClone);
+							// clone.appendChild(childClone);
+							this.insertChildAtIndex(clone, childClone, i);
 		        		});
 		        	arr.push(p);
 				});
 
 		    	Promise.all(arr).then(()=> {
 		    		resolve(clone);
-		    	});
+				});
         	}
         	else {
         		resolve(clone);
@@ -60,13 +61,29 @@ class Cloner {
         })
 	}
 
+	insertChildAtIndex(parent, child, index) {
+		if(!index) index = 0;
+		if(index >= parent.childNodes.length) {
+			parent.appendChild(child);
+		}
+		else {
+			parent.insertBefore(child, parent.childNodes[index]);
+		}
+	}
+
 	cloneStyle(original, target, excludes) {
 
 		if(!(original instanceof Element)) return target;
+
+		console.log('original', original);
+		console.log('target', target);
+		console.log('target.style', target.style);
 		
 		this.copyStyle(window.getComputedStyle(original), target.style, excludes);
 
         if (original.hasChildNodes()) {
+			console.log('original.childNodes', original.childNodes);
+			console.log('target.childNodes', target.childNodes);
 
         	const children = original.childNodes;
         	children.forEach((child, i, list) => {

@@ -60,7 +60,7 @@ export class SlideController extends EventDispatcher {
 			this.data.time = e.time;
 			this.indexer.tick();
 			this.renderer.default.render(this.indexer);
-			this.ready()
+			this.readyModel()
 				.then(() => {
 					this.renderer.gl.render(this.indexer);
 				},
@@ -85,7 +85,7 @@ export class SlideController extends EventDispatcher {
 				case 'index':
 					this.indexer.to(e.value);
 
-					this.ready().then(() => {
+					this.readyModel().then(() => {
 						stage.on('tick', this._onTick);
 					},
 					(message) => {
@@ -158,7 +158,7 @@ export class SlideController extends EventDispatcher {
 
 		this.dom.on('resize', this._onResize);
 
-		this.ready().then(() => {
+		this.readyModel().then(() => {
 			this.ui.on('index', this._onChange);
 			this.ui.on(UI.EVENT.PREV, this._onChange);
 			this.ui.on(UI.EVENT.NEXT, this._onChange);
@@ -175,7 +175,8 @@ export class SlideController extends EventDispatcher {
 	}
 
 
-	ready() {
+
+	readyModel() {
 		return this.readySlide().then(() => {
 			const slide0 = this.data.list[this.indexer.i0]
 			, slide1 = this.indexer.i1 !== undefined ? this.data.list[this.indexer.i1] : undefined;
@@ -216,6 +217,8 @@ export class SlideController extends EventDispatcher {
 
 	dispose() {
 
+		if(!this.data) return;
+
 		stage.off('tick', this._onTick);
 		stage.off(TouchEvent.MOVE, this._onChange);
 		stage.off(TouchEvent.END, this._onChange);
@@ -241,6 +244,8 @@ export class SlideController extends EventDispatcher {
 		this.renderer.default.dispose();
 
 		this.model.dispose();
+
+		this.data = undefined;
 	}
 }
 
