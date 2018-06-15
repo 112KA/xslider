@@ -32,7 +32,7 @@ export const Inliner = {
 		for(let j=0; j<list.length; j++) {
 			let ss = list[j];
 
-			if(ss.hasOwnProperty('cssRules')) {
+			if(ss.cssRules) {
 				for(let i=0; i<ss.cssRules.length; i++) {
 					let rule = ss.cssRules[i];
 					if(rule.type === CSSRule.FONT_FACE_RULE) {
