@@ -21,8 +21,6 @@ export class Slide {
 		}
 
 		this.needsResize = false;
-
-		this.tag = this.layer.ui.textContent;
 	}
 
 	dispose() {
@@ -112,20 +110,25 @@ export class Slide {
 				this.canvas.width = w;
 				this.canvas.height = h;
 
-				this.layer.gl.classList.add("xslider-capture");
+				if(this.layer.gl) {
+					this.layer.gl.classList.add("xslider-capture");
+	
+					cloner.cloneStyle(this.layer.gl, this.inlinedNode, ['background']);
+	
+					this.layer.gl.classList.remove("xslider-capture");
 
-				cloner.cloneStyle(this.layer.gl, this.inlinedNode, ['background']);
-
-				this.layer.gl.classList.remove("xslider-capture");
-
-				this.svg = converter.convert(this.inlinedNode, w, h);
-
-				this.loadSvg().then(() => {
-					const c = this.canvas.getContext('2d');
-					c.drawImage(this.image,0,0,w,h);
-
+					this.svg = converter.convert(this.inlinedNode, w, h);
+	
+					this.loadSvg().then(() => {
+						const c = this.canvas.getContext('2d');
+						c.drawImage(this.image,0,0,w,h);
+	
+						resolve();
+					});
+				}
+				else {
 					resolve();
-				});
+				}
 			}
 		});
 	}
