@@ -51,10 +51,8 @@ export class Slide {
 				const h = dom.scrollHeight;
 
 				Inliner.resolveFonts()
-					.then(() => {
-						return Inliner.inlineNode(dom);
-					})
-					.then((inlined) => {
+					.then(() => Inliner.inlineNode(dom))
+					.then(inlined => {
 						this.inlinedNode = inlined;
 
 						this.svg = converter.convert(this.inlinedNode, w, h);

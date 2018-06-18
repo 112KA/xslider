@@ -2289,9 +2289,22 @@ var Cloner = function () {
 
 			if (original.cssText) {
 				target.cssText = original.cssText;
+
+				//remove fontStrech
+				var matches = target.cssText.match(/font:( [^ ;]+)+;/);
+				if (matches) {
+					var removeFontStrech = function removeFontStrech(s) {
+						var arr = s.split(" ");
+						arr.splice(3, 1);
+						return arr.join(" ");
+					};
+					for (var _i = 0; _i < matches.length; _i++) {
+						target.cssText = target.cssText.replace(matches[_i], removeFontStrech(matches[_i]));
+					}
+				}
 			} else {
-				for (var _i = 0; _i < original.length; _i++) {
-					var _name = original[_i];
+				for (var _i2 = 0; _i2 < original.length; _i2++) {
+					var _name = original[_i2];
 					target.setProperty(_name, original.getPropertyValue(_name), original.getPropertyPriority(_name));
 				}
 			}
@@ -5101,7 +5114,7 @@ var converter = exports.converter = {
 
 	convert: function convert(node, width, height) {
 
-		var svgString = '\n\t\t<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">\n\t\t\t<foreignObject x="0" y="0" width="100%" height="100%">\n\t\t\t\t<style>' + _Inliner.Inliner.inlinedFontString + '</style>\n\t\t\t</foreignObject>\n\t\t</svg>\n\t\t';
+		var svgString = '\n<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">\n\t<foreignObject x="0" y="0" width="100%" height="100%">\n\t\t<style>' + _Inliner.Inliner.inlinedFontString + '</style>\n\t</foreignObject>\n</svg>\n\t\t';
 		var svg = this.parser.parseFromString(svgString, "text/xml");
 		var o = svg.getElementsByTagName('foreignObject')[0];
 		o.appendChild(node);

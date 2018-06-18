@@ -21,17 +21,13 @@
 }
 
 	    html, body {
-	      height: 100%;
-	      width: 100%;
-	    }
-	    body {
+	    	height: 100%;
+	    	width: 100%;
 	    	margin: 0; padding: 0;
 	    }
 
 	    .xslider-view {
-			font-family: 'Noto Sans', sans-serif;
-			font-weight:700; font-style:italic;
-
+			font: italic normal 700 normal 16px/23px "Noto Sans", sans-serif;
 	    }
 
 	    .xslider-layer-gl {
@@ -68,7 +64,7 @@
 	    .xslider-view .xslider-slide:nth-child(4) .xslider-layer-gl {
 	    	background: url('../samples/asset/image/slide4.jpg') no-repeat center;
 	    	background-size: cover;
-	    }
+		}
 	</style>
 	
 </head>
@@ -99,7 +95,9 @@
 	</div>
 	
 
-	<script src="../samples/asset/js/vendor.js"></script>
+	<!-- <script src="../samples/asset/js/vendor.js"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/92/three.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.2/dat.gui.js"></script>
 	<script src="../dist/xslider.js"></script>
 	<script>
 		
