@@ -5,10 +5,12 @@ import {converter} from '../components/converter/SvgConverter'
 import {Bench} from '../components/debug/Bench'
 import {Debug} from '../components/debug/Debug'
 
+import {EventDispatcher} from '../core/EventDispatcher'
+
 export class Slide {
 
 	constructor(slide) {
-		this.container = slide;
+		this.element = slide;
 		this.canvas = document.createElement('canvas');
 		this.image = new Image();
 		this.layer = {
@@ -17,7 +19,7 @@ export class Slide {
 		}
 
 		if(Debug.display == Debug.DISPLAY_IMG) {
-			this.container.insertBefore(this.image, this.layer.gl);
+			this.element.insertBefore(this.image, this.layer.gl);
 		}
 
 		this.needsResize = false;
@@ -82,11 +84,11 @@ export class Slide {
 		if(Debug.display == Debug.DISPLAY_SVG) {
 
 			if(this._svg0 === undefined) {
-				this._svg0 = this.container.insertBefore(this.svg.childNodes[0], this.layer.gl);
+				this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
 			}
 			else {
 				const node = this.svg.childNodes[0];
-				this.container.replaceChild(node, this._svg0);
+				this.element.replaceChild(node, this._svg0);
 				this._svg0 = node;
 			}
 		}
@@ -129,5 +131,89 @@ export class Slide {
 				}
 			}
 		});
+	}
+}
+
+export class SlideContainer extends EventDispatcher {
+
+	constructor() {
+
+		super();
+
+		this._defineHandlers();
+
+		this.width = this.height = 1;
+	}
+
+	_defineHandlers() {
+		this._onChangeSlide = (e) => {
+
+			let removeOld = false;
+
+			switch(e.type) {
+				case 'slide0':
+					this.updateSlide(0);
+					removeOld = e.value0 !== undefined;
+					break;
+				case 'slide1':
+					this.updateSlide(1);
+					removeOld = e.value0 !== undefined && e.value0 !== this.get('slide0');
+					break;
+			}
+
+			if(removeOld) {
+				e.value0.element.classList.remove("xslider-slide-active");
+			}
+		}
+	}
+
+	setup(mesh) {
+		this.mesh = mesh;
+		if(this.mesh) {
+			this.uniforms = this.mesh.material.uniforms;
+		}
+
+		this.on('slide0', this._onChangeSlide);
+		this.on('slide1', this._onChangeSlide);
+	}
+
+	dispose() {
+		this.off('slide0', this._onChangeSlide);
+		this.off('slide1', this._onChangeSlide);
+
+		const slide0 = this.get('slide0');
+		const slide1 = this.get('slide1');
+		slide0.element.classList.remove("xslider-slide-active");
+		slide1 && slide1.element.classList.remove("xslider-slide-active");
+	}
+
+	resize(w, h) {
+		this.width = w; this.height = h;
+
+		if(this.mesh) {
+			this.uniforms.resolution.value.set(w,h);
+		}
+
+		this.updateSlide(0);
+		this.updateSlide(1);
+	}
+
+	updateSlide(slideIndex) {
+		const slide = this.get('slide'+slideIndex);
+
+		if(!slide)  return;
+
+		slide.element.classList.add("xslider-slide-active");
+
+		slide.resize(this.width, this.height)
+			.then(() => {
+				if(this.uniforms) {
+					const texture = this.uniforms['texture'+slideIndex].value;
+					texture.image = slide.canvas;
+					texture.needsUpdate = true;
+				}
+
+				this.dispatch('updateTexture');
+			});
 	}
 }

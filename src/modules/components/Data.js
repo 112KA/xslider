@@ -4,7 +4,8 @@ import {Debug} from './debug/Debug'
 import {Dom} from '../display/Dom'
 import {Slide} from '../display/Slide'
 import {DefaultRenderer} from '../renderer/DefaultRenderer'
-import {ThreeRenderer} from '../renderer/ThreeRenderer'
+// import {ThreeRenderer} from '../renderer/ThreeRenderer'
+import {XRenderer} from '../renderer/XRenderer'
 
 
 
@@ -45,7 +46,8 @@ export class Data {
 			return new DefaultRenderer();
 		}
 		else {
-			return this.option.renderer || new ThreeRenderer();
+			// return this.option.renderer || new ThreeRenderer();
+			return this.option.renderer || new XRenderer();
 		}
 	}
 }

@@ -47,7 +47,7 @@ module.exports = {
 		    outputPath: './samples/asset/js/',
 		    fileName: '[name].js',
 		    filesToConcat: [
-		    	'./node_modules/three/build/three.min.js', 
+		    	// './node_modules/three/build/three.min.js', 
 		    	// './node_modules/dom-to-image/dist/dom-to-image.min.js'
 		    	// './node_modules/dom-to-image/src/dom-to-image.js'
 		    	'./node_modules/dat.gui/build/dat.gui.min.js',

@@ -2,10 +2,10 @@
 
 XSlider is a slider library using webgl shader for transition.
 
-[demo](https://112ka.github.io/)
-
 - Shader transition is easy to customize.
 - Treat DOM structure as webgl texture.
+
+[demo](https://112ka.github.io/xslider/demo/)
 
 ## Installing / Getting started
 

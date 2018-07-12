@@ -24,8 +24,8 @@ export class DefaultRenderer extends BaseRenderer {
 		}
 	}
 	
-	setup(data, model) {
-		super.setup(data, model);
+	setup(data, container) {
+		super.setup(data, container);
 	}
 
 	dispose() {

@@ -7,11 +7,10 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server --progress --colors",
+    "webpack:dev": "webpack",
     "webpack:prd": "NODE_ENV=production webpack -p"
   },
-  "dependencies": {
-    "three": "^0.89.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

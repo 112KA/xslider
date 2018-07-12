@@ -4,16 +4,11 @@ import {Vec2, Vec3, Vec4} from '../geom/Vec'
 
 export const BaseTransition = {
 
-	vertexShader : `
-precision highp float;
-
-attribute vec3 position;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
+	vertexShader: `
+attribute vec2 position;
 
 void main(void) {
-	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+	gl_Position = vec4(position, 0.0, 1.0);
 }
 `,
 
