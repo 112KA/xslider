@@ -99,6 +99,7 @@
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/92/three.min.js"></script> -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.2/dat.gui.js"></script>
 	<script src="../dist/xslider.js"></script>
+	<script src="TestTransition.js"></script>
 	<script>
 		
 		var query = {};
@@ -121,25 +122,24 @@
 			query.loop = true;
 		}
 
-		var transitions = ['Base','CrossWarp',"CrossZoom","Cube","Morph","Noise","Pixelate","PixelateWipe","Test"];
+		var transitions = ['Base','CrossWarp',"CrossZoom","Cube","Morph","Noise","Pixelate","PixelateWipe"];
+		window.TestTransition && transitions.push("Test");
 		var index = transitions.indexOf(query['transition']);
 		index = index == -1 ? 0 : index;
 
 		var target = {
 			transition:transitions[index],
-
 			loop : 'loop' in query,
-
 			touchMoveEnabled : 'touchMoveEnabled' in query,
 			throwable : 'throwable' in query,
-
 			autoplayEnabled : 'autoplayEnabled' in query,
 		};
 
 		var buildOptions = function() {
+
 			return {
 				// debug: XSlider.Debug.DISPLAY_SVG,
-				transition: XSlider.transition[target.transition],
+				transition: target.transition != "Test" ? XSlider[target.transition+"Transition"] : TestTransition,
 				loop : target.loop,
 				touchMove : target.touchMoveEnabled ? {
 					throwable : target.throwable

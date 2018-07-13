@@ -39,24 +39,24 @@ module.exports = {
 	},
 	
 	plugins: DEV ? [
-		new ConcatPlugin({
-		    // examples
-		    uglify: false,
-		    sourceMap: false,
-		    name: 'vendor',
-		    outputPath: './samples/asset/js/',
-		    fileName: '[name].js',
-		    filesToConcat: [
-		    	// './node_modules/three/build/three.min.js', 
-		    	// './node_modules/dom-to-image/dist/dom-to-image.min.js'
-		    	// './node_modules/dom-to-image/src/dom-to-image.js'
-		    	'./node_modules/dat.gui/build/dat.gui.min.js',
-		    	// './node_modules/babel-polyfill/dist/polyfill.min.js'
-		    ],
-		    attributes: {
-		        async: false
-		    }
-		}),
+		// new ConcatPlugin({
+		//     // examples
+		//     uglify: false,
+		//     sourceMap: false,
+		//     name: 'vendor',
+		//     outputPath: './samples/asset/js/',
+		//     fileName: '[name].js',
+		//     filesToConcat: [
+		//     	// './node_modules/three/build/three.min.js', 
+		//     	// './node_modules/dom-to-image/dist/dom-to-image.min.js'
+		//     	// './node_modules/dom-to-image/src/dom-to-image.js'
+		//     	'./node_modules/dat.gui/build/dat.gui.min.js',
+		//     	// './node_modules/babel-polyfill/dist/polyfill.min.js'
+		//     ],
+		//     attributes: {
+		//         async: false
+		//     }
+		// }),
 		new webpack.DefinePlugin({
 	      XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
 	    }),
