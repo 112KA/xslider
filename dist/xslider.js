@@ -3113,8 +3113,7 @@ var SlideContainer = exports.SlideContainer = function (_EventDispatcher) {
 				this.uniforms.resolution.value.set(w, h);
 			}
 
-			this.updateSlide(0);
-			this.updateSlide(1);
+			return _promise2.default.all([this.updateSlide(0), this.updateSlide(1)]);
 		}
 	}, {
 		key: 'updateSlide',
@@ -3123,18 +3122,23 @@ var SlideContainer = exports.SlideContainer = function (_EventDispatcher) {
 
 			var slide = this.get('slide' + slideIndex);
 
-			if (!slide) return;
+			return new _promise2.default(function (resolve, reject) {
 
-			slide.element.classList.add("xslider-slide-active");
+				if (!slide) resolve();
 
-			slide.resize(this.width, this.height).then(function () {
-				if (_this5.uniforms) {
-					var texture = _this5.uniforms['texture' + slideIndex].value;
-					texture.image = slide.canvas;
-					texture.needsUpdate = true;
-				}
+				slide.element.classList.add("xslider-slide-active");
 
-				_this5.dispatch('updateTexture');
+				slide.resize(_this5.width, _this5.height).then(function () {
+					if (_this5.uniforms) {
+						var texture = _this5.uniforms['texture' + slideIndex].value;
+						texture.image = slide.canvas;
+						texture.needsUpdate = true;
+					}
+
+					// this.dispatch('updateTexture');
+
+					resolve();
+				});
 			});
 		}
 	}]);
@@ -3823,17 +3827,13 @@ var GLRenderer = exports.GLRenderer = function (_BaseRenderer) {
 
 	(0, _createClass3.default)(GLRenderer, [{
 		key: '_defineHandlers',
-		value: function _defineHandlers() {
-			this._onUpdateTexture = function () {};
-		}
+		value: function _defineHandlers() {}
 	}, {
 		key: 'setup',
 		value: function setup(data, container) {
 			(0, _get3.default)(GLRenderer.prototype.__proto__ || (0, _getPrototypeOf2.default)(GLRenderer.prototype), 'setup', this).call(this, data, container);
 
 			data.dom.container.insertBefore(this.canvas, data.dom.view);
-
-			this.container.on('updateTexture', this._onUpdateTexture);
 		}
 	}, {
 		key: 'dispose',
@@ -6172,16 +6172,6 @@ var XRenderer = exports.XRenderer = function (_GLRenderer) {
 	}
 
 	(0, _createClass3.default)(XRenderer, [{
-		key: '_defineHandlers',
-		value: function _defineHandlers() {
-			var _this2 = this;
-
-			this._onUpdateTexture = function () {
-				_GLGraphics.GLGraphics.clear(_this2.scene.context);
-				_GLGraphics.GLGraphics.renderModel(_this2.model);
-			};
-		}
-	}, {
 		key: 'setup',
 		value: function setup(data, container) {
 			(0, _get3.default)(XRenderer.prototype.__proto__ || (0, _getPrototypeOf2.default)(XRenderer.prototype), 'setup', this).call(this, data, container);
@@ -6961,7 +6951,9 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 				_this2.renderer.default.resize(e);
 				_this2.renderer.gl.resize(e);
 
-				_this2.container.resize(e.width, e.height);
+				_this2.container.resize(e.width, e.height).then(function () {
+					_this2.renderer.gl.render(_this2.indexer);
+				});
 			};
 
 			this._onCompleteSlide = function () {

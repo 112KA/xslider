@@ -13,13 +13,6 @@ export class XRenderer extends GLRenderer {
 		this.scene = new Scene3D();
 		// this.scene.context.color.b = 1;
 	}
-
-	_defineHandlers() {
-		this._onUpdateTexture = () => {
-			GLGraphics.clear(this.scene.context);
-			GLGraphics.renderModel(this.model);
-		}
-	}
 	
 	setup(data, container) {
 		super.setup(data, container);

@@ -194,26 +194,33 @@ export class SlideContainer extends EventDispatcher {
 			this.uniforms.resolution.value.set(w,h);
 		}
 
-		this.updateSlide(0);
-		this.updateSlide(1);
+		return Promise.all([
+			this.updateSlide(0),
+			this.updateSlide(1)
+		])
 	}
 
 	updateSlide(slideIndex) {
 		const slide = this.get('slide'+slideIndex);
 
-		if(!slide)  return;
+		return new Promise((resolve, reject) => {
 
-		slide.element.classList.add("xslider-slide-active");
+			if(!slide)  resolve();
+	
+			slide.element.classList.add("xslider-slide-active");
+	
+			slide.resize(this.width, this.height)
+				.then(() => {
+					if(this.uniforms) {
+						const texture = this.uniforms['texture'+slideIndex].value;
+						texture.image = slide.canvas;
+						texture.needsUpdate = true;
+					}
+	
+					// this.dispatch('updateTexture');
 
-		slide.resize(this.width, this.height)
-			.then(() => {
-				if(this.uniforms) {
-					const texture = this.uniforms['texture'+slideIndex].value;
-					texture.image = slide.canvas;
-					texture.needsUpdate = true;
-				}
-
-				this.dispatch('updateTexture');
-			});
+					resolve();
+				});
+		});
 	}
 }

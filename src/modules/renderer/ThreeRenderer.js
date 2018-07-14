@@ -23,12 +23,6 @@ export class ThreeRenderer extends GLRenderer {
     	this.scene = new THREE.Scene();
 	}
 
-	_defineHandlers() {
-		this._onUpdateTexture = () => {
-			this.renderer.render( this.scene, this.camera );
-		}
-	}
-
 	setup(data, container) {
 		super.setup(data, container);
 

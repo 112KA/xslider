@@ -31,15 +31,12 @@ export class GLRenderer extends BaseRenderer {
 	}
 
 	_defineHandlers() {
-		this._onUpdateTexture = () => {}
 	}
 	
 	setup(data, container) {
 		super.setup(data, container);
 
 		data.dom.container.insertBefore(this.canvas, data.dom.view);
-
-		this.container.on('updateTexture', this._onUpdateTexture);
 	}
 
 	dispose() {

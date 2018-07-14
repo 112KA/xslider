@@ -43,7 +43,9 @@ export class SlideController extends EventDispatcher {
 			this.renderer.default.resize(e);
 			this.renderer.gl.resize(e);
 
-			this.container.resize(e.width, e.height);
+			this.container.resize(e.width, e.height).then(() => {
+				this.renderer.gl.render(this.indexer);
+			});
 		}
 
 
