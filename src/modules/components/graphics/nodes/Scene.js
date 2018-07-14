@@ -1,5 +1,5 @@
 import {Color} from '../../../geom/Color'
-import {Node3D, Camera3D} from './Node'
+import {Node, Camera} from './Node'
 
 
 export class SceneContext {
@@ -19,13 +19,13 @@ export class SceneContext {
     }
 }
 
-export class Scene3D extends Node3D {
+export class Scene3D extends Node {
     constructor() {
         super();
 
         this.context = new SceneContext();
 
-        this.camera = new Camera3D();
+        this.camera = new Camera();
     }
 
     addChild(child) {

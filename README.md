@@ -3,6 +3,7 @@
 XSlider is a slider library using webgl shader for transition.
 
 - Shader transition is easy to customize.
+- No external dependency.
 - Treat DOM structure as webgl texture.
 
 [demo](https://112ka.github.io/xslider/demo/)
@@ -28,13 +29,10 @@ npm install xslider
 </head>
 <body>
     ...
-    <script src="path/to/three.min.js"></script>
     <script src="path/to/xslider.min.js"></script>
 </body>
 </html>
 ```
-Includes three.js. Xslider depends on it.
-(In the near future, I plan to make it independent.)
 
 ## Usage
 A minimum sample is [Here](https://112ka.github.io/xslider/samples/base/).

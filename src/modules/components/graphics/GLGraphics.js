@@ -73,12 +73,7 @@ export const GLGraphics =  {
 
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-            if(texture.image) {
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
-            }
-            // else {
-            //     console.log("no texture !!!!!!!!!")
-            // }
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
         }
     },
 
