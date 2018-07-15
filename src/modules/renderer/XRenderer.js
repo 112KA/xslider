@@ -2,7 +2,10 @@ import {GLRenderer} from './BaseRenderer'
 
 import {GLGraphics} from '../components/graphics/GLGraphics'
 import {Scene3D} from '../components/graphics/nodes/Scene'
-import {XModel} from '../display/XModel'
+import {XModel, XMaterial} from '../display/XModel'
+import {Texture} from '../components/graphics/assets/Texture'
+import {Utils} from '../components/Utils'
+import {Vec2} from '../geom/Vec'
 
 export class XRenderer extends GLRenderer {
 	constructor() {
@@ -10,6 +13,17 @@ export class XRenderer extends GLRenderer {
 
 		this.scene = new Scene3D();
 		// this.scene.context.color.b = 1;
+		this.model = new XModel();
+		this.mesh = this.model.mesh;
+
+		this.scene.addChild(this.model);
+
+		this._uniform0 = {
+			texture0: { value: new Texture() },
+			texture1: { value: new Texture() },
+			progress:{ value: 0 },
+			resolution: { value: new Vec2(0.0, 0.0) },
+		}
 	}
 	
 	setup(data, container) {
@@ -18,20 +32,19 @@ export class XRenderer extends GLRenderer {
 		GLGraphics.setup(this.canvas);
 
 		const transition = data.option.transition;
-		this.model = new XModel({
-			vertexShader: transition.vertexShader,
-			fragmentShader: transition.fragmentShader,
-			uniforms: transition.uniforms,
-		});
-		this.mesh = this.model.mesh;
 
-		this.scene.addChild(this.model);
+		this.mesh.material = new XMaterial({
+            vertexShader:transition.vertexShader, 
+            fragmentShader:transition.fragmentShader,
+            uniforms: Utils.extend(transition.uniforms, this._uniform0)
+		});
 	}
 
 	dispose() {
 		super.dispose();
 
-		//TODO: dispose model
+		GLGraphics.deleteProgram(this.mesh.material.program);
+		this.mesh.material = undefined;
 	}
 
 	render(indexer) {

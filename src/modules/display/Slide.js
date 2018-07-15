@@ -167,6 +167,22 @@ export class SlideContainer extends EventDispatcher {
 		}
 	}
 
+	ready(indexer) {
+		const slide0 = indexer.data.list[indexer.i0]
+		let slide1 = undefined;
+
+		const arr = [slide0.ready()];
+
+		if(indexer.i1 !== undefined) {
+			slide1 = indexer.data.list[indexer.i1];
+			arr.push(slide1.ready());
+		}
+
+		return Promise.all(arr).then(() => {
+			this.set({ slide0:slide0, slide1:slide1 });
+		});
+	}
+
 	setup(mesh) {
 		this.mesh = mesh;
 		if(this.mesh) {

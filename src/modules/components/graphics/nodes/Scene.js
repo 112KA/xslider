@@ -28,9 +28,20 @@ export class Scene3D extends Node {
         this.camera = new Camera();
     }
 
-    addChild(child) {
-        super.addChild(child);
+    addChild(node) {
+        
+        if(node.parent) {
+            node.parent.removeChild(node);
+        }
 
-        child.scene = this;
+        super.addChild(node);
+
+        node.scene = this;
+    }
+
+    removeChild(node) {
+        super.removeChild(node);
+
+        node.scene = undefined;
     }
 }

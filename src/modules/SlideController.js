@@ -62,7 +62,7 @@ export class SlideController extends EventDispatcher {
 			this.data.time = e.time;
 			this.indexer.tick();
 			this.renderer.default.render(this.indexer);
-			this.readySlideContainer()
+			this.container.ready(this.indexer)
 				.then(() => {
 					this.renderer.gl.render(this.indexer);
 				},
@@ -87,7 +87,7 @@ export class SlideController extends EventDispatcher {
 				case 'index':
 					this.indexer.to(e.value);
 
-					this.readySlideContainer().then(() => {
+					this.container.ready(this.indexer).then(() => {
 						stage.on('tick', this._onTick);
 					},
 					(message) => {
@@ -147,20 +147,20 @@ export class SlideController extends EventDispatcher {
 
 		this.ui.setup(this.data);
 
+		this.indexer.setup(this.data);
+		this.indexer.on('complete', this._onCompleteSlide);
 		if(!this.data.option.loop) {
 			this.indexer.on('head', this._onChange);
 			this.indexer.on('tail', this._onChange);
 		}
-		this.indexer.setup(this.data);
-
-		this.indexer.on('complete', this._onCompleteSlide);
 
 		this.autoplay.on(AutoPlay.EVENT.TICK, this._onChange);
 		this.autoplay.setup(this.data.option.autoplay);
 
 		this.dom.on('resize', this._onResize);
 
-		this.readySlideContainer().then(() => {
+		this.container.ready(this.indexer).then(() => {
+
 			this.ui.on('index', this._onChange);
 			this.ui.on(UI.EVENT.PREV, this._onChange);
 			this.ui.on(UI.EVENT.NEXT, this._onChange);
@@ -171,33 +171,10 @@ export class SlideController extends EventDispatcher {
 
 			stage.on('tick', this._onTick);
 			this.dom._onResize();
+
 		}, (message) => {
 			console.log("first ready rejected : ", message);
 		});
-	}
-
-
-
-	readySlideContainer() {
-		return this.readySlide().then(() => {
-			const slide0 = this.data.list[this.indexer.i0]
-			, slide1 = this.indexer.i1 !== undefined ? this.data.list[this.indexer.i1] : undefined;
-
-			this.container.set({ slide0:slide0, slide1:slide1 });
-		});
-
-	}
-
-	readySlide() {
-		const slide0 = this.data.list[this.indexer.i0];
-
-		if(this.indexer.i1 !== undefined) {
-			const slide1 = this.data.list[this.indexer.i1];
-			return Promise.all([slide0.ready(), slide1.ready()]);
-		}
-		else {
-			return slide0.ready();
-		}
 	}
 
 

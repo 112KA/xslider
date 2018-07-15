@@ -90,7 +90,10 @@ export const GLGraphics =  {
             this.updateShader(program.fragment)
             gl.attachShader(program.location, program.fragment.location);
             
-	        gl.linkProgram(program.location);
+            gl.linkProgram(program.location);
+            
+            this.deleteShader(program.vertex);
+            this.deleteShader(program.fragment);
 
             if (!gl.getProgramParameter(program.location, gl.LINK_STATUS)) {
                 throw new Error("Could not initialise shaders");
@@ -116,6 +119,14 @@ export const GLGraphics =  {
         }
     },
 
+    deleteProgram: function(program) {
+        const gl = this._gl;
+
+        if(program.location) {
+            gl.deleteProgram(program.location);
+        }
+    },
+
     updateShader: function(shader) {
         const gl = this._gl;
 
@@ -128,6 +139,15 @@ export const GLGraphics =  {
 
         if (!gl.getShaderParameter(shader.location, gl.COMPILE_STATUS)) {
             throw new Error(gl.getShaderInfoLog(shader.location));
+        }
+    },
+
+    deleteShader: function(shader) {
+        const gl = this._gl;
+
+        if(shader.location) {
+            gl.deleteShader(shader.location);
+            shader.location = undefined;
         }
     },
 

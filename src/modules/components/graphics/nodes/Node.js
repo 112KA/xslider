@@ -14,6 +14,16 @@ export class Node extends EventDispatcher {
 
     addChild(node) {
         this.children.push(node);
+        node.parent = this;
+    }
+
+    removeChild(node) {
+        node.parent = undefined;
+
+        var index = this.children.indexOf(node);
+        if (index > -1) {
+            this.children.splice(index, 1);
+        }
     }
 }
 
