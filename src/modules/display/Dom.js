@@ -14,12 +14,20 @@ export class Dom extends EventDispatcher {
 
 	_defineHandlers() {
 		this._onResize = (e) => {
-			if(this.width != this.container.clientWidth || this.height != this.container.clientHeight) {
-				this.width = this.container.clientWidth;
-				this.height = this.container.clientHeight;
-				this.dispatch('resize', {type:'resize', width:this.width, height:this.height});
+			if(this._width != this.width || this._height != this.height) {
+				this._width = this.width;
+				this._height = this.height;
+				this.dispatch('resize', {type:'resize', width:this._width, height:this._height});
 			}
 		}
+	}
+
+	get width() {
+		return this.container.clientWidth;
+	}
+
+	get height() {
+		return this.container.clientHeight;
 	}
 
 	setup(selector) {

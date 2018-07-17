@@ -87,10 +87,8 @@ export class ThreeRenderer extends GLRenderer {
       	this.renderer.render( this.scene, this.camera );
 	}
 
-	resize(e) {
-		super.resize(e);
-
-		const w = this.width, h = this.height;
+	resize(w, h) {
+		super.resize(w, h);
 
 		if(this.mesh) {
 			this.mesh.scale.set(w, h, 1);

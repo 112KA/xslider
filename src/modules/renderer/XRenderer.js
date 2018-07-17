@@ -54,10 +54,8 @@ export class XRenderer extends GLRenderer {
 		GLGraphics.renderModel(this.model);
 	}
 
-	resize(e) {
-		super.resize(e);
-
-		const w = this.width, h = this.height;
+	resize(w, h) {
+		super.resize(w, h);
 
 		this.canvas.setAttribute("width", w);
 		this.canvas.setAttribute("height", h);

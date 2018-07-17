@@ -1,11 +1,11 @@
 
-import {Event, TouchEvent} from './core/Event'
+import {TouchEvent} from './core/Event'
 import {EventDispatcher} from './core/EventDispatcher'
 import {stage} from './core/Stage'
 import {AutoPlay} from './components/AutoPlay'
 import {Indexer} from './components/Indexer'
+import {Inliner} from './components/converter/Inliner'
 import {Bench} from './components/debug/Bench'
-import {Button} from './display/Button'
 import {SlideContainer} from './display/Slide'
 import {UI} from './display/UI'
 import {DefaultRenderer} from './renderer/DefaultRenderer'
@@ -35,15 +35,16 @@ export class SlideController extends EventDispatcher {
 	_defineHandlers() {
 
 		this._onResize = (e) => {
+			const w = this.dom.width, h = this.dom.height;
 
 			this.data.list.forEach((slide) => {
 				slide.needsResize = true;
 			});
 
-			this.renderer.default.resize(e);
-			this.renderer.gl.resize(e);
+			this.renderer.default.resize(w, h);
+			this.renderer.gl.resize(w, h);
 
-			this.container.resize(e.width, e.height).then(() => {
+			return this.container.resize(w, h).then(() => {
 				this.renderer.gl.render(this.indexer);
 			});
 		}
@@ -159,7 +160,10 @@ export class SlideController extends EventDispatcher {
 
 		this.dom.on('resize', this._onResize);
 
-		this.container.ready(this.indexer).then(() => {
+		Inliner.resolveFonts()
+		.then(() => this.container.ready(this.indexer))
+		.then(this._onResize)
+		.then(() => {
 
 			this.ui.on('index', this._onChange);
 			this.ui.on(UI.EVENT.PREV, this._onChange);
@@ -170,7 +174,6 @@ export class SlideController extends EventDispatcher {
 			this.autoplay.start();
 
 			stage.on('tick', this._onTick);
-			this.dom._onResize();
 
 		}, (message) => {
 			console.log("first ready rejected : ", message);

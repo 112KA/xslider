@@ -22,6 +22,7 @@ export class Slide {
 			this.element.insertBefore(this.image, this.layer.gl);
 		}
 
+		this.inlinedNode = undefined;
 		this.needsResize = false;
 	}
 
@@ -34,34 +35,19 @@ export class Slide {
 		return new Promise((resolve, reject) => {
 
 			//処理済
-			if(this.svg) {
+			if(this.inlinedNode) {
 				resolve();
 			}
 			//textureなし
 			else if(!this.layer.gl) {
 				resolve();
 			}
-			//処理中
-			else if(this.layer.gl.classList.contains("xslider-capture")) {
-				reject("in process");
-			}
 			else {
-				this.layer.gl.classList.add("xslider-capture");
-
-				const dom = this.layer.gl;
-				const w = dom.scrollWidth;
-				const h = dom.scrollHeight;
-
-				Inliner.resolveFonts()
-					.then(() => Inliner.inlineNode(dom))
-					.then(inlined => {
-						this.inlinedNode = inlined;
-
-						this.svg = converter.convert(this.inlinedNode, w, h);
-						this.layer.gl.classList.remove("xslider-capture");
-
-						resolve();
-					});
+				Inliner.inlineNode(this.layer.gl).then(inlined => {
+					this.inlinedNode = inlined;
+					
+					resolve();
+				});
 
 				// // Utils.toSvg(this.layer.gl)
 				// converter.from(this.layer.gl)
@@ -113,7 +99,7 @@ export class Slide {
 				if(this.layer.gl) {
 					this.layer.gl.classList.add("xslider-capture");
 	
-					cloner.cloneStyle(this.layer.gl, this.inlinedNode, ['background']);
+					cloner.cloneStyle(this.layer.gl, this.inlinedNode, Slide.EXCLUDES);
 	
 					this.layer.gl.classList.remove("xslider-capture");
 
@@ -134,6 +120,8 @@ export class Slide {
 	}
 }
 
+Slide.EXCLUDES = ['background', 'left', 'right', 'width', 'height'];
+
 export class SlideContainer extends EventDispatcher {
 
 	constructor() {
@@ -142,7 +130,7 @@ export class SlideContainer extends EventDispatcher {
 
 		this._defineHandlers();
 
-		this.width = this.height = 1;
+		this.width = this.height = -1;
 	}
 
 	_defineHandlers() {
@@ -171,7 +159,9 @@ export class SlideContainer extends EventDispatcher {
 		const slide0 = indexer.data.list[indexer.i0]
 		let slide1 = undefined;
 
-		const arr = [slide0.ready()];
+		const arr = [
+			slide0.ready()
+		];
 
 		if(indexer.i1 !== undefined) {
 			slide1 = indexer.data.list[indexer.i1];
@@ -210,13 +200,12 @@ export class SlideContainer extends EventDispatcher {
 			this.uniforms.resolution.value.set(w,h);
 		}
 
-		return Promise.all([
-			this.updateSlide(0),
-			this.updateSlide(1)
-		])
+		return Promise.all([this.updateSlide(0), this.updateSlide(1)]);
 	}
 
 	updateSlide(slideIndex) {
+		if(this.width == -1 && this.height == -1)	return;
+
 		const slide = this.get('slide'+slideIndex);
 
 		return new Promise((resolve, reject) => {
@@ -232,8 +221,6 @@ export class SlideContainer extends EventDispatcher {
 						texture.image = slide.canvas;
 						texture.needsUpdate = true;
 					}
-	
-					// this.dispatch('updateTexture');
 
 					resolve();
 				});

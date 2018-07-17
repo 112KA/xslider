@@ -14,9 +14,9 @@ export class BaseRenderer extends EventDispatcher {
 
 	render(indexer) {}
 
-	resize(e) {
-		this.width = e.width;
-		this.height = e.height;
+	resize(w, h) {
+		this.width = w;
+		this.height = h;
 	}
 }
 
@@ -56,7 +56,7 @@ export class GLRenderer extends BaseRenderer {
 		}
 	}
 
-	resize(e) {
-		super.resize(e);
+	resize(w, h) {
+		super.resize(w, h);
 	}
 }
