@@ -21,14 +21,14 @@ export class Data {
 
 		this.dom.setup(args[0]);
 
-		if(this.option.display == Option.Debug.DISPLAY.DOM) {
+		if(this.option.debug == Option.Debug.DISPLAY.DOM) {
 			this.dom.container.classList.add("xslider-debug");
 		}
 
 		this.list = [];
 
 		for(const element of this.dom.slides) {
-			this.list.push(new Slide(element, this.option.display));
+			this.list.push(new Slide(element, this.option.debug));
 		}
 	}
 
