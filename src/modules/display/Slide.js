@@ -2,15 +2,16 @@ import {net} from '../components/Net'
 import {cloner} from '../components/converter/Cloner'
 import {Inliner} from '../components/converter/Inliner'
 import {converter} from '../components/converter/SvgConverter'
-import {Bench} from '../components/debug/Bench'
-import {Debug} from '../components/debug/Debug'
+// import {Bench} from '../components/debug/Bench'
+import {Option} from '../components/Option'
 
 import {EventDispatcher} from '../core/EventDispatcher'
 
 export class Slide {
 
-	constructor(slide) {
+	constructor(slide, debug) {
 		this.element = slide;
+		this.debug = debug;
 		this.canvas = document.createElement('canvas');
 		this.image = new Image();
 		this.layer = {
@@ -18,7 +19,7 @@ export class Slide {
 			, "ui" : slide.querySelector(".xslider-layer-ui")
 		}
 
-		if(Debug.display == Debug.DISPLAY_IMG) {
+		if(this.debug == Option.Debug.DISPLAY.IMG) {
 			this.element.insertBefore(this.image, this.layer.gl);
 		}
 
@@ -67,7 +68,7 @@ export class Slide {
 		const string = new XMLSerializer().serializeToString(this.svg);
 		const uri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(string);
 
-		if(Debug.display == Debug.DISPLAY_SVG) {
+		if(this.debug == Option.Debug.DISPLAY.SVG) {
 
 			if(this._svg0 === undefined) {
 				this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
@@ -107,7 +108,9 @@ export class Slide {
 	
 					this.loadSvg().then(() => {
 						const c = this.canvas.getContext('2d');
+						c.clearRect(0,0,w,h);
 						c.drawImage(this.image,0,0,w,h);
+						console.log(this.layer,w,h);
 	
 						resolve();
 					});

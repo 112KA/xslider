@@ -10,7 +10,7 @@ import {MorphTransition} 		from './modules/transitions/MorphTransition'
 import {NoiseTransition} 		from './modules/transitions/NoiseTransition'
 import {PixelateTransition} 	from './modules/transitions/PixelateTransition'
 import {PixelateWipeTransition} from './modules/transitions/PixelateWipeTransition'
-import {Debug} from './modules/components/debug/Debug'
+import {Option} from './modules/components/Option'
 import {Utils} from './modules/components/Utils'
 import {Vec2, Vec3, Vec4} from './modules/geom/Vec'
 import {Matrix3, Matrix4} from './modules/geom/Matrix'
@@ -35,6 +35,6 @@ XSlider.Matrix3 = Matrix3;
 XSlider.Matrix4 = Matrix4;
 
 XSlider.Utils = Utils;
-XSlider.Debug = Debug;
+XSlider.Debug = Option.Debug;
 
 window.XSlider = XSlider;

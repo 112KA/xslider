@@ -33,3 +33,11 @@ export const Option = {
 		}
 	}
 }
+
+Option.Debug = {
+	DISPLAY: {
+		DOM:"DEBUG_DISPLAY_DOM",
+		SVG:"DEBUG_DISPLAY_SVG",
+		IMG:"DEBUG_DISPLAY_IMG"
+	}
+}

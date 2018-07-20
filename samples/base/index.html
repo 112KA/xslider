@@ -71,9 +71,13 @@
         </div>
     </div>
     
-    <script src="../../dist/xslider.min.js"></script>
+    <!-- <script src="../../dist/xslider.min.js"></script> -->
+    <script src="../../dist/xslider.js"></script>
     <script>
-        new XSlider(".xslider");
+        new XSlider(".xslider", {
+
+            // debug: XSlider.Debug.DISPLAY.IMG,
+        });
     </script>
 </body>
 </html>

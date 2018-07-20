@@ -1,6 +1,5 @@
 import {Option} from './Option'
 import {Utils} from './Utils'
-import {Debug} from './debug/Debug'
 import {Dom} from '../display/Dom'
 import {Slide} from '../display/Slide'
 import {DefaultRenderer} from '../renderer/DefaultRenderer'
@@ -19,14 +18,17 @@ export class Data {
 	setup(...args) {
 
 		this.option = Utils.extend(Option, args[1] || {});
-		Debug.display = this.option.debug;
 
 		this.dom.setup(args[0]);
+
+		if(this.option.display == Option.Debug.DISPLAY.DOM) {
+			this.dom.container.classList.add("xslider-debug");
+		}
 
 		this.list = [];
 
 		for(const element of this.dom.slides) {
-			this.list.push(new Slide(element));
+			this.list.push(new Slide(element, this.option.display));
 		}
 	}
 

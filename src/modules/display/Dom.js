@@ -1,7 +1,5 @@
 import {EventDispatcher} from '../core/EventDispatcher'
 import {stage} from '../core/Stage'
-import {Debug} from '../components/debug/Debug'
-
 export class Dom extends EventDispatcher {
 
 	constructor() {
@@ -34,10 +32,6 @@ export class Dom extends EventDispatcher {
 
 		this.container = document.querySelector(selector);
 		this.container.classList.add("xslider-container");
-
-		if(Debug.display == Debug.DISPLAY_DOM) {
-			this.container.classList.add("xslider-debug");
-		}
 
 		this.view = this.container.querySelector(".xslider-view");
 		this.slides = this.view.querySelectorAll(".xslider-slide");
