@@ -25,6 +25,10 @@ $color: #00ff7a;
 		&-active {
 			display: block;
 		}
+
+		>img {
+			position: absolute;
+		}
 	}
 }
 

@@ -20,6 +20,8 @@
     height: 100%; }
     .xslider-view .xslider-slide-active {
       display: block; }
+    .xslider-view .xslider-slide > img {
+      position: absolute; }
 
 .xslider-layer-gl {
   position: absolute;

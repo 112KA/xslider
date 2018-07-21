@@ -48,29 +48,35 @@ class Cloner {
 		const clone = original.cloneNode(false);
 
         return new Promise((resolve, reject) => {
-        	if (original.hasChildNodes()) {
-				const children = original.childNodes;
 				
+			if(!(original instanceof Element)) {
+				resolve(clone);
+			}
+			else {
 				this.copyStyle(window.getComputedStyle(original), clone.style);
-
-				const arr = [];
-
-		        children.forEach((child, i, list) => {
-		        	let p = this.cloneNode(child)
-		        		.then((childClone) => {
-							// clone.appendChild(childClone);
-							this.insertChildAtIndex(clone, childClone, i);
-		        		});
-		        	arr.push(p);
-				});
-
-		    	Promise.all(arr).then(()=> {
-		    		resolve(clone);
-				});
-        	}
-        	else {
-        		resolve(clone);
-		    }
+	
+				if (original.hasChildNodes()) {
+					const children = original.childNodes;
+	
+					const arr = [];
+	
+					children.forEach((child, i, list) => {
+						let p = this.cloneNode(child)
+							.then((childClone) => {
+								// clone.appendChild(childClone);
+								this.insertChildAtIndex(clone, childClone, i);
+							});
+						arr.push(p);
+					});
+	
+					Promise.all(arr).then(()=> {
+						resolve(clone);
+					});
+				}
+				else {
+					resolve(clone);
+				}
+			}
         })
 	}
 

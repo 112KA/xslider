@@ -3403,26 +3403,31 @@ var Cloner = function () {
 			var clone = original.cloneNode(false);
 
 			return new _promise2.default(function (resolve, reject) {
-				if (original.hasChildNodes()) {
-					var children = original.childNodes;
 
+				if (!(original instanceof Element)) {
+					resolve(clone);
+				} else {
 					_this.copyStyle(window.getComputedStyle(original), clone.style);
 
-					var arr = [];
+					if (original.hasChildNodes()) {
+						var children = original.childNodes;
 
-					children.forEach(function (child, i, list) {
-						var p = _this.cloneNode(child).then(function (childClone) {
-							// clone.appendChild(childClone);
-							_this.insertChildAtIndex(clone, childClone, i);
+						var arr = [];
+
+						children.forEach(function (child, i, list) {
+							var p = _this.cloneNode(child).then(function (childClone) {
+								// clone.appendChild(childClone);
+								_this.insertChildAtIndex(clone, childClone, i);
+							});
+							arr.push(p);
 						});
-						arr.push(p);
-					});
 
-					_promise2.default.all(arr).then(function () {
+						_promise2.default.all(arr).then(function () {
+							resolve(clone);
+						});
+					} else {
 						resolve(clone);
-					});
-				} else {
-					resolve(clone);
+					}
 				}
 			});
 		}
@@ -3999,19 +4004,19 @@ var _Stage = __webpack_require__(28);
 
 var _BaseTransition = __webpack_require__(12);
 
-var _CrossWarpTransition = __webpack_require__(169);
+var _CrossWarpTransition = __webpack_require__(168);
 
-var _CrossZoomTransition = __webpack_require__(170);
+var _CrossZoomTransition = __webpack_require__(169);
 
-var _CubeTransition = __webpack_require__(171);
+var _CubeTransition = __webpack_require__(170);
 
-var _MorphTransition = __webpack_require__(172);
+var _MorphTransition = __webpack_require__(171);
 
-var _NoiseTransition = __webpack_require__(173);
+var _NoiseTransition = __webpack_require__(172);
 
-var _PixelateTransition = __webpack_require__(175);
+var _PixelateTransition = __webpack_require__(174);
 
-var _PixelateWipeTransition = __webpack_require__(176);
+var _PixelateWipeTransition = __webpack_require__(175);
 
 var _Option = __webpack_require__(53);
 
@@ -4859,7 +4864,7 @@ var Data = exports.Data = function () {
 
 			this.dom.setup(arguments.length <= 0 ? undefined : arguments[0]);
 
-			if (this.option.display == _Option.Option.Debug.DISPLAY.DOM) {
+			if (this.option.debug == _Option.Option.Debug.DISPLAY.DOM) {
 				this.dom.container.classList.add("xslider-debug");
 			}
 
@@ -4873,7 +4878,7 @@ var Data = exports.Data = function () {
 				for (var _iterator = (0, _getIterator3.default)(this.dom.slides), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 					var element = _step.value;
 
-					this.list.push(new _Slide.Slide(element, this.option.display));
+					this.list.push(new _Slide.Slide(element, this.option.debug));
 				}
 			} catch (err) {
 				_didIteratorError = true;
@@ -6803,11 +6808,9 @@ var _Indexer = __webpack_require__(164);
 
 var _Inliner = __webpack_require__(58);
 
-var _Bench = __webpack_require__(165);
-
 var _Slide = __webpack_require__(80);
 
-var _UI = __webpack_require__(166);
+var _UI = __webpack_require__(165);
 
 var _DefaultRenderer = __webpack_require__(83);
 
@@ -7035,6 +7038,7 @@ var SlideController = exports.SlideController = function (_EventDispatcher) {
 	}]);
 	return SlideController;
 }(_EventDispatcher2.EventDispatcher);
+// import {Bench} from './components/debug/Bench'
 
 /***/ }),
 /* 163 */
@@ -7346,66 +7350,6 @@ Indexer.STATE = {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.Bench = undefined;
-
-var _classCallCheck2 = __webpack_require__(0);
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = __webpack_require__(1);
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Bench = exports.Bench = function () {
-	function Bench() {
-		(0, _classCallCheck3.default)(this, Bench);
-	}
-
-	(0, _createClass3.default)(Bench, null, [{
-		key: "start",
-		value: function start(tag, label) {
-			var _label = label != undefined ? "start-" + label : "start";
-			console.log(tag, _label);
-			Bench.list[tag] = Bench.time;
-		}
-	}, {
-		key: "check",
-		value: function check(tag, label) {
-			var _label = label != undefined ? "check-" + label : "check";
-			var dt = Bench.time - Bench.list[tag];
-			console.log(tag, _label, dt);
-		}
-	}, {
-		key: "end",
-		value: function end(tag, label) {
-			var _label = label != undefined ? "end-" + label : "end";
-			var dt = Bench.time - Bench.list[tag];
-			console.log(tag, _label, dt);
-			delete Bench.list[tag];
-		}
-	}, {
-		key: "time",
-		get: function get() {
-			return Date.now() || new Date().getTime();
-		}
-	}]);
-	return Bench;
-}();
-
-Bench.list = {};
-
-/***/ }),
-/* 166 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
 exports.UI = undefined;
 
 var _getPrototypeOf = __webpack_require__(2);
@@ -7434,9 +7378,9 @@ var _inherits3 = _interopRequireDefault(_inherits2);
 
 var _InteractiveObject2 = __webpack_require__(57);
 
-var _Button = __webpack_require__(167);
+var _Button = __webpack_require__(166);
 
-var _Pager = __webpack_require__(168);
+var _Pager = __webpack_require__(167);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7518,7 +7462,7 @@ UI.EVENT = {
 };
 
 /***/ }),
-/* 167 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7586,7 +7530,7 @@ var Button = exports.Button = function (_InteractiveObject) {
 }(_InteractiveObject2.InteractiveObject);
 
 /***/ }),
-/* 168 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7688,7 +7632,7 @@ var Pager = exports.Pager = function (_EventDispatcher) {
 }(_EventDispatcher2.EventDispatcher);
 
 /***/ }),
-/* 169 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7716,7 +7660,7 @@ var CrossWarpTransition = exports.CrossWarpTransition = _BaseTransition.BaseTran
 });
 
 /***/ }),
-/* 170 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7745,7 +7689,7 @@ var CrossZoomTransition = exports.CrossZoomTransition = _BaseTransition.BaseTran
 });
 
 /***/ }),
-/* 171 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7777,7 +7721,7 @@ var CubeTransition = exports.CubeTransition = _BaseTransition.BaseTransition.ext
 });
 
 /***/ }),
-/* 172 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7805,7 +7749,7 @@ var MorphTransition = exports.MorphTransition = _BaseTransition.BaseTransition.e
 });
 
 /***/ }),
-/* 173 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7816,7 +7760,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.NoiseTransition = undefined;
 
-var _defineProperty2 = __webpack_require__(174);
+var _defineProperty2 = __webpack_require__(173);
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
 
@@ -7847,7 +7791,7 @@ var NoiseTransition = exports.NoiseTransition = _BaseTransition.BaseTransition.e
 });
 
 /***/ }),
-/* 174 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7877,7 +7821,7 @@ exports.default = function (obj, key, value) {
 };
 
 /***/ }),
-/* 175 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7900,7 +7844,7 @@ var PixelateTransition = exports.PixelateTransition = _BaseTransition.BaseTransi
 });
 
 /***/ }),
-/* 176 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
