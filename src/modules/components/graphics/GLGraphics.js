@@ -122,7 +122,6 @@ export const GLGraphics =  {
             this.updateAttribute(program.attributes[i], program.stride);
         }
 
-
         for(let i=0; i<program.uniforms.length; i++) {
             this.updateUniform(program.uniformBuffer, program.uniforms[i]);
         }

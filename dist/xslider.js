@@ -1268,7 +1268,7 @@ var Buffer = exports.Buffer = function (_Asset) {
         _this.bufferType = bufferType;
         _this.usage = usage;
 
-        _this.data = getTypedArrayByFormat(_this.format, 16);
+        _this.data = getTypedArrayByFormat(_this.format, 1);
         return _this;
     }
 
@@ -2376,21 +2376,30 @@ var Uniform = exports.Uniform = function (_ShaderVar) {
         var shaderVarFormat = void 0;
 
         if (valueObject) {
-            varFormat = valueObject.value instanceof _Texture.Texture ? _Buffer.VarFormat.Int : _Buffer.VarFormat.Float;
-            shaderVarFormat = ShaderVarFormat.Float;
+            varFormat = _Buffer.VarFormat.Float;
 
-            if (valueObject.value instanceof _Texture.Texture) {
-                shaderVarFormat = ShaderVarFormat.Int;
-            } else if (valueObject.value instanceof _Matrix.Matrix3) {
-                shaderVarFormat = ShaderVarFormat.Matrix3;
-            } else if (valueObject.value instanceof _Matrix.Matrix4) {
-                shaderVarFormat = ShaderVarFormat.Matrix4;
-            } else if (valueObject.value instanceof _Vec.Vec2) {
-                shaderVarFormat = ShaderVarFormat.Vector2;
-            } else if (valueObject.value instanceof _Vec.Vec3) {
-                shaderVarFormat = ShaderVarFormat.Vector3;
-            } else if (valueObject.value instanceof _Vec.Vec4) {
-                shaderVarFormat = ShaderVarFormat.Vector4;
+            switch (valueObject.value.constructor) {
+                case _Texture.Texture:
+                    varFormat = _Buffer.VarFormat.Int;
+                    shaderVarFormat = ShaderVarFormat.Int;
+                    break;
+                case _Matrix.Matrix3:
+                    shaderVarFormat = ShaderVarFormat.Matrix3;
+                    break;
+                case _Matrix.Matrix4:
+                    shaderVarFormat = ShaderVarFormat.Matrix4;
+                    break;
+                case _Vec.Vec2:
+                    shaderVarFormat = ShaderVarFormat.Vector2;
+                    break;
+                case _Vec.Vec3:
+                    shaderVarFormat = ShaderVarFormat.Vector3;
+                    break;
+                case _Vec.Vec4:
+                    shaderVarFormat = ShaderVarFormat.Vector4;
+                    break;
+                default:
+                    shaderVarFormat = ShaderVarFormat.Float;
             }
         }
 
@@ -2983,6 +2992,8 @@ var Slide = exports.Slide = function () {
 			this.element.insertBefore(this.image, this.layer.gl);
 		}
 
+		// this.element.insertBefore(this.canvas, this.layer.gl);
+
 		this.inlinedNode = undefined;
 		this.needsResize = false;
 	}
@@ -3072,7 +3083,7 @@ var Slide = exports.Slide = function () {
 							var c = _this2.canvas.getContext('2d');
 							c.clearRect(0, 0, w, h);
 							c.drawImage(_this2.image, 0, 0, w, h);
-							console.log(_this2.layer, w, h);
+							// console.log(this.layer, w, h);
 
 							resolve();
 						});
@@ -3108,6 +3119,7 @@ var SlideContainer = exports.SlideContainer = function (_EventDispatcher) {
 			var _this4 = this;
 
 			this._onChangeSlide = function (e) {
+				// console.log(e);
 
 				var removeOld = false;
 
@@ -3189,16 +3201,28 @@ var SlideContainer = exports.SlideContainer = function (_EventDispatcher) {
 			var slide = this.get('slide' + slideIndex);
 
 			return new _promise2.default(function (resolve, reject) {
+				// console.log(this.uniforms);
+				// console.log(this.uniforms.texture0.value.image);
+				// console.log(this.uniforms.texture1.value.image);
+				// console.log(slide);
+				// console.log(slideIndex, this.uniforms.texture0.value.image == this.uniforms.texture1.value.image);
 
-				if (!slide) resolve();
+				if (!slide) {
+					if (_this6.uniforms) {
+						var texture = _this6.uniforms['texture' + slideIndex].value;
+						texture.image = undefined;
+						texture.needsUpdate = true;
+					}
+					resolve();
+				}
 
 				slide.element.classList.add("xslider-slide-active");
 
 				slide.resize(_this6.width, _this6.height).then(function () {
 					if (_this6.uniforms) {
-						var texture = _this6.uniforms['texture' + slideIndex].value;
-						texture.image = slide.canvas;
-						texture.needsUpdate = true;
+						var _texture = _this6.uniforms['texture' + slideIndex].value;
+						_texture.image = slide.canvas;
+						_texture.needsUpdate = true;
 					}
 
 					resolve();
@@ -5166,7 +5190,7 @@ var Dom = exports.Dom = function (_EventDispatcher) {
 	}, {
 		key: 'dispose',
 		value: function dispose() {
-			this.width = this.height = undefined;
+			this._width = this._height = undefined;
 			_Stage.stage.off('resize', this._onResize);
 			this.container.classList.remove("xslider-container", "xslider-debug");
 		}
@@ -6145,18 +6169,15 @@ var GraphicsContext = {
 var GLGraphics = exports.GLGraphics = {
 
     setup: function setup(canvas) {
-        this._gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        var params = {
+            alpha: true,
+            premultipliedAlpha: false
+        };
+        this._gl = canvas.getContext("webgl", params) || canvas.getContext("experimental-webgl", params);
         if (!this.context) {
             this.context = GraphicsContext;
         } else {
             this.context.reset();
-        }
-    },
-
-    deleteTexture: function deleteTexture(texture) {
-        if (texture.location) {
-            this._gl.deleteTexture(texture.location);
-            texture.location = undefined;
         }
     },
 
@@ -6180,8 +6201,18 @@ var GLGraphics = exports.GLGraphics = {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+            if (texture.image) {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+            } else {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+            }
+        }
+    },
 
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+    deleteTexture: function deleteTexture(texture) {
+        if (texture.location) {
+            this._gl.deleteTexture(texture.location);
+            texture.location = undefined;
         }
     },
 
@@ -6538,16 +6569,33 @@ var _classCallCheck2 = __webpack_require__(0);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _createClass2 = __webpack_require__(1);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Color = exports.Color = function Color() {
-    (0, _classCallCheck3.default)(this, Color);
+var Color = exports.Color = function () {
+    function Color() {
+        (0, _classCallCheck3.default)(this, Color);
 
-    this.r = 0;
-    this.g = 0;
-    this.b = 0;
-    this.a = 1;
-};
+        this.r = 0;
+        this.g = 0;
+        this.b = 0;
+        this.a = 1;
+    }
+
+    (0, _createClass3.default)(Color, [{
+        key: "set",
+        value: function set(r, g, b, a) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+        }
+    }]);
+    return Color;
+}();
 
 /***/ }),
 /* 156 */

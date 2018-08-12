@@ -20,7 +20,7 @@
     height: 100%; }
     .xslider-view .xslider-slide-active {
       display: block; }
-    .xslider-view .xslider-slide > img {
+    .xslider-view .xslider-slide > img, .xslider-view .xslider-slide > canvas {
       position: absolute; }
 
 .xslider-layer-gl {

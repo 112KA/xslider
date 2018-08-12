@@ -77,8 +77,8 @@ export class Uniform extends ShaderVar {
                 case Vec3:
                     shaderVarFormat = ShaderVarFormat.Vector3;
                     break;
-                case Vec3:
-                    shaderVarFormat = ShaderVarFormat.Vector3;
+                case Vec4:
+                    shaderVarFormat = ShaderVarFormat.Vector4;
                     break;
                 default:
                     shaderVarFormat = ShaderVarFormat.Float;
