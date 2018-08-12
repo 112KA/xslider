@@ -58,26 +58,30 @@ export class Uniform extends ShaderVar {
         let shaderVarFormat;
 
         if(valueObject) {
-            varFormat = valueObject.value instanceof Texture ? VarFormat.Int : VarFormat.Float;
-            shaderVarFormat = ShaderVarFormat.Float;
-    
-            if(valueObject.value instanceof Texture) {
-                shaderVarFormat = ShaderVarFormat.Int;
-            }
-            else if(valueObject.value instanceof Matrix3) {
-                shaderVarFormat = ShaderVarFormat.Matrix3;
-            }
-            else if(valueObject.value instanceof Matrix4) {
-                shaderVarFormat = ShaderVarFormat.Matrix4;
-            }
-            else if(valueObject.value instanceof Vec2) {
-                shaderVarFormat = ShaderVarFormat.Vector2;
-            }
-            else if(valueObject.value instanceof Vec3) {
-                shaderVarFormat = ShaderVarFormat.Vector3;
-            }
-            else if(valueObject.value instanceof Vec4) {
-                shaderVarFormat = ShaderVarFormat.Vector4;
+            varFormat = VarFormat.Float;
+
+            switch(valueObject.value.constructor) {
+                case Texture:
+                    varFormat = VarFormat.Int;
+                    shaderVarFormat = ShaderVarFormat.Int;
+                    break;
+                case Matrix3:
+                    shaderVarFormat = ShaderVarFormat.Matrix3;
+                    break;
+                case Matrix4:
+                    shaderVarFormat = ShaderVarFormat.Matrix4;
+                    break;
+                case Vec2:
+                    shaderVarFormat = ShaderVarFormat.Vector2;
+                    break;
+                case Vec3:
+                    shaderVarFormat = ShaderVarFormat.Vector3;
+                    break;
+                case Vec3:
+                    shaderVarFormat = ShaderVarFormat.Vector3;
+                    break;
+                default:
+                    shaderVarFormat = ShaderVarFormat.Float;
             }
         }
 

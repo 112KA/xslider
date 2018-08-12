@@ -32,7 +32,7 @@ export class Buffer extends Asset {
         this.bufferType = bufferType;
         this.usage = usage;
 
-        this.data = getTypedArrayByFormat(this.format, 16);
+        this.data = getTypedArrayByFormat(this.format, 1);
     }
 
     clear() {

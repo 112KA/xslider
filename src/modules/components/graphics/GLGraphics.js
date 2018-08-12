@@ -36,19 +36,16 @@ const GraphicsContext = {
 export const GLGraphics =  {
 
     setup: function(canvas) {
-        this._gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        const params = {
+            alpha: true,
+            premultipliedAlpha: false
+        }
+        this._gl = canvas.getContext("webgl", params) || canvas.getContext("experimental-webgl", params);
         if(!this.context) {
             this.context = GraphicsContext;
         }
         else {
             this.context.reset();
-        }
-    },
-
-    deleteTexture: function(texture) {
-        if(texture.location) {
-            this._gl.deleteTexture(texture.location);
-            texture.location = undefined;
         }
     },
 
@@ -72,8 +69,20 @@ export const GLGraphics =  {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+            if(texture.image) {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+            }
+            else {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
+            }
 
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+        }
+    },
+
+    deleteTexture: function(texture) {
+        if(texture.location) {
+            this._gl.deleteTexture(texture.location);
+            texture.location = undefined;
         }
     },
 

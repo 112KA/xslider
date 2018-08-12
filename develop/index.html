@@ -70,9 +70,7 @@
 	<div id="xslider">
 		<div class="xslider-view">
 			<div class="xslider-slide">
-                <!-- <div class="xslider-layer-gl" style="background: linear-gradient(to right bottom, #051937, #323851, #595a6d, #81808a, #a8a8a8);"><p>Slider1 Texture Text</p></div> -->
-                <div class="xslider-layer-gl" style="background: linear-gradient(to right bottom, #051937, #323851, #595a6d, #81808a, #a8a8a8);"></div>
-				<!-- <div class="xslider-layer-gl"><p>Slider1 Texture Text</p></div> -->
+				<div class="xslider-layer-gl"><p>Slider1 Texture Text</p></div>
 				<div class="xslider-layer-ui">Slide1</div>
 			</div>
 			<div class="xslider-slide">
@@ -138,7 +136,7 @@
 			return {
 				// debug: XSlider.Debug.DISPLAY.DOM,
 				// debug: XSlider.Debug.DISPLAY.SVG,
-				debug: XSlider.Debug.DISPLAY.IMG,
+				// debug: XSlider.Debug.DISPLAY.IMG,
 				transition: target.transition != "Test" ? XSlider[target.transition+"Transition"] : TestTransition,
 				loop : target.loop,
 				touchMove : target.touchMoveEnabled ? {

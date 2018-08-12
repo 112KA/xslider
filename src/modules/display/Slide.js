@@ -23,6 +23,8 @@ export class Slide {
 			this.element.insertBefore(this.image, this.layer.gl);
 		}
 
+		// this.element.insertBefore(this.canvas, this.layer.gl);
+
 		this.inlinedNode = undefined;
 		this.needsResize = false;
 	}
@@ -110,7 +112,7 @@ export class Slide {
 						const c = this.canvas.getContext('2d');
 						c.clearRect(0,0,w,h);
 						c.drawImage(this.image,0,0,w,h);
-						console.log(this.layer,w,h);
+						// console.log(this.layer, w, h);
 	
 						resolve();
 					});
@@ -138,6 +140,7 @@ export class SlideContainer extends EventDispatcher {
 
 	_defineHandlers() {
 		this._onChangeSlide = (e) => {
+			// console.log(e);
 
 			let removeOld = false;
 
@@ -212,8 +215,20 @@ export class SlideContainer extends EventDispatcher {
 		const slide = this.get('slide'+slideIndex);
 
 		return new Promise((resolve, reject) => {
+			// console.log(this.uniforms);
+			// console.log(this.uniforms.texture0.value.image);
+			// console.log(this.uniforms.texture1.value.image);
+			// console.log(slide);
+			// console.log(slideIndex, this.uniforms.texture0.value.image == this.uniforms.texture1.value.image);
 
-			if(!slide)  resolve();
+			if(!slide)  {
+				if(this.uniforms) {
+					const texture = this.uniforms['texture'+slideIndex].value;
+					texture.image = undefined;
+					texture.needsUpdate = true;
+				}
+				resolve();
+			}
 	
 			slide.element.classList.add("xslider-slide-active");
 	
@@ -223,6 +238,7 @@ export class SlideContainer extends EventDispatcher {
 						const texture = this.uniforms['texture'+slideIndex].value;
 						texture.image = slide.canvas;
 						texture.needsUpdate = true;
+
 					}
 
 					resolve();
