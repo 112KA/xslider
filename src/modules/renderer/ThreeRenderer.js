@@ -1,29 +1,30 @@
-import {BaseRenderer} from './BaseRenderer'
-import {SlideModel} from '../display/SlideModel'
+import {GLRenderer} from './BaseRenderer'
 import {Bench} from '../components/debug/Bench'
+import {Vec2, Vec3, Vec4} from '../geom/Vec'
 
-export class ThreeRenderer extends BaseRenderer {
+const baseVertexShader = `
+precision highp float;
+
+attribute vec3 position;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+void main(void) {
+	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+export class ThreeRenderer extends GLRenderer {
 	constructor() {
 		super();
 
-		this._defineHandlers();
-
-		this.canvas = document.createElement('canvas');
-	}
-
-	_defineHandlers() {
-		this._onUpdateTexture = () => {
-			this.renderer.render( this.scene, this.camera );
-		}
-	}
-
-	setup(data) {
-		super.setup(data);
-
-		data.dom.container.insertBefore(this.canvas, data.dom.view);
-
     	this.camera = new THREE.PerspectiveCamera(60, 1, 1, 10000);
     	this.scene = new THREE.Scene();
+	}
+
+	setup(data, container) {
+		super.setup(data, container);
 
 		this.renderer = new THREE.WebGLRenderer( { 
 			antialias: false, 
@@ -31,7 +32,7 @@ export class ThreeRenderer extends BaseRenderer {
 			canvas: this.canvas
 		});
 
-		const transition = data.option.getTransition();
+		const transition = data.option.transition;
 
 		this.mesh = new THREE.Mesh( 
 
@@ -40,54 +41,63 @@ export class ThreeRenderer extends BaseRenderer {
 			new THREE.RawShaderMaterial({
 				depthTest: false,
 				transparent: true,
-				vertexShader: transition.vertexShader,
+				vertexShader: baseVertexShader,
 				fragmentShader: transition.fragmentShader,
-				uniforms: transition.uniforms
+				uniforms: this._createUniforms(transition.uniforms),
 			})
 		)
 
-		this.model = new SlideModel();
-		this.model.setup(this.mesh);
-		this.scene.add(this.model.mesh);
+		this.scene.add(this.mesh);
+	}
 
-		this.model.on('updateTexture', this._onUpdateTexture);
+	_createUniforms(setting) {
+		let ret = {
+			texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+			texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
+			progress:{ value: 0 },
+			resolution: { value: new THREE.Vector2(0.0, 0.0) },
+		};
+
+		Object.keys(setting).forEach((key) => {
+			let v = setting[key];
+			if(v instanceof Vec4) {
+				ret[key] = new THREE.Vector4(v.x, v.y, v.z, v.w);
+			}
+			else if(v instanceof Vec3) {
+				ret[key] = new THREE.Vector3(v.x, v.y, v.z);
+			}
+			else if(v instanceof Vec2) {
+				ret[key] = new THREE.Vector2(v.x, v.y);
+			}
+			else {
+				ret[key] = v;
+			}
+		  })
+
+		return ret;
 	}
 
 	dispose() {
 		super.dispose();
-
-		this.model.off('updateTexture', this._onUpdateTexture);
-		this.model.dispose();
-
-		this.data.dom.container.removeChild(this.canvas);
 	}
 
 	render(indexer) {
 		super.render(indexer);
 
-		const slide0 = this.data.list[indexer.i0]
-		, slide1 = this.data.list[indexer.i1];
-
-		this.model.set({ slide0:slide0, slide1:slide1 });
-		this.model.uniforms.progress.value = indexer.progress;
-		if(this.model.uniforms.time) {
-			this.model.uniforms.time.value = this.data.time;
-		}
       	this.renderer.render( this.scene, this.camera );
 	}
 
-	resize(e) {
-		super.resize(e);
+	resize(w, h) {
+		super.resize(w, h);
 
-		const w = this.width, h = this.height;
-
+		if(this.mesh) {
+			this.mesh.scale.set(w, h, 1);
+		}
 		this.renderer.setSize( w, h );
 
 		this.camera.aspect = w / h;
 		this.camera.position.z = ThreeRenderer.CZ * h;
 		this.camera.updateProjectionMatrix();
-
-		this.model.resize(w, h);
 	}
 }
 

@@ -12,49 +12,47 @@ $color: #00ff7a;
 }
 
 .xslider-view {
-	overflow: hidden;
+	// overflow: hidden;
 	width: 100%; height: 100%;
 
 	.xslider-slide {
 		display: none;
+		overflow: hidden;
 		position: absolute;
 		top: 0; left: 0;
 		width: 100%; height: 100%;
 
-		&.xslider-slide-active {
+		&-active {
 			display: block;
 		}
 
-		&.xslider-slide-next {
-			
+		>img, >canvas {
+			position: absolute;
 		}
 	}
 }
 
-.xslider-slide-image {
-	display: none;
-	position: absolute;
-}
+.xslider-layer {
+	&-gl {
+		position: absolute;
+		display: none;
+		width: 100%; height: 100%;
 
-.xslider-layer-texture {
-	position: absolute;
-	display: none;
-	width: 100%; height: 100%;
-
-	&.xslider-texture-capture {
-		display: block;
-		z-index: -99999;
+		&.xslider-capture {
+			display: block;
+			z-index: -99999;
+		}
 	}
-}
 
-.xslider-layer-ui {
-	position: absolute;
-	top: 0; left: 0;
-	width: 100%; height: 100%;
-	display: flex;
-
-	justify-content: center;
-	align-items: center;
+	&-ui {
+		position: absolute;
+		top: 0; left: 0;
+		width: 100%; height: 100%;
+		display: flex;
+	
+		justify-content: center;
+		align-items: center;
+	}
 }
 
 .xslider-pager {
@@ -102,4 +100,10 @@ $color: #00ff7a;
 .xslider-next {
 	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2027%2044'%3E%3Cpath%20d%3D'M27%2C22L27%2C22L5%2C44l-2.1-2.1L22.8%2C22L2.9%2C2.1L5%2C0L27%2C22L27%2C22z'%20fill%3D'%2300ff7a'%2F%3E%3C%2Fsvg%3E");
 	right: 10px;
+}
+
+.xslider-debug {
+	.xslider-layer-gl {
+		display: block;
+	}
 }

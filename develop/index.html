@@ -12,7 +12,6 @@
 	<link href="../dist/xslider.css" rel="stylesheet">
 
 	<style>
-
 @font-face {
   font-family: 'Noto Sans';
   font-style: italic;
@@ -22,54 +21,47 @@
 }
 
 	    html, body {
-	      height: 100%;
-	      width: 100%;
-	      overflow: hidden;
-	    }
-	    body {
+	    	height: 100%;
+	    	width: 100%;
 	    	margin: 0; padding: 0;
 	    }
 
 	    .xslider-view {
-	    	font-family: 'Noto Sans', sans-serif;
-
+			font: italic normal 700 normal 16px/23px 'Noto Sans', sans-serif;
 	    }
 
-	    .xslider-layer-texture {
-	    }
-
-	    .xslider-layer-texture p {
+	    .xslider-layer-gl p {
 	    	position: absolute;
 	    	display: inline-block;
 	    	background: white;
 	    	padding: 3px 8px;
 	    	left: 50%; bottom: 25px;
-	    	margin-left: -80px;
+	    	margin-left: -75px;
 	    }
 
 	    .xslider-layer-ui {
 	    	color: white;
 	    }
 
-	    .xslider-view .xslider-slide:nth-child(1) .xslider-layer-texture {
-	    	background: url('images/slide1.jpg') no-repeat center;
+	    .xslider-view .xslider-slide:nth-child(1) .xslider-layer-gl {
+	    	background: url('../samples/asset/image/slide1.jpg') no-repeat center;
 	    	background-size: cover;
 	    }
 
-	    .xslider-view .xslider-slide:nth-child(2) .xslider-layer-texture {
-	    	background: url('images/slide2.jpg') no-repeat center;
+	    .xslider-view .xslider-slide:nth-child(2) .xslider-layer-gl {
+	    	background: url('../samples/asset/image/slide2.jpg') no-repeat center;
 	    	background-size: cover;
 	    }
 
-	    .xslider-view .xslider-slide:nth-child(3) .xslider-layer-texture {
-	    	background: url('images/slide3.jpg') no-repeat center;
+	    .xslider-view .xslider-slide:nth-child(3) .xslider-layer-gl {
+	    	background: url('../samples/asset/image/slide3.jpg') no-repeat center;
 	    	background-size: cover;
 	    }
 
-	    .xslider-view .xslider-slide:nth-child(4) .xslider-layer-texture {
-	    	background: url('images/slide4.jpg') no-repeat center;
+	    .xslider-view .xslider-slide:nth-child(4) .xslider-layer-gl {
+	    	background: url('../samples/asset/image/slide4.jpg') no-repeat center;
 	    	background-size: cover;
-	    }
+		}
 	</style>
 	
 </head>
@@ -78,19 +70,19 @@
 	<div id="xslider">
 		<div class="xslider-view">
 			<div class="xslider-slide">
-				<div class="xslider-layer-texture"><p>Slider1 Texture Text</p></div>
+				<div class="xslider-layer-gl"><p>Slider1 Texture Text</p></div>
 				<div class="xslider-layer-ui">Slide1</div>
 			</div>
 			<div class="xslider-slide">
-				<div class="xslider-layer-texture"><p>Slider2 Texture Text</p></div>
+				<div class="xslider-layer-gl"><p>Slider2 Texture Text</p></div>
 				<div class="xslider-layer-ui">Slide2</div>
 			</div>
 			<div class="xslider-slide">
-				<div class="xslider-layer-texture"><p>Slider3 Texture Text</p></div>
+				<div class="xslider-layer-gl"><p>Slider3 Texture Text</p></div>
 				<div class="xslider-layer-ui">Slide3</div>
 			</div>
 			<div class="xslider-slide">
-				<div class="xslider-layer-texture"><p>Slider4 Texture Text</p></div>
+				<div class="xslider-layer-gl"><p>Slider4 Texture Text</p></div>
 				<div class="xslider-layer-ui">Slide4</div>
 			</div>
 		</div>
@@ -98,9 +90,12 @@
 		<div class="xslider-prev"></div>
 		<div class="xslider-next"></div>
 	</div>
+	
 
-	<script src="./vendor.js"></script>
+	<script src="../samples/asset/js/vendor.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.2/dat.gui.js"></script> -->
 	<script src="../dist/xslider.js"></script>
+	<script src="TestTransition.js"></script>
 	<script>
 		
 		var query = {};
@@ -123,28 +118,26 @@
 			query.loop = true;
 		}
 
-		var transitions = ['Base','CrossWarp',"CrossZoom","Cube","Morph","Noise","Pixelate","PixelateWipe","Test"];
+		var transitions = ['Base','CrossWarp',"CrossZoom","Cube","Morph","Noise","Pixelate","PixelateWipe"];
+		window.TestTransition && transitions.push("Test");
 		var index = transitions.indexOf(query['transition']);
 		index = index == -1 ? 0 : index;
 
 		var target = {
 			transition:transitions[index],
-
 			loop : 'loop' in query,
-
 			touchMoveEnabled : 'touchMoveEnabled' in query,
 			throwable : 'throwable' in query,
-
 			autoplayEnabled : 'autoplayEnabled' in query,
 		};
 
 		var buildOptions = function() {
+
 			return {
-				selector: "#xslider",
-				// debug: true,
-				getTransition : function() {
-					return XSlider.transition[target.transition];
-				},
+				// debug: XSlider.Debug.DISPLAY.DOM,
+				// debug: XSlider.Debug.DISPLAY.SVG,
+				// debug: XSlider.Debug.DISPLAY.IMG,
+				transition: target.transition != "Test" ? XSlider[target.transition+"Transition"] : TestTransition,
 				loop : target.loop,
 				touchMove : target.touchMoveEnabled ? {
 					throwable : target.throwable
@@ -156,9 +149,8 @@
 					init : function() { console.log('option :: on init'); }
 				}
 			}
-		}
+		};
 
-;
 		var gui = new dat.GUI();
 
 		var folders = {
@@ -179,14 +171,12 @@
 
 		XSlider.stage.ready()
 			.then(function() {
-
-				var slider = new XSlider(buildOptions());
+				var slider = new XSlider('#xslider', buildOptions());
 
 				var reset = function(v) {
 					slider.dispose();
-					// slider.setup(XSlider.Utils.extend(options, o));
 
-					slider.setup(buildOptions());
+					slider.setup('#xslider', buildOptions());
 
 					var s = '';
 					s += 'transition='+target.transition;

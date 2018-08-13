@@ -1,6 +1,5 @@
 import {EventDispatcher} from '../core/EventDispatcher'
 import {stage} from '../core/Stage'
-
 export class Dom extends EventDispatcher {
 
 	constructor() {
@@ -13,12 +12,20 @@ export class Dom extends EventDispatcher {
 
 	_defineHandlers() {
 		this._onResize = (e) => {
-			if(this.width != this.container.clientWidth || this.height != this.container.clientHeight) {
-				this.width = this.container.clientWidth;
-				this.height = this.container.clientHeight;
-				this.dispatch('resize', {type:'resize', width:this.width, height:this.height});
+			if(this._width != this.width || this._height != this.height) {
+				this._width = this.width;
+				this._height = this.height;
+				this.dispatch('resize', {type:'resize', width:this._width, height:this._height});
 			}
 		}
+	}
+
+	get width() {
+		return this.container.clientWidth;
+	}
+
+	get height() {
+		return this.container.clientHeight;
 	}
 
 	setup(selector) {
@@ -37,8 +44,8 @@ export class Dom extends EventDispatcher {
 	}
 
 	dispose() {
-		this.width = this.height = undefined;
+		this._width = this._height = undefined;
 		stage.off('resize', this._onResize);
-		this.container.classList.remove("xslider-container");
+		this.container.classList.remove("xslider-container", "xslider-debug");
 	}
 }

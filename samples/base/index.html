@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Base Sample | XSlider</title>
+
+    <link href="../../dist/xslider.min.css" rel="stylesheet">
+    
+	<style>
+        body {
+            margin: 0; padding: 0;
+        }
+        .container {
+            width: 400px; height: 300px;
+            color: white;
+            background: #ffd700;
+            margin: 100px auto 0;
+        }
+        .xslider-view .xslider-layer-gl {
+            text-align: center;
+        }
+	    .xslider-view .xslider-slide:nth-child(2n) .xslider-layer-gl {
+            background: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="xslider">
+            <div class="xslider-view">
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"><p>Slider1 Texture Text</p></div>
+                    <div class="xslider-layer-ui">Slide1</div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"><p>Slider2 Texture Text</p></div>
+                    <div class="xslider-layer-ui">Slide2</div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"><p>Slider3 Texture Text</p></div>
+                    <div class="xslider-layer-ui">Slide3</div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"><p>Slider4 Texture Text</p></div>
+                    <div class="xslider-layer-ui">Slide4</div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"><p>Slider5 Texture Text</p></div>
+                    <div class="xslider-layer-ui">Slide5</div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"><p>Slider6 Texture Text</p></div>
+                    <div class="xslider-layer-ui">Slide6</div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"><p>Slider7 Texture Text</p></div>
+                    <div class="xslider-layer-ui">Slide7</div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"><p>Slider8 Texture Text</p></div>
+                    <div class="xslider-layer-ui">Slide8</div>
+                </div>
+            </div>
+            <div class="xslider-pager"></div>
+            <div class="xslider-prev"></div>
+            <div class="xslider-next"></div>
+        </div>
+    </div>
+    
+    <!-- <script src="../../dist/xslider.min.js"></script> -->
+    <script src="../../dist/xslider.js"></script>
+    <script>
+        new XSlider(".xslider", {
+
+            // debug: XSlider.Debug.DISPLAY.IMG,
+        });
+    </script>
+</body>
+</html>

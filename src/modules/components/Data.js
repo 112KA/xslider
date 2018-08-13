@@ -3,7 +3,8 @@ import {Utils} from './Utils'
 import {Dom} from '../display/Dom'
 import {Slide} from '../display/Slide'
 import {DefaultRenderer} from '../renderer/DefaultRenderer'
-import {ThreeRenderer} from '../renderer/ThreeRenderer'
+// import {ThreeRenderer} from '../renderer/ThreeRenderer'
+import {XRenderer} from '../renderer/XRenderer'
 
 
 
@@ -16,22 +17,30 @@ export class Data {
 
 	setup(...args) {
 
-		this.option = Utils.extend(Option, args[0]);
+		this.option = Utils.extend(Option, args[1] || {});
 
-		this.dom.setup(this.option.selector);
+		this.dom.setup(args[0]);
+
+		if(this.option.debug == Option.Debug.DISPLAY.DOM) {
+			this.dom.container.classList.add("xslider-debug");
+		}
 
 		this.list = [];
 
 		for(const element of this.dom.slides) {
-			this.list.push(new Slide(element));
+			this.list.push(new Slide(element, this.option.debug));
 		}
 	}
 
 	dispose() {
+		if(!this.option) return;
+
 		for(const slide of this.list) {
 			slide.dispose();
 		}
 		this.dom.dispose();
+
+		this.option = undefined;
 	}
 
 	getRenderer() {
@@ -39,7 +48,8 @@ export class Data {
 			return new DefaultRenderer();
 		}
 		else {
-			return this.option.renderer || new ThreeRenderer();
+			// return this.option.renderer || new ThreeRenderer();
+			return this.option.renderer || new XRenderer();
 		}
 	}
 }

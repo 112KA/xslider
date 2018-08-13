@@ -22,7 +22,7 @@ export class EventDispatcher {
 
 		for(let key in properties) {
 
-			if(this._properties[key] == undefined || this._properties[key] != properties[key]) {
+			if((this._properties[key] === undefined && properties[key] !== undefined) || this._properties[key] !== properties[key]) {
 				let v0 = this._properties[key];
 				this._properties[key] = properties[key];
 

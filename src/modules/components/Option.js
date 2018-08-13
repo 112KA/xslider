@@ -11,14 +11,13 @@ export const Option = {
 	touchMove : {
 		throwable : true
 	},
-	// throwable : true,
-	// allowTouchMove : true,
 	renderer : undefined,
 	debug : false,
 	
-	getTransition : function() {
-		return BaseTransition;
-	},
+	// getTransition : function() {
+	// 	return BaseTransition;
+	// },
+	transition: BaseTransition,
 
 	get : function(property, module) {
 		if(module) {
@@ -32,5 +31,13 @@ export const Option = {
 		else {
 			return this[property];
 		}
+	}
+}
+
+Option.Debug = {
+	DISPLAY: {
+		DOM:"DEBUG_DISPLAY_DOM",
+		SVG:"DEBUG_DISPLAY_SVG",
+		IMG:"DEBUG_DISPLAY_IMG"
 	}
 }

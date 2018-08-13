@@ -1,23 +1,10 @@
 import {BaseTransition} from './BaseTransition'
+import {Vec2, Vec3, Vec4} from '../geom/Vec'
 
-
+/**
+ * It's based on {@link https://gl-transitions.com/editor/crosswarp crosswarp by Eke Péter}.
+ */
 export const CrossWarpTransition = BaseTransition.extend({
-
-//Crosswarp Transition 
-//https://gl-transitions.com/editor/crosswarp
-
-	vertexShader : `
-precision highp float;
-
-attribute vec3 position;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-
-void main(void) {
-	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}
-`,
 
 fragmentShader : `
 precision highp float;
@@ -53,10 +40,6 @@ void main(void) {
 `,
 
 	uniforms: {
-		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		progress:{ value: 0 },
-		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		gradient: { value: new THREE.Vector2(0.5, 0.5) },
+		gradient: { value: new Vec2(0.5, 0.5) },
 	}
 });

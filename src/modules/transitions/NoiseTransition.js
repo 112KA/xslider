@@ -1,23 +1,10 @@
 import {BaseTransition} from './BaseTransition'
+import {Vec2, Vec3, Vec4} from '../geom/Vec'
 
+/**
+ * It's based on {@link https://logik-matchbook.org/shader/crok_transitions crok_transitions by Gaëtan Renaudeau}.
+ */
 export const NoiseTransition = BaseTransition.extend({
-
-
-
-	vertexShader : `
-    precision highp float;
-
-attribute vec3 position;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-
-
-void main(void) {
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}
-`,
 
     fragmentShader : `
 precision highp float;
@@ -173,11 +160,6 @@ void main(void) {
 `,
 
 	uniforms: {
-		texture0: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		texture1: { value: new THREE.Texture(null, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearFilter) },
-		progress:{ value: 0 },
-		resolution: { value: new THREE.Vector2(0.0, 0.0) },
-		// fade: { value: new THREE.Vector2(0.5, 0.5) },
 		time:{ value: 0 },
 		
 		zoom:{ value: 0.3 },
@@ -189,8 +171,8 @@ void main(void) {
 		contrast:{ value: 1 },
 		brightness:{ value: 1 },
 		saturation:{ value: 100 },
-		light_tint: { value: new THREE.Vector3(0.5, 0.5, 0.5) },
-		dark_tint: { value: new THREE.Vector3(0.2, 0.2, 0.2) },
+		light_tint: { value: new Vec3(0.5, 0.5, 0.5) },
+		dark_tint: { value: new Vec3(0.2, 0.2, 0.2) },
 		t_amount:{ value: 0.5 },
 		exposure:{ value: 30 },
 		horzFuzzOpt:{ value: 10 },

@@ -24,8 +24,8 @@ export class DefaultRenderer extends BaseRenderer {
 		}
 	}
 	
-	setup(data) {
-		super.setup(data);
+	setup(data, container) {
+		super.setup(data, container);
 	}
 
 	dispose() {
@@ -52,8 +52,8 @@ export class DefaultRenderer extends BaseRenderer {
 		
 	}
 
-	resize(e) {
-		super.resize(e);
+	resize(w, h) {
+		super.resize(w, h);
 	}
 
 	updateSlide(slide, opacity, dx) {

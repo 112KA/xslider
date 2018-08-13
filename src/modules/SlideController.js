@@ -1,11 +1,12 @@
 
-import {Event, TouchEvent} from './core/Event'
+import {TouchEvent} from './core/Event'
 import {EventDispatcher} from './core/EventDispatcher'
 import {stage} from './core/Stage'
 import {AutoPlay} from './components/AutoPlay'
 import {Indexer} from './components/Indexer'
-import {Bench} from './components/debug/Bench'
-import {Button} from './display/Button'
+import {Inliner} from './components/converter/Inliner'
+// import {Bench} from './components/debug/Bench'
+import {SlideContainer} from './display/Slide'
 import {UI} from './display/UI'
 import {DefaultRenderer} from './renderer/DefaultRenderer'
 
@@ -26,19 +27,26 @@ export class SlideController extends EventDispatcher {
 		this.ui = new UI();
 		this.autoplay = new AutoPlay();
 
+		this.container = new SlideContainer();
+
 		this._defineHandlers();
 	}
 
 	_defineHandlers() {
 
 		this._onResize = (e) => {
+			const w = this.dom.width, h = this.dom.height;
 
 			this.data.list.forEach((slide) => {
 				slide.needsResize = true;
 			});
 
-			this.renderer.default.resize(e);
-			this.renderer.gl.resize(e);
+			this.renderer.default.resize(w, h);
+			this.renderer.gl.resize(w, h);
+
+			return this.container.resize(w, h).then(() => {
+				this.renderer.gl.render(this.indexer);
+			});
 		}
 
 
@@ -55,7 +63,7 @@ export class SlideController extends EventDispatcher {
 			this.data.time = e.time;
 			this.indexer.tick();
 			this.renderer.default.render(this.indexer);
-			this.ready()
+			this.container.ready(this.indexer)
 				.then(() => {
 					this.renderer.gl.render(this.indexer);
 				},
@@ -80,7 +88,7 @@ export class SlideController extends EventDispatcher {
 				case 'index':
 					this.indexer.to(e.value);
 
-					this.ready().then(() => {
+					this.container.ready(this.indexer).then(() => {
 						stage.on('tick', this._onTick);
 					},
 					(message) => {
@@ -134,24 +142,29 @@ export class SlideController extends EventDispatcher {
 		this.renderer.default.setup(this.data);
 
 		this.renderer.gl = this.data.getRenderer();
-		this.renderer.gl.setup(this.data);
+		this.renderer.gl.setup(this.data, this.container);
+
+		this.container.setup(this.renderer.gl.mesh);
 
 		this.ui.setup(this.data);
 
+		this.indexer.setup(this.data);
+		this.indexer.on('complete', this._onCompleteSlide);
 		if(!this.data.option.loop) {
 			this.indexer.on('head', this._onChange);
 			this.indexer.on('tail', this._onChange);
 		}
-		this.indexer.setup(this.data);
-
-		this.indexer.on('complete', this._onCompleteSlide);
 
 		this.autoplay.on(AutoPlay.EVENT.TICK, this._onChange);
 		this.autoplay.setup(this.data.option.autoplay);
 
 		this.dom.on('resize', this._onResize);
 
-		this.ready().then(() => {
+		Inliner.resolveFonts()
+		.then(() => this.container.ready(this.indexer))
+		.then(this._onResize)
+		.then(() => {
+
 			this.ui.on('index', this._onChange);
 			this.ui.on(UI.EVENT.PREV, this._onChange);
 			this.ui.on(UI.EVENT.NEXT, this._onChange);
@@ -161,18 +174,10 @@ export class SlideController extends EventDispatcher {
 			this.autoplay.start();
 
 			stage.on('tick', this._onTick);
-			this.dom._onResize();
+
 		}, (message) => {
 			console.log("first ready rejected : ", message);
 		});
-	}
-
-
-	ready() {
-		const slide0 = this.data.list[this.indexer.i0]
-		, slide1 = this.data.list[this.indexer.i1];
-
-		return Promise.all([slide0.ready(), slide1.ready()]);
 	}
 
 
@@ -193,6 +198,8 @@ export class SlideController extends EventDispatcher {
 
 
 	dispose() {
+
+		if(!this.data) return;
 
 		stage.off('tick', this._onTick);
 		stage.off(TouchEvent.MOVE, this._onChange);
@@ -217,6 +224,10 @@ export class SlideController extends EventDispatcher {
 
 		this.renderer.gl.dispose();
 		this.renderer.default.dispose();
+
+		this.container.dispose();
+
+		this.data = undefined;
 	}
 }
 
