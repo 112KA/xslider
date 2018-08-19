@@ -25,14 +25,16 @@ void main(void) {
 	v = clamp(v, 0.0, 1.0);
 	v = floor(v * 16.0) / 16.0;
 
-	p -= 0.5;
-
-	float pv = min(v, 1.0 - v) * 2.0;	//0.0-1.0
-	vec2 steps = vec2(aspect, 1.0) * N / pv;
-	steps = min(steps, resolution.xy);
-	p = (floor(p * steps) + 0.5) / steps;
-
-	p += 0.5;
+	if(v!=0.0) {
+		p -= 0.5;
+	
+		float pv = min(v, 1.0 - v) * 2.0;	//0.0-1.0
+		vec2 steps = vec2(aspect, 1.0) * N / pv;
+		steps = min(steps, resolution.xy);
+		p = (floor(p * steps) + 0.5) / steps;
+	
+		p += 0.5;
+	}
 
 	vec4 c0 = texture2D(texture0, p);
 	vec4 c1 = texture2D(texture1, p);

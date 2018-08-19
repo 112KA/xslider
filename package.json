@@ -1,6 +1,6 @@
 {
   "name": "xslider",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/xslider.min.js",
   "repository": "https://github.com/112KA/xslider.git",
   "author": "112KA",
@@ -26,7 +26,7 @@
     "webpack": "^3.10.0",
     "webpack-concat-plugin": "^2.4.2",
     "webpack-dev-server": "^2.10.1"
-  },,
+  },
   "keywords": [
     "webgl","shader","slider","XSlider" 
   ]
