@@ -1844,7 +1844,7 @@ var Environment = function (_EventDispatcher) {
 
 		var _this = (0, _possibleConstructorReturn3.default)(this, (Environment.__proto__ || (0, _getPrototypeOf2.default)(Environment)).call(this));
 
-		console.info("xslider ver.", "1.0.1");
+		console.info("xslider ver.", "1.0.2");
 		// if(!THREE) {
 		// 	console.error("xslider depend on three.js");
 		// }
