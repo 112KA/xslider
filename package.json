@@ -28,6 +28,9 @@
     "webpack-dev-server": "^2.10.1"
   },
   "keywords": [
-    "webgl","shader","slider","XSlider" 
+    "webgl",
+    "shader",
+    "slider",
+    "XSlider"
   ]
 }
