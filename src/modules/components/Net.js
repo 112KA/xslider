@@ -1,5 +1,24 @@
 class Net {
-	construcor() {
+	constructor() {
+		/*
+		 * Only WOFF and EOT mime types for fonts are 'real'
+		 * see http://www.iana.org/assignments/media-types/media-types.xhtml
+		 */
+		var WOFF = 'application/font-woff';
+		var JPEG = 'image/jpeg';
+
+		this.mimes = {
+			'woff': WOFF,
+			'woff2': WOFF,
+			'ttf': 'application/font-truetype',
+			'eot': 'application/vnd.ms-fontobject',
+			'png': 'image/png',
+			'jpg': JPEG,
+			'jpeg': JPEG,
+			'gif': 'image/gif',
+			'tiff': 'image/tiff',
+			'svg': 'image/svg+xml'
+		}
 
 	}
 
@@ -61,16 +80,34 @@ class Net {
 	// 	return blob;
 	// }
 	getDataURI(url) {
+		let ext = this.parseExtension(url)
+
 		return this.get(url, 'blob')
-			.then(this.readBlob);
+			.then((blob) => {
+				return this.readBlob.bind(this)(blob, ext)
+			});
 	}
 
+	parseExtension(url) {
+		var match = /\.([^\.\/]*?)$/g.exec(url)
+		if (match) return match[1]
+		else return null
+	}
 
-	readBlob(blob) {
-		const reader = new FileReader();
+	getMimeType(ext) {
+	}
+
+	readBlob(blob, ext) {
+		const reader = new FileReader(),
+		mimeType = ext ? this.mimes[ext] : null;
 		return new Promise((resolve, reject) => {
-			reader.onloadend = function () {
-				resolve(reader.result);
+			reader.onloadend = () => {
+				let ret = reader.result
+				if(mimeType) {
+					ret = ret.split(',')[1]
+					ret = 'data:' + mimeType + ';base64,' + ret;
+				}
+				resolve(ret)
 			};
 			reader.readAsDataURL(blob);
 		});

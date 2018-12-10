@@ -7,6 +7,8 @@ import {Option} from '../components/Option'
 
 import {EventDispatcher} from '../core/EventDispatcher'
 
+import domtoimage from 'dom-to-image';
+
 export class Slide {
 
 	constructor(slide, debug) {
@@ -66,23 +68,50 @@ export class Slide {
 	}
 
 
-	loadSvg() {
-		const string = new XMLSerializer().serializeToString(this.svg);
-		const uri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(string);
+	loadSvg(w, h) {
 
-		if(this.debug == Option.Debug.DISPLAY.SVG) {
+		// this.svg = converter.convert(this.inlinedNode, w, h);
 
-			if(this._svg0 === undefined) {
-				this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
-			}
-			else {
-				const node = this.svg.childNodes[0];
-				this.element.replaceChild(node, this._svg0);
-				this._svg0 = node;
-			}
-		}
+		// let string = new XMLSerializer().serializeToString(this.svg);
+		// // console.log('string', string)
+		// // string = string.replace(/#/g, '%23').replace(/\n/g, '%0A')
+		// const uri = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(string);
 
-		return net.loadImage(this.image, uri);
+		// if(this.debug == Option.Debug.DISPLAY.SVG) {
+
+		// 	if(this._svg0 === undefined) {
+		// 		this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
+		// 	}
+		// 	else {
+		// 		const node = this.svg.childNodes[0];
+		// 		this.element.replaceChild(node, this._svg0);
+		// 		this._svg0 = node;
+		// 	}
+		// }
+		// return net.loadImage(this.image, uri)
+
+		// const uri = converter.toSvgUri(this.inlinedNode, w, h)
+			const uri = converter.toSvg(this.inlinedNode, w, h)
+
+		this.layer.gl.classList.add("xslider-capture");
+		return domtoimage.toSvg(this.layer.gl, {width:w, height:h}).then((uri) => {
+			this.layer.gl.classList.remove("xslider-capture");
+	
+			return net.loadImage(this.image, uri)
+		})
+		
+		// this.layer.gl.classList.add("xslider-capture");
+		// return Inliner.inlineNode(this.layer.gl).then(inlined => {
+		// 	this.layer.gl.classList.remove("xslider-capture");
+		// 	const uri = converter.toSvgUri(inlined, w, h)
+
+		// 	return net.loadImage(this.image, uri)
+		// });
+
+		// return domtoimage.makeSvgDataUri(this.inlinedNode, w, h).then((uri) => {
+
+		// 	return net.loadImage(this.image, uri)
+		// });
 	}
 
 
@@ -106,13 +135,11 @@ export class Slide {
 	
 					this.layer.gl.classList.remove("xslider-capture");
 
-					this.svg = converter.convert(this.inlinedNode, w, h);
-	
-					this.loadSvg().then(() => {
+					this.loadSvg(w, h).then(() => {
 						const c = this.canvas.getContext('2d');
 						c.clearRect(0,0,w,h);
 						c.drawImage(this.image,0,0,w,h);
-						// console.log(this.layer, w, h);
+						// console.log(this.image, w, h);
 	
 						resolve();
 					});

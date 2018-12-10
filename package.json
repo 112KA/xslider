@@ -10,7 +10,9 @@
     "webpack:dev": "webpack",
     "webpack:prd": "NODE_ENV=production webpack -p"
   },
-  "dependencies": {},
+  "dependencies": {
+    "dom-to-image": "^2.6.0"
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

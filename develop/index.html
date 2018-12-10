@@ -30,6 +30,11 @@
 			font: italic normal 700 normal 16px/23px 'Noto Sans', sans-serif;
 	    }
 
+		
+	    .xslider-layer-gl {
+			/* display: block; */
+		}
+
 	    .xslider-layer-gl p {
 	    	position: absolute;
 	    	display: inline-block;
@@ -37,6 +42,7 @@
 	    	padding: 3px 8px;
 	    	left: 50%; bottom: 25px;
 	    	margin-left: -75px;
+			font: italic normal 700 normal 16px/23px 'Noto Sans', sans-serif;
 	    }
 
 	    .xslider-layer-ui {
@@ -98,6 +104,10 @@
 	<script src="TestTransition.js"></script>
 	<script>
 		
+var svgString = '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><div></div></svg>'
+        var svg = new DOMParser().parseFromString(svgString, "text/xml");
+		console.log('svg', svg)
+		
 		var query = {};
 
 		if(window.location.hash) {
@@ -136,7 +146,7 @@
 			return {
 				// debug: XSlider.Debug.DISPLAY.DOM,
 				// debug: XSlider.Debug.DISPLAY.SVG,
-				// debug: XSlider.Debug.DISPLAY.IMG,
+				debug: XSlider.Debug.DISPLAY.IMG,
 				transition: target.transition != "Test" ? XSlider[target.transition+"Transition"] : TestTransition,
 				loop : target.loop,
 				touchMove : target.touchMoveEnabled ? {

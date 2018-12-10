@@ -17,6 +17,8 @@ export const Inliner = {
 				this.inlineFonts(fontStrings)
 					.then((inlinedFontStrings) => {
 						this.inlinedFontString = inlinedFontStrings.join(" ");
+						// this.inlinedFontString = inlinedFontStrings.join("\n");
+						// console.log("this.inlinedFontString", this.inlinedFontString)
 						resolve();
 					})
 			}
@@ -42,6 +44,8 @@ export const Inliner = {
 			}
 		}
 
+		console.log("fontRules", fontRules)
+
 		return fontRules;
 	},
 
@@ -58,8 +62,8 @@ export const Inliner = {
 
 
 	_inline(string) {
+		// console.log('string', string)
 		const urls = this.searchUrls(string);
-
 		const arr = [];
 
 		urls.map((url) => {
