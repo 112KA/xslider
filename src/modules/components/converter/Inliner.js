@@ -44,7 +44,7 @@ export const Inliner = {
 			}
 		}
 
-		console.log("fontRules", fontRules)
+		// console.log("fontRules", fontRules)
 
 		return fontRules;
 	},

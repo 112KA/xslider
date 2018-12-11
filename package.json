@@ -8,11 +8,10 @@
   "scripts": {
     "start": "webpack-dev-server --progress --colors",
     "webpack:dev": "webpack",
-    "webpack:prd": "NODE_ENV=production webpack -p"
+    "webpack:prd": "NODE_ENV=production webpack -p",
+    "webpack:prd-win": "set NODE_ENV=production&&webpack -p"
   },
-  "dependencies": {
-    "dom-to-image": "^2.6.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
