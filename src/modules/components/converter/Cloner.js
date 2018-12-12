@@ -20,17 +20,17 @@ class Cloner {
 			target.cssText = original.cssText;
 
 			//remove fontStrech
-			const matches = target.cssText.match(/font:( [^ ;]+)+;/);
-			if(matches) {
-				const removeFontStrech = s => {
-					let arr = s.split(" ");
-					arr.splice(3, 1);
-					return arr.join(" ");
-				};
-				for(let i=0; i<matches.length; i++) {
-					target.cssText = target.cssText.replace(matches[i], removeFontStrech(matches[i]));
-				}
-			}
+			// const matches = target.cssText.match(/font:( [^ ;]+)+;/);
+			// if(matches) {
+			// 	const removeFontStrech = s => {
+			// 		let arr = s.split(" ");
+			// 		arr.splice(3, 1);
+			// 		return arr.join(" ");
+			// 	};
+			// 	for(let i=0; i<matches.length; i++) {
+			// 		target.cssText = target.cssText.replace(matches[i], removeFontStrech(matches[i]));
+			// 	}
+			// }
 		}
 		else {
 			for(let i=0; i<original.length; i++) {
