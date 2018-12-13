@@ -13,11 +13,18 @@
         body {
             margin: 0; padding: 0;
         }
-        .container {
-            width: 400px; height: 300px;
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .xslider {
+            width: 90%; height: 300px;
+            max-width: 400px;
             color: white;
             background: #ffd700;
-            margin: 100px auto 0;
         }
         .xslider-view .xslider-layer-gl {
             text-align: center;
@@ -29,7 +36,8 @@
 </head>
 
 <body>
-    <div class="container">
+    <main>
+
         <div class="xslider">
             <div class="xslider-view">
                 <div class="xslider-slide">
@@ -69,7 +77,8 @@
             <div class="xslider-prev"></div>
             <div class="xslider-next"></div>
         </div>
-    </div>
+
+    </main>
     
     <!-- <script src="../../dist/xslider.min.js"></script> -->
     <script src="../../dist/xslider.js"></script>

@@ -1851,7 +1851,7 @@ var Environment = function (_EventDispatcher) {
 
 		var _this = (0, _possibleConstructorReturn3.default)(this, (Environment.__proto__ || (0, _getPrototypeOf2.default)(Environment)).call(this));
 
-		console.info("xslider ver.", "1.0.2");
+		console.info("xslider ver.", "1.0.3");
 		// if(!THREE) {
 		// 	console.error("xslider depend on three.js");
 		// }
@@ -3447,20 +3447,20 @@ var Cloner = function () {
 				target.cssText = original.cssText;
 
 				//remove fontStrech
-				var matches = target.cssText.match(/font:( [^ ;]+)+;/);
-				if (matches) {
-					var removeFontStrech = function removeFontStrech(s) {
-						var arr = s.split(" ");
-						arr.splice(3, 1);
-						return arr.join(" ");
-					};
-					for (var _i = 0; _i < matches.length; _i++) {
-						target.cssText = target.cssText.replace(matches[_i], removeFontStrech(matches[_i]));
-					}
-				}
+				// const matches = target.cssText.match(/font:( [^ ;]+)+;/);
+				// if(matches) {
+				// 	const removeFontStrech = s => {
+				// 		let arr = s.split(" ");
+				// 		arr.splice(3, 1);
+				// 		return arr.join(" ");
+				// 	};
+				// 	for(let i=0; i<matches.length; i++) {
+				// 		target.cssText = target.cssText.replace(matches[i], removeFontStrech(matches[i]));
+				// 	}
+				// }
 			} else {
-				for (var _i2 = 0; _i2 < original.length; _i2++) {
-					var _name = original[_i2];
+				for (var _i = 0; _i < original.length; _i++) {
+					var _name = original[_i];
 					target.setProperty(_name, original.getPropertyValue(_name), original.getPropertyPriority(_name));
 				}
 			}
@@ -6048,7 +6048,7 @@ __webpack_require__(32)('getOwnPropertyNames', function () {
 
 
 Object.defineProperty(exports, "__esModule", {
-		value: true
+	value: true
 });
 exports.converter = undefined;
 
@@ -6058,42 +6058,42 @@ var _Inliner = __webpack_require__(58);
  * It's based on {@link https://github.com/tsayen/dom-to-image dom-to-image by Anatolii Saienko}.
  */
 var converter = exports.converter = {
-		parser: new DOMParser(),
+	parser: new DOMParser(),
 
-		convert: function convert(node, width, height) {
-				/*
-    		const svgString = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="`+width+`" height="`+height+`">
-    	<foreignObject x="0" y="0" width="100%" height="100%">
-    		<body xmlns="http://www.w3.org/1999/xhtml" style="margin:0;">
-    			<style>`+Inliner.inlinedFontString+`</style>
-    		</body>
-    	</foreignObject>
-    </svg>
-    		`
-    		// console.log('--')
-    		// console.log(Inliner.inlinedFontString)
-    		const svg = this.parser.parseFromString(svgString, "text/xml");
-    		let o = svg.getElementsByTagName('body')[0];
-    		o.appendChild(node);
-    */
-				node.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+	convert: function convert(node, width, height) {
+		/*
+  		const svgString = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="`+width+`" height="`+height+`">
+  	<foreignObject x="0" y="0" width="100%" height="100%">
+  		<body xmlns="http://www.w3.org/1999/xhtml" style="margin:0;">
+  			<style>`+Inliner.inlinedFontString+`</style>
+  		</body>
+  	</foreignObject>
+  </svg>
+  		`
+  		// console.log('--')
+  		// console.log(Inliner.inlinedFontString)
+  		const svg = this.parser.parseFromString(svgString, "text/xml");
+  		let o = svg.getElementsByTagName('body')[0];
+  		o.appendChild(node);
+  */
+		node.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
 
-				var svgString = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">\n\t\t<foreignObject x="0" y="0" width="100%" height="100%">\n\t\t</foreignObject>\n\t\t</svg>';
+		var svgString = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">\n\t\t<foreignObject x="0" y="0" width="100%" height="100%">\n\t\t</foreignObject>\n\t\t</svg>';
 
-				var svg = this.parser.parseFromString(svgString, "text/xml"),
-				    styleNode = document.createElement('style');
+		var svg = this.parser.parseFromString(svgString, "text/xml"),
+		    styleNode = document.createElement('style');
 
-				styleNode.appendChild(document.createTextNode(_Inliner.Inliner.inlinedFontString));
-				node.appendChild(styleNode);
+		styleNode.appendChild(document.createTextNode(_Inliner.Inliner.inlinedFontString));
+		node.appendChild(styleNode);
 
-				var o = svg.getElementsByTagName('foreignObject')[0];
-				o.appendChild(node);
+		var o = svg.getElementsByTagName('foreignObject')[0];
+		o.appendChild(node);
 
-				// console.log('svg: ', svg.childNodes[0]);
+		// console.log('svg: ', svg.childNodes[0]);
 
-				return svg;
-		}
+		return svg;
+	}
 };
 
 /***/ }),
