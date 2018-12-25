@@ -5,6 +5,10 @@ XSlider is a slider library using webgl shader for transition.
 - Shader transition is easy to customize.
 - No external dependency.
 - Treat DOM structure as webgl texture.
+- It switches continuously when several slides are skipped  
+![slide sample](https://raw.githubusercontent.com/wiki/112KA/xslider/images/xslider_slide.gif)
+- You can grab a slide and throw it  
+![drag sample](https://raw.githubusercontent.com/wiki/112KA/xslider/images/xslider_drag.gif)
 
 [demo](https://112ka.github.io/xslider/demo/)
 
