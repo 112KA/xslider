@@ -23,8 +23,8 @@ module.exports = {
 			use: [{
 				loader: 'babel-loader',
 				options: {
-					presets: ['env'],
-					plugins: ['transform-runtime'],
+					presets: ["@babel/preset-env"],
+					plugins: ['@babel/transform-runtime'],
 					cacheDirectory: true
 				}
 			}],
