@@ -86,6 +86,7 @@ new XSlider(selector, options);
 | Name | Type | Default | Description |
 | - | - | - | - |
 | transition | Object | Xslider.BaseTransition | Transition effect. |
+| easing | Number | 0.15 | Easing coefficient of transition. <br>Adjust the transition time with this parameter. |
 | initialSlideIndex | Number | 0 | Index number of initial slide. |
 | loop | Boolean | true | Loop slide flag. |
 | touchMove | Boolean or Object | { <br>    throwable:true <br>} | Object with touch parameters.  |
