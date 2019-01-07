@@ -125,7 +125,7 @@ export class Indexer extends EventDispatcher {
 			default:
 				!this.data.option.loop && (this._target = this.constrain(this._target));
 
-				this._v += (this._target - this._v) * Indexer.EASING;
+				this._v += (this._target - this._v) * this.data.option.easing;
 
 				if(Math.abs(this._target - this._v) < 0.001) {
 					this._v = this._target;
@@ -143,8 +143,6 @@ export class Indexer extends EventDispatcher {
 		complete &&	this.dispatch('complete');
 	}
 }
-
-Indexer.EASING = 0.15;
 
 Indexer.STATE = {
 	DEFAULT:'DEFAULT',

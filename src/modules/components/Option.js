@@ -13,10 +13,8 @@ export const Option = {
 	},
 	renderer : undefined,
 	debug : false,
+	easing: 0.15,
 	
-	// getTransition : function() {
-	// 	return BaseTransition;
-	// },
 	transition: BaseTransition,
 
 	get : function(property, module) {
