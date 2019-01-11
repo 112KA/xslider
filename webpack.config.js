@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const ConcatPlugin = require('webpack-concat-plugin');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 
 const DEV = process.env.NODE_ENV !== 'production';
@@ -11,11 +12,13 @@ module.exports = {
 	entry: {
 		xslider: './src/xslider.js',
 	},
+
 	output: {
 		filename: DEV ? 'dist/[name].js' : 'dist/[name].min.js',
 		// path: path.join(__dirname, 'dist')
 		path: __dirname
 	},
+
 	module: {
 		rules: [{
 			test: /\.js$/,
@@ -36,6 +39,20 @@ module.exports = {
 				use: ['css-loader', 'sass-loader'],
 			}),
 		}],
+	},
+
+	optimization: DEV ? {} : {
+			minimize: true,
+			minimizer: [new TerserPlugin({
+			terserOptions: {
+				ecma: 6,
+				compress: true,
+				output: {
+					comments: false,
+					beautify: false
+				}
+			}
+		})]
 	},
 	
 	plugins: DEV ? [
@@ -66,9 +83,9 @@ module.exports = {
 		new webpack.DefinePlugin({
 	      XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
 		}),
-		new webpack.optimize.UglifyJsPlugin({
-			compress: { warnings: false }
-		}),
+		// new webpack.optimize.UglifyJsPlugin({
+		// 	compress: { warnings: false }
+		// }),
 		new ExtractTextPlugin(DEV?'dist/xslider.css':'dist/xslider.min.css'),
 	],
 
