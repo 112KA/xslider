@@ -1,4 +1,14 @@
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["XSlider"] = factory();
+	else
+		root["XSlider"] = factory();
+})(window, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -405,7 +415,7 @@ function (_EventDispatcher) {
     _this = _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default()(this, _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(SlideController).call(this));
     _this.indexer = new _components_Indexer__WEBPACK_IMPORTED_MODULE_9__["Indexer"]();
     _this.renderer = {
-      default: new _renderer_DefaultRenderer__WEBPACK_IMPORTED_MODULE_13__["DefaultRenderer"](),
+      "default": new _renderer_DefaultRenderer__WEBPACK_IMPORTED_MODULE_13__["DefaultRenderer"](),
       gl: undefined
     };
     _this.ui = new _display_UI__WEBPACK_IMPORTED_MODULE_12__["UI"]();
@@ -430,7 +440,7 @@ function (_EventDispatcher) {
           slide.needsResize = true;
         });
 
-        _this2.renderer.default.resize(w, h);
+        _this2.renderer["default"].resize(w, h);
 
         _this2.renderer.gl.resize(w, h);
 
@@ -453,7 +463,7 @@ function (_EventDispatcher) {
 
         _this2.indexer.tick();
 
-        _this2.renderer.default.render(_this2.indexer);
+        _this2.renderer["default"].render(_this2.indexer);
 
         _this2.container.ready(_this2.indexer).then(function () {
           _this2.renderer.gl.render(_this2.indexer);
@@ -536,7 +546,7 @@ function (_EventDispatcher) {
       this.renderer.gl = renderer;
       this.data = data;
       this.dom = data.dom;
-      this.renderer.default.setup(this.data);
+      this.renderer["default"].setup(this.data);
       this.renderer.gl = this.data.getRenderer();
       this.renderer.gl.setup(this.data, this.container);
       this.container.setup(this.renderer.gl.mesh);
@@ -611,7 +621,7 @@ function (_EventDispatcher) {
       }
 
       this.renderer.gl.dispose();
-      this.renderer.default.dispose();
+      this.renderer["default"].dispose();
       this.container.dispose();
       this.data = undefined;
     }
@@ -779,8 +789,8 @@ function () {
         _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion && _iterator.return != null) {
-            _iterator.return();
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
           }
         } finally {
           if (_didIteratorError) {
@@ -807,8 +817,8 @@ function () {
         _iteratorError2 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-            _iterator2.return();
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
           }
         } finally {
           if (_didIteratorError2) {
@@ -1231,8 +1241,8 @@ var Utils = {
     Object.assign(ret, base);
     var entries = Object.entries(o);
 
-    for (var _i = 0; _i < entries.length; _i++) {
-      var entry = entries[_i];
+    for (var _i = 0, _entries = entries; _i < _entries.length; _i++) {
+      var entry = _entries[_i];
       ret[entry[0]] = entry[1];
     }
 
@@ -1241,8 +1251,8 @@ var Utils = {
   delegate: function delegate(base, o) {
     var entries = Object.entries(o);
 
-    for (var _i2 = 0; _i2 < entries.length; _i2++) {
-      var entry = entries[_i2];
+    for (var _i2 = 0, _entries2 = entries; _i2 < _entries2.length; _i2++) {
+      var entry = _entries2[_i2];
       base[entry[0]] = entry[1];
     }
   },
@@ -2948,8 +2958,8 @@ function () {
           _iteratorError = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
             }
           } finally {
             if (_didIteratorError) {
@@ -4617,10 +4627,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/getPrototypeOf.js");
 /* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/inherits.js");
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/assertThisInitialized.js");
-/* harmony import */ var _babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/assertThisInitialized.js");
+/* harmony import */ var _babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/inherits.js");
+/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _components_Data__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/Data */ "./src/modules/components/Data.js");
 /* harmony import */ var _SlideController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./SlideController */ "./src/modules/SlideController.js");
 /* harmony import */ var _core_EventDispatcher__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./core/EventDispatcher */ "./src/modules/core/EventDispatcher.js");
@@ -4638,7 +4648,7 @@ __webpack_require__.r(__webpack_exports__);
 var XSlider =
 /*#__PURE__*/
 function (_EventDispatcher) {
-  _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4___default()(XSlider, _EventDispatcher);
+  _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5___default()(XSlider, _EventDispatcher);
 
   function XSlider() {
     var _this2;
@@ -4650,7 +4660,7 @@ function (_EventDispatcher) {
     _this = _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default()(this, _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(XSlider).call(this));
     _this.data = new _components_Data__WEBPACK_IMPORTED_MODULE_6__["Data"]();
     _this.controller = new _SlideController__WEBPACK_IMPORTED_MODULE_7__["SlideController"]();
-    _components_Utils__WEBPACK_IMPORTED_MODULE_9__["Utils"].delegate(_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_5___default()(_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_5___default()(_this)), {
+    _components_Utils__WEBPACK_IMPORTED_MODULE_9__["Utils"].delegate(_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4___default()(_this), {
       prev: _this.controller.prev,
       next: _this.controller.next,
       autoplay: {
@@ -4669,14 +4679,10 @@ function (_EventDispatcher) {
     value: function setup() {
       var _this$data;
 
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      console.log('args: ', args);
+      // console.log('args: ', args);
       this.dispose();
 
-      (_this$data = this.data).setup.apply(_this$data, args);
+      (_this$data = this.data).setup.apply(_this$data, arguments);
 
       this.controller.setup(this.renderer, this.data);
     }
@@ -5394,4 +5400,5 @@ window.XSlider = _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"];
 /***/ })
 
 /******/ });
+});
 //# sourceMappingURL=xslider.js.map

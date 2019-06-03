@@ -16,7 +16,7 @@ XSlider is a slider library using webgl shader for transition.
 
 ### Download and install:
 ```shell
-yarn install xslider
+yarn add xslider
 ```
 or
 ```shell
