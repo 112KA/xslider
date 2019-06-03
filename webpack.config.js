@@ -16,7 +16,9 @@ module.exports = {
 	output: {
 		filename: DEV ? 'dist/[name].js' : 'dist/[name].min.js',
 		// path: path.join(__dirname, 'dist')
-		path: __dirname
+		path: __dirname,
+		library: 'XSlider',
+		libraryTarget: 'umd'
 	},
 
 	module: {
@@ -42,8 +44,8 @@ module.exports = {
 	},
 
 	optimization: DEV ? {} : {
-			minimize: true,
-			minimizer: [new TerserPlugin({
+		minimize: true,
+		minimizer: [new TerserPlugin({
 			terserOptions: {
 				ecma: 6,
 				compress: true,
@@ -54,46 +56,46 @@ module.exports = {
 			}
 		})]
 	},
-	
+
 	plugins: DEV ? [
 		new ConcatPlugin({
-		    // examples
-		    uglify: false,
-		    sourceMap: false,
-		    name: 'vendor',
-		    outputPath: './samples/asset/js/',
-		    fileName: '[name].js',
-		    filesToConcat: [
-		    	// './node_modules/three/build/three.min.js', 
-		    	// './node_modules/dom-to-image/dist/dom-to-image.min.js'
-		    	// './node_modules/dom-to-image/src/dom-to-image.js'
-		    	'./node_modules/dat.gui/build/dat.gui.min.js',
-		    	// './node_modules/babel-polyfill/dist/polyfill.min.js'
-		    ],
-		    attributes: {
-		        async: false
-		    }
+			// examples
+			uglify: false,
+			sourceMap: false,
+			name: 'vendor',
+			outputPath: './samples/asset/js/',
+			fileName: '[name].js',
+			filesToConcat: [
+				// './node_modules/three/build/three.min.js', 
+				// './node_modules/dom-to-image/dist/dom-to-image.min.js'
+				// './node_modules/dom-to-image/src/dom-to-image.js'
+				'./node_modules/dat.gui/build/dat.gui.min.js',
+				// './node_modules/babel-polyfill/dist/polyfill.min.js'
+			],
+			attributes: {
+				async: false
+			}
 		}),
 		new webpack.DefinePlugin({
-	      XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
-	    }),
+			XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
+		}),
 		new ExtractTextPlugin('dist/xslider.css'),
 		// new webpack.optimize.UglifyJsPlugin()
 	] : [
-		new webpack.DefinePlugin({
-	      XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
-		}),
-		// new webpack.optimize.UglifyJsPlugin({
-		// 	compress: { warnings: false }
-		// }),
-		new ExtractTextPlugin(DEV?'dist/xslider.css':'dist/xslider.min.css'),
-	],
+			new webpack.DefinePlugin({
+				XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
+			}),
+			// new webpack.optimize.UglifyJsPlugin({
+			// 	compress: { warnings: false }
+			// }),
+			new ExtractTextPlugin(DEV ? 'dist/xslider.css' : 'dist/xslider.min.css'),
+		],
 
 	devServer: {
-	    contentBase: __dirname,
-	    // watchContentBase: true,
-	    port: 3000,
-	    inline: true,
+		contentBase: __dirname,
+		// watchContentBase: true,
+		port: 3000,
+		inline: true,
 	},
 
 	devtool: DEV ? 'source-map' : ''
