@@ -18,7 +18,9 @@ module.exports = {
 		// path: path.join(__dirname, 'dist')
 		path: __dirname,
 		library: 'XSlider',
-		libraryTarget: 'umd'
+		libraryTarget: 'umd',
+		umdNamedDefine: true,
+		globalObject: "typeof self !== 'undefined' ? self : this"
 	},
 
 	module: {

@@ -2,12 +2,12 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define([], factory);
+		define("XSlider", [], factory);
 	else if(typeof exports === 'object')
 		exports["XSlider"] = factory();
 	else
 		root["XSlider"] = factory();
-})(window, function() {
+})(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -2824,7 +2824,7 @@ function (_EventDispatcher) {
     _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default()(this, Environment);
 
     _this = _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default()(this, _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(Environment).call(this));
-    console.info("xslider ver.", "1.0.5"); // if(!THREE) {
+    console.info("xslider ver.", "1.0.7"); // if(!THREE) {
     // 	console.error("xslider depend on three.js");
     // }
     // if(!domtoimage) {
@@ -5331,7 +5331,7 @@ var PixelateWipeTransition = _BaseTransition__WEBPACK_IMPORTED_MODULE_0__["BaseT
 /*!************************!*\
   !*** ./src/xslider.js ***!
   \************************/
-/*! no exports provided */
+/*! exports provided: XSlider */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5339,6 +5339,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _xslider_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./xslider.scss */ "./src/xslider.scss");
 /* harmony import */ var _xslider_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_xslider_scss__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _modules_main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/main.js */ "./src/modules/main.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "XSlider", function() { return _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"]; });
+
 /* harmony import */ var _modules_core_Stage_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/core/Stage.js */ "./src/modules/core/Stage.js");
 /* harmony import */ var _modules_transitions_BaseTransition__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/transitions/BaseTransition */ "./src/modules/transitions/BaseTransition.js");
 /* harmony import */ var _modules_transitions_CrossWarpTransition__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/transitions/CrossWarpTransition */ "./src/modules/transitions/CrossWarpTransition.js");
@@ -5383,8 +5385,9 @@ _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Vec4 = _modules_geom_Ve
 _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Matrix3 = _modules_geom_Matrix__WEBPACK_IMPORTED_MODULE_14__["Matrix3"];
 _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Matrix4 = _modules_geom_Matrix__WEBPACK_IMPORTED_MODULE_14__["Matrix4"];
 _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Utils = _modules_components_Utils__WEBPACK_IMPORTED_MODULE_12__["Utils"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Debug = _modules_components_Option__WEBPACK_IMPORTED_MODULE_11__["Option"].Debug;
-window.XSlider = _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Debug = _modules_components_Option__WEBPACK_IMPORTED_MODULE_11__["Option"].Debug; // window.XSlider = XSlider;
+
+
 
 /***/ }),
 
