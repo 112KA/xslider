@@ -2824,7 +2824,7 @@ function (_EventDispatcher) {
     _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default()(this, Environment);
 
     _this = _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default()(this, _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(Environment).call(this));
-    console.info("xslider ver.", "1.0.7"); // if(!THREE) {
+    console.info("xslider ver.", "1.0.8"); // if(!THREE) {
     // 	console.error("xslider depend on three.js");
     // }
     // if(!domtoimage) {
