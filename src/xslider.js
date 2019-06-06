@@ -38,4 +38,5 @@ XSlider.Utils = Utils;
 XSlider.Debug = Option.Debug;
 
 // window.XSlider = XSlider;
-export { XSlider }
+// export { XSlider }
+export default XSlider;
