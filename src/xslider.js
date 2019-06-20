@@ -1,6 +1,7 @@
 import './xslider.scss';
-
-import { XSlider } from './modules/main.js'
+// const XSlider = require('./modules/main.js').default;
+// const XSlider = require('./modules/main.js')
+import XSlider from './modules/main.js'
 import { stage } from './modules/core/Stage.js'
 import { BaseTransition } from './modules/transitions/BaseTransition'
 import { CrossWarpTransition } from './modules/transitions/CrossWarpTransition'
@@ -15,6 +16,7 @@ import { Utils } from './modules/components/Utils'
 import { Vec2, Vec3, Vec4 } from './modules/geom/Vec'
 import { Matrix3, Matrix4 } from './modules/geom/Matrix'
 
+console.log('XSlider', XSlider)
 
 //exports
 XSlider.stage = stage;
@@ -37,6 +39,15 @@ XSlider.Matrix4 = Matrix4;
 XSlider.Utils = Utils;
 XSlider.Debug = Option.Debug;
 
+if (typeof window !== 'undefined') {
+  window.XSlider = XSlider;
+} else if (typeof global !== 'undefined') {
+  global.XSlider = XSlider;
+}
+
 // window.XSlider = XSlider;
 // export { XSlider }
+// export XSlider
 export default XSlider;
+// exports { XSlider };
+// module.exports = XSlider

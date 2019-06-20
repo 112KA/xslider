@@ -46,7 +46,7 @@ A minimum sample is [Here](https://112ka.github.io/xslider/samples/base/).
 <div class="xslider">
     <div class="xslider-view">
         <div class="xslider-slide">
-            <div class="xslider-layer-texture">Elements as texture</div>
+            <div class="xslider-layer-gl">Elements as texture</div>
             <div class="xslider-layer-ui">Elements as DOM</div>
         </div>
         <div class="xslider-slide"></div>

@@ -1,10 +1,10 @@
-import {Option} from './Option'
-import {Utils} from './Utils'
-import {Dom} from '../display/Dom'
-import {Slide} from '../display/Slide'
-import {DefaultRenderer} from '../renderer/DefaultRenderer'
+import { Option } from './Option'
+import { Utils } from './Utils'
+import { Dom } from '../display/Dom'
+import { Slide } from '../display/Slide'
+import { DefaultRenderer } from '../renderer/DefaultRenderer'
 // import {ThreeRenderer} from '../renderer/ThreeRenderer'
-import {XRenderer} from '../renderer/XRenderer'
+import { XRenderer } from '../renderer/XRenderer'
 
 
 
@@ -21,30 +21,30 @@ export class Data {
 
 		this.dom.setup(args[0]);
 
-		if(this.option.debug == Option.Debug.DISPLAY.DOM) {
+		if (this.option.debug == Option.Debug.DISPLAY.DOM) {
 			this.dom.container.classList.add("xslider-debug");
 		}
 
 		this.list = [];
 
-		for(const element of this.dom.slides) {
+		this.dom.slides.forEach(element => {
 			this.list.push(new Slide(element, this.option.debug));
-		}
+		})
 	}
 
 	dispose() {
-		if(!this.option) return;
+		if (!this.option) return;
 
-		for(const slide of this.list) {
+		this.list.forEach(slide => {
 			slide.dispose();
-		}
+		})
 		this.dom.dispose();
 
 		this.option = undefined;
 	}
 
 	getRenderer() {
-		if(this.option.debug) {
+		if (this.option.debug) {
 			return new DefaultRenderer();
 		}
 		else {

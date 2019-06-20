@@ -1,14 +1,4 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define("XSlider", [], factory);
-	else if(typeof exports === 'object')
-		exports["XSlider"] = factory();
-	else
-		root["XSlider"] = factory();
-})(typeof self !== 'undefined' ? self : this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -355,6 +345,37 @@ function _typeof(obj) {
 }
 
 module.exports = _typeof;
+
+/***/ }),
+
+/***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || new Function("return this")();
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
 
 /***/ }),
 
@@ -767,6 +788,8 @@ function () {
   _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default()(Data, [{
     key: "setup",
     value: function setup() {
+      var _this = this;
+
       this.option = _Utils__WEBPACK_IMPORTED_MODULE_3__["Utils"].extend(_Option__WEBPACK_IMPORTED_MODULE_2__["Option"], (arguments.length <= 1 ? undefined : arguments[1]) || {});
       this.dom.setup(arguments.length <= 0 ? undefined : arguments[0]);
 
@@ -775,58 +798,17 @@ function () {
       }
 
       this.list = [];
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = this.dom.slides[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var element = _step.value;
-          this.list.push(new _display_Slide__WEBPACK_IMPORTED_MODULE_5__["Slide"](element, this.option.debug));
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-            _iterator["return"]();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
+      this.dom.slides.forEach(function (element) {
+        _this.list.push(new _display_Slide__WEBPACK_IMPORTED_MODULE_5__["Slide"](element, _this.option.debug));
+      });
     }
   }, {
     key: "dispose",
     value: function dispose() {
       if (!this.option) return;
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
-
-      try {
-        for (var _iterator2 = this.list[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var slide = _step2.value;
-          slide.dispose();
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-            _iterator2["return"]();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
-      }
-
+      this.list.forEach(function (slide) {
+        slide.dispose();
+      });
       this.dom.dispose();
       this.option = undefined;
     }
@@ -1240,21 +1222,16 @@ var Utils = {
     var ret = {};
     Object.assign(ret, base);
     var entries = Object.entries(o);
-
-    for (var _i = 0, _entries = entries; _i < _entries.length; _i++) {
-      var entry = _entries[_i];
+    entries.forEach(function (entry) {
       ret[entry[0]] = entry[1];
-    }
-
+    });
     return ret;
   },
   delegate: function delegate(base, o) {
     var entries = Object.entries(o);
-
-    for (var _i2 = 0, _entries2 = entries; _i2 < _entries2.length; _i2++) {
-      var entry = _entries2[_i2];
+    entries.forEach(function (entry) {
       base[entry[0]] = entry[1];
-    }
+    });
   },
   clamp: function clamp(v, min, max) {
     return Math.max(min, Math.min(max, v));
@@ -2824,7 +2801,7 @@ function (_EventDispatcher) {
     _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default()(this, Environment);
 
     _this = _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default()(this, _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(Environment).call(this));
-    console.info("xslider ver.", "1.0.8"); // if(!THREE) {
+    console.info("xslider ver.", "1.0.9"); // if(!THREE) {
     // 	console.error("xslider depend on three.js");
     // }
     // if(!domtoimage) {
@@ -2941,32 +2918,12 @@ function () {
     key: "dispatch",
     value: function dispatch(type, options) {
       if (this._listeners.hasOwnProperty(type)) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = this._listeners[type][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var o = _step.value;
-            var tmp = options || {
-              type: type
-            };
-            o.listener(tmp);
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-              _iterator["return"]();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
+        this._listeners[type].forEach(function (o) {
+          var tmp = options || {
+            type: type
+          };
+          o.listener(tmp);
+        });
       }
     }
   }, {
@@ -4613,12 +4570,12 @@ function () {
 /*!*****************************!*\
   !*** ./src/modules/main.js ***!
   \*****************************/
-/*! exports provided: XSlider */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "XSlider", function() { return XSlider; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return XSlider; });
 /* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/classCallCheck.js");
 /* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/createClass.js");
@@ -4635,6 +4592,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SlideController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./SlideController */ "./src/modules/SlideController.js");
 /* harmony import */ var _core_EventDispatcher__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./core/EventDispatcher */ "./src/modules/core/EventDispatcher.js");
 /* harmony import */ var _components_Utils__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/Utils */ "./src/modules/components/Utils.js");
+
 
 
 
@@ -4696,6 +4654,8 @@ function (_EventDispatcher) {
 
   return XSlider;
 }(_core_EventDispatcher__WEBPACK_IMPORTED_MODULE_8__["EventDispatcher"]);
+
+
 
 /***/ }),
 
@@ -5331,14 +5291,16 @@ var PixelateWipeTransition = _BaseTransition__WEBPACK_IMPORTED_MODULE_0__["BaseT
 /*!************************!*\
   !*** ./src/xslider.js ***!
   \************************/
-/*! exports provided: default */
+/*! exports provided: XSlider */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _xslider_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./xslider.scss */ "./src/xslider.scss");
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _xslider_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./xslider.scss */ "./src/xslider.scss");
 /* harmony import */ var _xslider_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_xslider_scss__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _modules_main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/main.js */ "./src/modules/main.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "XSlider", function() { return _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
 /* harmony import */ var _modules_core_Stage_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/core/Stage.js */ "./src/modules/core/Stage.js");
 /* harmony import */ var _modules_transitions_BaseTransition__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/transitions/BaseTransition */ "./src/modules/transitions/BaseTransition.js");
 /* harmony import */ var _modules_transitions_CrossWarpTransition__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/transitions/CrossWarpTransition */ "./src/modules/transitions/CrossWarpTransition.js");
@@ -5352,6 +5314,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_components_Utils__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/components/Utils */ "./src/modules/components/Utils.js");
 /* harmony import */ var _modules_geom_Vec__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./modules/geom/Vec */ "./src/modules/geom/Vec.js");
 /* harmony import */ var _modules_geom_Matrix__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./modules/geom/Matrix */ "./src/modules/geom/Matrix.js");
+ // const XSlider = require('./modules/main.js').default;
+// const XSlider = require('./modules/main.js')
 
 
 
@@ -5366,27 +5330,38 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- //exports
 
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].stage = _modules_core_Stage_js__WEBPACK_IMPORTED_MODULE_2__["stage"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].BaseTransition = _modules_transitions_BaseTransition__WEBPACK_IMPORTED_MODULE_3__["BaseTransition"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].CrossWarpTransition = _modules_transitions_CrossWarpTransition__WEBPACK_IMPORTED_MODULE_4__["CrossWarpTransition"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].CrossZoomTransition = _modules_transitions_CrossZoomTransition__WEBPACK_IMPORTED_MODULE_5__["CrossZoomTransition"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].CubeTransition = _modules_transitions_CubeTransition__WEBPACK_IMPORTED_MODULE_6__["CubeTransition"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].MorphTransition = _modules_transitions_MorphTransition__WEBPACK_IMPORTED_MODULE_7__["MorphTransition"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].NoiseTransition = _modules_transitions_NoiseTransition__WEBPACK_IMPORTED_MODULE_8__["NoiseTransition"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].PixelateTransition = _modules_transitions_PixelateTransition__WEBPACK_IMPORTED_MODULE_9__["PixelateTransition"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].PixelateWipeTransition = _modules_transitions_PixelateWipeTransition__WEBPACK_IMPORTED_MODULE_10__["PixelateWipeTransition"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Vec2 = _modules_geom_Vec__WEBPACK_IMPORTED_MODULE_13__["Vec2"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Vec3 = _modules_geom_Vec__WEBPACK_IMPORTED_MODULE_13__["Vec3"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Vec4 = _modules_geom_Vec__WEBPACK_IMPORTED_MODULE_13__["Vec4"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Matrix3 = _modules_geom_Matrix__WEBPACK_IMPORTED_MODULE_14__["Matrix3"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Matrix4 = _modules_geom_Matrix__WEBPACK_IMPORTED_MODULE_14__["Matrix4"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Utils = _modules_components_Utils__WEBPACK_IMPORTED_MODULE_12__["Utils"];
-_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Debug = _modules_components_Option__WEBPACK_IMPORTED_MODULE_11__["Option"].Debug; // window.XSlider = XSlider;
-// export { XSlider }
+console.log('XSlider', _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"]); //exports
 
-/* harmony default export */ __webpack_exports__["default"] = (_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"]);
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].stage = _modules_core_Stage_js__WEBPACK_IMPORTED_MODULE_2__["stage"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].BaseTransition = _modules_transitions_BaseTransition__WEBPACK_IMPORTED_MODULE_3__["BaseTransition"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].CrossWarpTransition = _modules_transitions_CrossWarpTransition__WEBPACK_IMPORTED_MODULE_4__["CrossWarpTransition"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].CrossZoomTransition = _modules_transitions_CrossZoomTransition__WEBPACK_IMPORTED_MODULE_5__["CrossZoomTransition"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].CubeTransition = _modules_transitions_CubeTransition__WEBPACK_IMPORTED_MODULE_6__["CubeTransition"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].MorphTransition = _modules_transitions_MorphTransition__WEBPACK_IMPORTED_MODULE_7__["MorphTransition"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].NoiseTransition = _modules_transitions_NoiseTransition__WEBPACK_IMPORTED_MODULE_8__["NoiseTransition"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].PixelateTransition = _modules_transitions_PixelateTransition__WEBPACK_IMPORTED_MODULE_9__["PixelateTransition"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].PixelateWipeTransition = _modules_transitions_PixelateWipeTransition__WEBPACK_IMPORTED_MODULE_10__["PixelateWipeTransition"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].Vec2 = _modules_geom_Vec__WEBPACK_IMPORTED_MODULE_13__["Vec2"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].Vec3 = _modules_geom_Vec__WEBPACK_IMPORTED_MODULE_13__["Vec3"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].Vec4 = _modules_geom_Vec__WEBPACK_IMPORTED_MODULE_13__["Vec4"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].Matrix3 = _modules_geom_Matrix__WEBPACK_IMPORTED_MODULE_14__["Matrix3"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].Matrix4 = _modules_geom_Matrix__WEBPACK_IMPORTED_MODULE_14__["Matrix4"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].Utils = _modules_components_Utils__WEBPACK_IMPORTED_MODULE_12__["Utils"];
+_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].Debug = _modules_components_Option__WEBPACK_IMPORTED_MODULE_11__["Option"].Debug;
+
+if (typeof window !== 'undefined') {
+  window.XSlider = _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"];
+} else if (typeof global !== 'undefined') {
+  global.XSlider = _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"];
+} // window.XSlider = XSlider;
+
+
+ // export XSlider
+// export default XSlider;
+// exports { XSlider };
+// module.exports = XSlider
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -5402,5 +5377,4 @@ _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["XSlider"].Debug = _modules_compon
 /***/ })
 
 /******/ });
-});
 //# sourceMappingURL=xslider.js.map

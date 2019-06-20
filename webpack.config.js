@@ -17,10 +17,13 @@ module.exports = {
 		filename: DEV ? 'dist/[name].js' : 'dist/[name].min.js',
 		// path: path.join(__dirname, 'dist')
 		path: __dirname,
-		library: 'XSlider',
-		libraryTarget: 'umd',
-		umdNamedDefine: true,
-		globalObject: "typeof self !== 'undefined' ? self : this"
+		// library: 'XSlider',
+		// libraryTarget: 'window',
+		// libraryTarget: 'umd',
+		// umdNamedDefine: true,
+		// globalObject: "typeof self !== 'undefined' ? self : this"
+		// globalObject: "typeof self !== 'undefined' ? self : window"
+		// globalObject: "window"
 	},
 
 	module: {
@@ -38,6 +41,7 @@ module.exports = {
 		},
 		{
 			test: /\.scss$/,
+			// use: ['style-loader', 'css-loader', 'sass-loader']
 			use: ExtractTextPlugin.extract({
 				fallback: 'style-loader',
 				use: ['css-loader', 'sass-loader'],

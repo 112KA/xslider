@@ -1,10 +1,10 @@
-import {Data} from './components/Data'
-import {SlideController} from './SlideController'
-import {EventDispatcher} from './core/EventDispatcher'
-import {Utils} from './components/Utils'
+import { Data } from './components/Data'
+import { SlideController } from './SlideController'
+import { EventDispatcher } from './core/EventDispatcher'
+import { Utils } from './components/Utils'
 
 
-export class XSlider extends EventDispatcher {
+export default class XSlider extends EventDispatcher {
 	constructor(...args) {
 		super();
 
@@ -12,11 +12,11 @@ export class XSlider extends EventDispatcher {
 		this.controller = new SlideController();
 
 		Utils.delegate(this, {
-			prev:this.controller.prev,
-			next:this.controller.next,
+			prev: this.controller.prev,
+			next: this.controller.next,
 			autoplay: {
-				start:this.controller.autoplay.start,
-				stop:this.controller.autoplay.stop
+				start: this.controller.autoplay.start,
+				stop: this.controller.autoplay.stop
 			}
 		});
 
