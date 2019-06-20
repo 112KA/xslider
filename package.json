@@ -10,7 +10,7 @@
     "webpack:dev": "webpack --mode development",
     "webpack:prd": "webpack --mode production",
     "webpack:prd-win": "set NODE_ENV=production&&webpack -p",
-    "build": "npm run webpack:prd-win & npm run build:es",
+    "build": "npm run webpack:dev & npm run webpack:prd-win & npm run build:es",
     "build:es": "rollup --config rollup.config.js --format es --file dist/xslider.esm.js"
   },
   "dependencies": {},

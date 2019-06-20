@@ -2801,7 +2801,7 @@ function (_EventDispatcher) {
     _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default()(this, Environment);
 
     _this = _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default()(this, _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(Environment).call(this));
-    console.info("xslider ver.", "1.0.9"); // if(!THREE) {
+    console.info("xslider ver.", "1.0.10"); // if(!THREE) {
     // 	console.error("xslider depend on three.js");
     // }
     // if(!domtoimage) {
@@ -5291,7 +5291,7 @@ var PixelateWipeTransition = _BaseTransition__WEBPACK_IMPORTED_MODULE_0__["BaseT
 /*!************************!*\
   !*** ./src/xslider.js ***!
   \************************/
-/*! exports provided: XSlider */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5299,8 +5299,6 @@ __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _xslider_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./xslider.scss */ "./src/xslider.scss");
 /* harmony import */ var _xslider_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_xslider_scss__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _modules_main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/main.js */ "./src/modules/main.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "XSlider", function() { return _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
 /* harmony import */ var _modules_core_Stage_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/core/Stage.js */ "./src/modules/core/Stage.js");
 /* harmony import */ var _modules_transitions_BaseTransition__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/transitions/BaseTransition */ "./src/modules/transitions/BaseTransition.js");
 /* harmony import */ var _modules_transitions_CrossWarpTransition__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/transitions/CrossWarpTransition */ "./src/modules/transitions/CrossWarpTransition.js");
@@ -5355,11 +5353,11 @@ if (typeof window !== 'undefined') {
 } else if (typeof global !== 'undefined') {
   global.XSlider = _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"];
 } // window.XSlider = XSlider;
+// export { XSlider }
+// export XSlider
 
 
- // export XSlider
-// export default XSlider;
-// exports { XSlider };
+/* harmony default export */ __webpack_exports__["default"] = (_modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"]); // exports { XSlider };
 // module.exports = XSlider
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 

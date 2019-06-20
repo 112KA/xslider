@@ -1,4 +1,4 @@
-var XSLIDER_VERSION = "1.0.9"
+var XSLIDER_VERSION = "1.0.10"
 
 var Utils = {
 
