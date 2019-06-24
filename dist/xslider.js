@@ -5328,8 +5328,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-console.log('XSlider', _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"]); //exports
+ //exports
 
 _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].stage = _modules_core_Stage_js__WEBPACK_IMPORTED_MODULE_2__["stage"];
 _modules_main_js__WEBPACK_IMPORTED_MODULE_1__["default"].BaseTransition = _modules_transitions_BaseTransition__WEBPACK_IMPORTED_MODULE_3__["BaseTransition"];

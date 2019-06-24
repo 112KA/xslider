@@ -16,8 +16,6 @@ import { Utils } from './modules/components/Utils'
 import { Vec2, Vec3, Vec4 } from './modules/geom/Vec'
 import { Matrix3, Matrix4 } from './modules/geom/Matrix'
 
-console.log('XSlider', XSlider)
-
 //exports
 XSlider.stage = stage;
 
