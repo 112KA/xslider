@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Background-image Sample | XSlider</title>
+
+    <link href="../../dist/xslider.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .xslider {
+            width: 500px;
+            height: 400px;
+            margin: 0 auto;
+        }
+
+        .xslider-view .xslider-layer-gl {
+            text-align: center;
+        }
+
+        .xslider-view .xslider-slide:nth-child(2n) .xslider-layer-gl {
+            background: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+
+        <div class="xslider">
+            <div class="xslider-view">
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"
+                        style="background:url(../asset/image/slide1.jpg); background-size: cover;">
+                    </div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"
+                        style="background:url(../asset/image/slide2.jpg); background-size: cover;">
+                    </div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"
+                        style="background:url(../asset/image/slide3.jpg); background-size: cover;">
+                    </div>
+                </div>
+            </div>
+            <div class="xslider-pager"></div>
+            <div class="xslider-prev"></div>
+            <div class="xslider-next"></div>
+        </div>
+
+    </main>
+
+    <!-- <script src="../../dist/xslider.min.js"></script> -->
+    <!-- <script src="../../dist/xslider.umd.js"></script> -->
+    <script src="../../dist/xslider.js"></script>
+    <script>
+        console.log(XSlider)
+        new XSlider(".xslider", {
+            transition: XSlider.CrossZoomTransition
+            // debug: XSlider.Debug.DISPLAY.IMG,
+        });
+    </script>
+</body>
+
+</html>
