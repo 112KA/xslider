@@ -1,13 +1,11 @@
-import {BaseTransition} from './BaseTransition'
-import {Vec2, Vec3, Vec4} from '../geom/Vec'
-
+import { BaseTransition } from './BaseTransition';
+import { Vec2, Vec3, Vec4 } from '../geom/Vec';
 
 /**
  * It's based on {@link https://gl-transitions.com/editor/cube cube by gre}.
  */
 export const CubeTransition = BaseTransition.extend({
-
-fragmentShader : `
+  fragmentShader: `
 precision highp float;
 
 uniform sampler2D texture0;
@@ -88,11 +86,11 @@ void main(void) {
 }
 `,
 
-	uniforms: {
-		bgColor: { value: new Vec4(0.1, 0.1, 0.1, 1.0) },
-		unzoom:{ value: 0.3 },
-		floating:{ value: 3.0 },
-		perspective:{ value: 0.7 },
-		reflection:{ value: 0.4 },
-	}
+  uniforms: {
+    bgColor: { value: new Vec4(0.1, 0.1, 0.1, 1.0) },
+    unzoom: { value: 0.3 },
+    floating: { value: 3.0 },
+    perspective: { value: 0.7 },
+    reflection: { value: 0.4 },
+  },
 });

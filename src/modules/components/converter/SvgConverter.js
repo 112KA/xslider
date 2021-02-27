@@ -1,13 +1,13 @@
-import {Inliner} from './Inliner'
+import { Inliner } from './Inliner';
 
 /**
  * It's based on {@link https://github.com/tsayen/dom-to-image dom-to-image by Anatolii Saienko}.
  */
 export const converter = {
-	parser : new DOMParser(),
+  parser: new DOMParser(),
 
-	convert(node, width, height) {
-/*
+  convert(node, width, height) {
+    /*
 		const svgString = `
 <svg xmlns="http://www.w3.org/2000/svg" width="`+width+`" height="`+height+`">
 	<foreignObject x="0" y="0" width="100%" height="100%">
@@ -23,24 +23,29 @@ export const converter = {
 		let o = svg.getElementsByTagName('body')[0];
 		o.appendChild(node);
 */
-		node.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    node.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
 
-		const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="`+width+`" height="`+height+`">
+    const svgString =
+      `<svg xmlns="http://www.w3.org/2000/svg" width="` +
+      width +
+      `" height="` +
+      height +
+      `">
 		<foreignObject x="0" y="0" width="100%" height="100%">
 		</foreignObject>
-		</svg>`
+		</svg>`;
 
-		const svg = this.parser.parseFromString(svgString, "text/xml"),
-		styleNode = document.createElement('style')
+    const svg = this.parser.parseFromString(svgString, 'text/xml'),
+      styleNode = document.createElement('style');
 
-		styleNode.appendChild(document.createTextNode(Inliner.inlinedFontString));
-		node.appendChild(styleNode)
+    styleNode.appendChild(document.createTextNode(Inliner.inlinedFontString));
+    node.appendChild(styleNode);
 
-		let o = svg.getElementsByTagName('foreignObject')[0];
-		o.appendChild(node);
+    let o = svg.getElementsByTagName('foreignObject')[0];
+    o.appendChild(node);
 
-		// console.log('svg: ', svg.childNodes[0]);
+    // console.log('svg: ', svg.childNodes[0]);
 
-		return svg;
-	},
-}
+    return svg;
+  },
+};

@@ -1,78 +1,76 @@
-import {EventDispatcher} from '../core/EventDispatcher';
+import { EventDispatcher } from '../core/EventDispatcher';
 
 export const Ticker = class extends EventDispatcher {
-	constructor() {
-		super();
+  constructor() {
+    super();
 
-		this.fps = 30;
+    this.fps = 30;
 
-		this._defineFunctions();
-	}
+    this._defineFunctions();
+  }
 
-	_defineFunctions() {
+  _defineFunctions() {
+    const prefixes = ['ms', 'moz', 'webkit', 'o'];
+    let i = prefixes.length;
 
-		const prefixes = ["ms","moz","webkit","o"];
-		let i = prefixes.length;
+    while (--i > -1 && !window.requestAnimationFrame) {
+      window.requestAnimationFrame = window[prefixes[i] + 'RequestAnimationFrame'];
+      window.cancelAnimationFrame =
+        window[prefixes[i] + 'CancelAnimationFrame'] ||
+        window[prefixes[i] + 'CancelRequestAnimationFrame'];
+    }
 
-		while (--i > -1 && !window.requestAnimationFrame) {
-			window.requestAnimationFrame = window[prefixes[i] + "RequestAnimationFrame"];
-			window.cancelAnimationFrame = window[prefixes[i] + "CancelAnimationFrame"] || window[prefixes[i] + "CancelRequestAnimationFrame"];
-		}
+    this._tickHandler = () => {
+      this._requestId = window.requestAnimationFrame(this._tickHandler);
 
+      this._lastMs = this.time;
 
-		this._tickHandler = () => {
-			this._requestId = window.requestAnimationFrame(this._tickHandler);
+      let overlap = this._lastMs - this._nextMs;
 
-			this._lastMs = this.time;
+      if (overlap >= 0) {
+        const t0 = this._nextMs;
+        this._nextMs += overlap + (overlap >= this._gap ? 1 : this._gap - overlap);
+        this.dispatch('tick', {
+          type: 'tick',
+          time: this._lastMs - this._startMs,
+          dt: this._nextMs - t0,
+        });
+      }
+    };
+  }
 
-			let overlap = this._lastMs - this._nextMs;
+  get fps() {
+    return this._fps;
+  }
 
-			if(overlap >= 0) {
-				const t0 = this._nextMs;
-				this._nextMs += overlap + (overlap >= this._gap ? 1 : this._gap - overlap);
-				this.dispatch('tick', {type:'tick', time:this._lastMs - this._startMs, dt:this._nextMs-t0});
-			}
-		}
-	}
+  set fps(v) {
+    this._fps = v;
+    this._gap = (1 / (v || 60)) * 1000;
+  }
 
-	get fps() {
-		return this._fps;
-	}
+  get time() {
+    return Date.now() || new Date().getTime();
+  }
 
-	set fps(v) {
-		this._fps = v;
-		this._gap = 1 / (v || 60) * 1000;
-	}
+  start() {
+    this._startMs = this.time;
+    this._nextMs = this._startMs + this._gap;
+    this._requestId = window.requestAnimationFrame(this._tickHandler);
+  }
 
-	get time() {
-		return Date.now() || new Date().getTime();
-	}
-
-	start() {
-		this._startMs = this.time;
-		this._nextMs = this._startMs + this._gap;
-		this._requestId = window.requestAnimationFrame(this._tickHandler);
-	}
-
-	stop() {
-		window.cancelAnimationFrame(this._requestId);
-	}
-}
+  stop() {
+    window.cancelAnimationFrame(this._requestId);
+  }
+};
 
 export const TweenMaxTicker = class extends Ticker {
-	constructor() {
-		super();
-	}
+  constructor() {
+    super();
+  }
 
-	setFps() {
-		
-	}
+  setFps() {}
 
-	start() {
+  start() {}
 
-	}
-
-	stop() {
-
-	}
-}
+  stop() {}
+};

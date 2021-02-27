@@ -1,12 +1,11 @@
-import {BaseTransition} from './BaseTransition'
-import {Vec2, Vec3, Vec4} from '../geom/Vec'
+import { BaseTransition } from './BaseTransition';
+import { Vec2, Vec3, Vec4 } from '../geom/Vec';
 
 /**
  * It's based on {@link https://gl-transitions.com/editor/CrossZoom CrossZoom by rectalogic}.
  */
 export const CrossZoomTransition = BaseTransition.extend({
-
-fragmentShader : `
+  fragmentShader: `
 precision highp float;
 
 #define PI 3.141592653589793
@@ -69,8 +68,7 @@ void main(void) {
 }
 `,
 
-	uniforms: {
-		strength:{ value: 1.0 },
-	}
-
+  uniforms: {
+    strength: { value: 1.0 },
+  },
 });

@@ -1,12 +1,11 @@
-import {BaseTransition} from './BaseTransition'
-import {Vec2, Vec3, Vec4} from '../geom/Vec'
+import { BaseTransition } from './BaseTransition';
+import { Vec2, Vec3, Vec4 } from '../geom/Vec';
 
 /**
  * It's based on {@link https://gl-transitions.com/editor/crosswarp crosswarp by Eke Péter}.
  */
 export const CrossWarpTransition = BaseTransition.extend({
-
-fragmentShader : `
+  fragmentShader: `
 precision highp float;
 
 uniform sampler2D texture0;
@@ -39,7 +38,7 @@ void main(void) {
 }
 `,
 
-	uniforms: {
-		gradient: { value: new Vec2(0.5, 0.5) },
-	}
+  uniforms: {
+    gradient: { value: new Vec2(0.5, 0.5) },
+  },
 });

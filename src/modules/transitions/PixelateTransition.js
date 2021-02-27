@@ -1,11 +1,8 @@
-import {BaseTransition} from './BaseTransition'
-import {Vec2, Vec3, Vec4} from '../geom/Vec'
-
-
+import { BaseTransition } from './BaseTransition';
+import { Vec2, Vec3, Vec4 } from '../geom/Vec';
 
 export const PixelateTransition = BaseTransition.extend({
-
-fragmentShader : `
+  fragmentShader: `
 precision highp float;
 
 
@@ -40,8 +37,5 @@ void main(void) {
 }
 `,
 
-	uniforms: {
-	}
+  uniforms: {},
 });
-
-

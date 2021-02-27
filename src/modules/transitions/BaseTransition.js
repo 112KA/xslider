@@ -1,10 +1,8 @@
-import {Utils} from '../components/Utils'
-import {Vec2, Vec3, Vec4} from '../geom/Vec'
-
+import { Utils } from '../components/Utils';
+import { Vec2, Vec3, Vec4 } from '../geom/Vec';
 
 export const BaseTransition = {
-
-	vertexShader: `
+  vertexShader: `
 attribute vec2 position;
 
 void main(void) {
@@ -12,7 +10,7 @@ void main(void) {
 }
 `,
 
-	fragmentShader : `
+  fragmentShader: `
 precision highp float;
 
 uniform sampler2D texture0;
@@ -30,12 +28,11 @@ void main(void) {
 }
 `,
 
-	uniforms: {
-		gradient: { value: new Vec2(1.0, 1.0) },
-	},
+  uniforms: {
+    gradient: { value: new Vec2(1.0, 1.0) },
+  },
 
-	extend(o) {
-		return Utils.extend(this, o);
-	}
-}
-
+  extend(o) {
+    return Utils.extend(this, o);
+  },
+};

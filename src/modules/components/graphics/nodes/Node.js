@@ -1,30 +1,30 @@
-import {EventDispatcher} from '../../../core/EventDispatcher'
-import {Mesh} from '../Mesh'
-import {Vec4} from '../../../geom/Vec'
+import { EventDispatcher } from '../../../core/EventDispatcher';
+import { Mesh } from '../Mesh';
+import { Vec4 } from '../../../geom/Vec';
 // import {Matrix3, Matrix4} from '../../../geom/Matrix'
 
 export class Node extends EventDispatcher {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.children = [];
+    this.children = [];
 
-        this.matrix = {}
+    this.matrix = {};
+  }
+
+  addChild(node) {
+    this.children.push(node);
+    node.parent = this;
+  }
+
+  removeChild(node) {
+    node.parent = undefined;
+
+    var index = this.children.indexOf(node);
+    if (index > -1) {
+      this.children.splice(index, 1);
     }
-
-    addChild(node) {
-        this.children.push(node);
-        node.parent = this;
-    }
-
-    removeChild(node) {
-        node.parent = undefined;
-
-        var index = this.children.indexOf(node);
-        if (index > -1) {
-            this.children.splice(index, 1);
-        }
-    }
+  }
 }
 
 // export class Node2D extends Node {
@@ -44,30 +44,30 @@ export class Node extends EventDispatcher {
 // }
 
 export class Model extends Node {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.mesh = new Mesh();
-    }
+    this.mesh = new Mesh();
+  }
 }
 
 export class Camera extends Node {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.viewport = new Vec4();
+    this.viewport = new Vec4();
 
-        // this.matrix.projection = new Matrix4();
-        // this.matrix.view = new Matrix4();
-        // this.matrix.viewProjection = new Matrix4();
-    }
+    // this.matrix.projection = new Matrix4();
+    // this.matrix.view = new Matrix4();
+    // this.matrix.viewProjection = new Matrix4();
+  }
 
-    // perspective(fov, aspect, near, far) {
-    //     this.matrix.projection.perspective(fov, aspect, near, far);
-    // }
+  // perspective(fov, aspect, near, far) {
+  //     this.matrix.projection.perspective(fov, aspect, near, far);
+  // }
 
-    setViewport(x, y, width, height) {
-        this.viewport.set(x, y, width, height);
-        // this.perspective(60, width/height, 0.1, 100);
-    }
+  setViewport(x, y, width, height) {
+    this.viewport.set(x, y, width, height);
+    // this.perspective(60, width/height, 0.1, 100);
+  }
 }

@@ -1,62 +1,60 @@
-import {EventDispatcher} from '../core/EventDispatcher'
+import { EventDispatcher } from '../core/EventDispatcher';
 
 export class BaseRenderer extends EventDispatcher {
-	constructor() {
-		super();
-	}
-	
-	setup(data, container) {
-		this.data = data;
-		this.container = container;
-	}
+  constructor() {
+    super();
+  }
 
-	dispose() {}
+  setup(data, container) {
+    this.data = data;
+    this.container = container;
+  }
 
-	render(indexer) {}
+  dispose() {}
 
-	resize(w, h) {
-		this.width = w;
-		this.height = h;
-	}
+  render(indexer) {}
+
+  resize(w, h) {
+    this.width = w;
+    this.height = h;
+  }
 }
 
-
 export class GLRenderer extends BaseRenderer {
-	constructor() {
-		super();
+  constructor() {
+    super();
 
-		this.canvas = document.createElement('canvas');
+    this.canvas = document.createElement('canvas');
 
-		this._defineHandlers();
-	}
+    this._defineHandlers();
+  }
 
-	_defineHandlers() {
-	}
-	
-	setup(data, container) {
-		super.setup(data, container);
+  _defineHandlers() {}
 
-		data.dom.container.insertBefore(this.canvas, data.dom.view);
-	}
+  setup(data, container) {
+    super.setup(data, container);
 
-	dispose() {
-		super.dispose();
+    data.dom.container.insertBefore(this.canvas, data.dom.view);
+  }
 
-		this.container.off('updateTexture', this._onUpdateTexture);
+  dispose() {
+    super.dispose();
 
-		this.data.dom.container.removeChild(this.canvas);
-	}
+    this.container.off('updateTexture', this._onUpdateTexture);
 
-	render(indexer) {
-		super.render(indexer);
+    this.data.dom.container.removeChild(this.canvas);
+  }
 
-		this.container.uniforms.progress.value = indexer.progress;
-		if(this.container.uniforms.time) {
-			this.container.uniforms.time.value = this.data.time;
-		}
-	}
+  render(indexer) {
+    super.render(indexer);
 
-	resize(w, h) {
-		super.resize(w, h);
-	}
+    this.container.uniforms.progress.value = indexer.progress;
+    if (this.container.uniforms.time) {
+      this.container.uniforms.time.value = this.data.time;
+    }
+  }
+
+  resize(w, h) {
+    super.resize(w, h);
+  }
 }

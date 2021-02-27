@@ -1,233 +1,224 @@
-
-import {TouchEvent} from './core/Event'
-import {EventDispatcher} from './core/EventDispatcher'
-import {stage} from './core/Stage'
-import {AutoPlay} from './components/AutoPlay'
-import {Indexer} from './components/Indexer'
-import {Inliner} from './components/converter/Inliner'
+import { TouchEvent } from './core/Event';
+import { EventDispatcher } from './core/EventDispatcher';
+import { stage } from './core/Stage';
+import { AutoPlay } from './components/AutoPlay';
+import { Indexer } from './components/Indexer';
+import { Inliner } from './components/converter/Inliner';
 // import {Bench} from './components/debug/Bench'
-import {SlideContainer} from './display/Slide'
-import {UI} from './display/UI'
-import {DefaultRenderer} from './renderer/DefaultRenderer'
-
-
+import { SlideContainer } from './display/Slide';
+import { UI } from './display/UI';
+import { DefaultRenderer } from './renderer/DefaultRenderer';
 
 export class SlideController extends EventDispatcher {
+  constructor() {
+    super();
 
-	constructor() {
-		super();
+    this.indexer = new Indexer();
 
-		this.indexer = new Indexer();
+    this.renderer = {
+      default: new DefaultRenderer(),
+      gl: undefined,
+    };
 
-		this.renderer = {
-			default : new DefaultRenderer()
-			, gl : undefined
-		};
+    this.ui = new UI();
+    this.autoplay = new AutoPlay();
 
-		this.ui = new UI();
-		this.autoplay = new AutoPlay();
+    this.container = new SlideContainer();
 
-		this.container = new SlideContainer();
+    this._defineHandlers();
+  }
 
-		this._defineHandlers();
-	}
+  _defineHandlers() {
+    this._onResize = e => {
+      const w = this.dom.width,
+        h = this.dom.height;
 
-	_defineHandlers() {
+      this.data.list.forEach(slide => {
+        slide.needsResize = true;
+      });
 
-		this._onResize = (e) => {
-			const w = this.dom.width, h = this.dom.height;
+      this.renderer.default.resize(w, h);
+      this.renderer.gl.resize(w, h);
 
-			this.data.list.forEach((slide) => {
-				slide.needsResize = true;
-			});
+      return this.container.resize(w, h).then(() => {
+        this.renderer.gl.render(this.indexer);
+      });
+    };
 
-			this.renderer.default.resize(w, h);
-			this.renderer.gl.resize(w, h);
+    this._onCompleteSlide = () => {
+      stage.off('tick', this._onTick);
+      this.data.option.get('touchMove') && this.ui.on(TouchEvent.START, this._onChange);
+      this.ui.on('index', this._onChange);
 
-			return this.container.resize(w, h).then(() => {
-				this.renderer.gl.render(this.indexer);
-			});
-		}
+      this.autoplay.start();
+    };
 
+    this._onTick = e => {
+      this.data.time = e.time;
+      this.indexer.tick();
+      this.renderer.default.render(this.indexer);
+      this.container.ready(this.indexer).then(
+        () => {
+          this.renderer.gl.render(this.indexer);
+        },
+        message => {
+          console.log('reject ::', message);
+        },
+      );
+      this.ui.pager.set({ index: this.indexer.current });
+    };
 
-		this._onCompleteSlide = () => {
-			stage.off('tick', this._onTick);
-			this.data.option.get('touchMove') && this.ui.on(TouchEvent.START, this._onChange);
-			this.ui.on('index', this._onChange);
+    this._onChange = e => {
+      switch (e.type) {
+        case UI.EVENT.PREV:
+          this.prev();
+          break;
 
-			this.autoplay.start();
-		}
+        case UI.EVENT.NEXT:
+        case AutoPlay.EVENT.TICK:
+          this.next();
+          break;
 
+        case 'index':
+          this.indexer.to(e.value);
 
-		this._onTick = (e) => {
-			this.data.time = e.time;
-			this.indexer.tick();
-			this.renderer.default.render(this.indexer);
-			this.container.ready(this.indexer)
-				.then(() => {
-					this.renderer.gl.render(this.indexer);
-				},
-				(message) => {
-					console.log("reject ::", message);
-				});
-			this.ui.pager.set({index:this.indexer.current});
-		}
+          this.container.ready(this.indexer).then(
+            () => {
+              stage.on('tick', this._onTick);
+            },
+            message => {
+              console.log('on index rejected : ', message);
+            },
+          );
+          break;
 
+        case 'head':
+          this.ui.prev && (this.ui.prev.active = !this.indexer.get('head'));
+          break;
 
-		this._onChange = (e) => {
-			switch(e.type) {
-				case UI.EVENT.PREV:
-					this.prev();
-				break;
+        case 'tail':
+          this.ui.next && (this.ui.next.active = !this.indexer.get('tail'));
+          break;
 
-				case UI.EVENT.NEXT:
-				case AutoPlay.EVENT.TICK:
-					this.next();
-				break;
+        case TouchEvent.START:
+          stage.on(TouchEvent.MOVE, this._onChange);
+          stage.on(TouchEvent.END, this._onChange);
 
-				case 'index':
-					this.indexer.to(e.value);
+          this.ui.off('index', this._onChange);
 
-					this.container.ready(this.indexer).then(() => {
-						stage.on('tick', this._onTick);
-					},
-					(message) => {
-						console.log('on index rejected : ', message);
-					});
-				break;
-				
-				case 'head':
-					this.ui.prev && (this.ui.prev.active = !this.indexer.get('head'));
-				break;
+          this.indexer.down();
 
-				case 'tail':
-					this.ui.next && (this.ui.next.active = !this.indexer.get('tail'));
-				break;
+          this.autoplay.stop();
 
-				case TouchEvent.START:
-					stage.on(TouchEvent.MOVE, this._onChange);
-					stage.on(TouchEvent.END, this._onChange);
+          stage.on('tick', this._onTick);
+          break;
 
-					this.ui.off('index', this._onChange);
+        case TouchEvent.MOVE:
+          const dx = (e.clientX - e.clientX0) / this.dom.width;
+          this.indexer.move(-dx);
+          break;
 
-					this.indexer.down();
+        case TouchEvent.END:
+          stage.off(TouchEvent.MOVE, this._onChange);
+          stage.off(TouchEvent.END, this._onChange);
 
-					this.autoplay.stop();
+          this.indexer.up();
+          break;
+      }
+    };
+  }
 
-					stage.on('tick', this._onTick);
-				break;
+  setup(renderer, data) {
+    this.renderer.gl = renderer;
 
-				case TouchEvent.MOVE:
-					const dx = (e.clientX - e.clientX0) / this.dom.width;
-					this.indexer.move(-dx);
-				break;
+    this.data = data;
+    this.dom = data.dom;
 
-				case TouchEvent.END:
-					stage.off(TouchEvent.MOVE, this._onChange);
-					stage.off(TouchEvent.END, this._onChange);
+    this.renderer.default.setup(this.data);
 
-					this.indexer.up();
-				break;
-			}
-		}
-	}
+    this.renderer.gl = this.data.getRenderer();
+    this.renderer.gl.setup(this.data, this.container);
 
+    this.container.setup(this.renderer.gl.mesh);
 
-	setup(renderer, data) {
-		this.renderer.gl = renderer;
+    this.ui.setup(this.data);
 
-		this.data = data;
-		this.dom = data.dom;
+    this.indexer.setup(this.data);
+    this.indexer.on('complete', this._onCompleteSlide);
+    if (!this.data.option.loop) {
+      this.indexer.on('head', this._onChange);
+      this.indexer.on('tail', this._onChange);
+    }
 
-		this.renderer.default.setup(this.data);
+    this.autoplay.on(AutoPlay.EVENT.TICK, this._onChange);
+    this.autoplay.setup(this.data.option.autoplay);
 
-		this.renderer.gl = this.data.getRenderer();
-		this.renderer.gl.setup(this.data, this.container);
+    this.dom.on('resize', this._onResize);
 
-		this.container.setup(this.renderer.gl.mesh);
+    Inliner.resolveFonts()
+      .then(() => this.container.ready(this.indexer))
+      .then(this._onResize)
+      .then(
+        () => {
+          this.ui.on('index', this._onChange);
+          this.ui.on(UI.EVENT.PREV, this._onChange);
+          this.ui.on(UI.EVENT.NEXT, this._onChange);
 
-		this.ui.setup(this.data);
+          this.data.option.get('touchMove') && this.ui.on(TouchEvent.START, this._onChange);
 
-		this.indexer.setup(this.data);
-		this.indexer.on('complete', this._onCompleteSlide);
-		if(!this.data.option.loop) {
-			this.indexer.on('head', this._onChange);
-			this.indexer.on('tail', this._onChange);
-		}
+          this.autoplay.start();
 
-		this.autoplay.on(AutoPlay.EVENT.TICK, this._onChange);
-		this.autoplay.setup(this.data.option.autoplay);
+          stage.on('tick', this._onTick);
+        },
+        message => {
+          console.log('first ready rejected : ', message);
+        },
+      );
+  }
 
-		this.dom.on('resize', this._onResize);
+  prev() {
+    this.data.option.get('touchMove') && this.ui.off(TouchEvent.START, this._onChange);
+    this.autoplay.stop();
+    this.indexer.prev();
+    this.ui.pager.set({ index: this.indexer.current });
+  }
 
-		Inliner.resolveFonts()
-		.then(() => this.container.ready(this.indexer))
-		.then(this._onResize)
-		.then(() => {
+  next() {
+    this.data.option.get('touchMove') && this.ui.off(TouchEvent.START, this._onChange);
+    this.autoplay.stop();
+    this.indexer.next();
+    this.ui.pager.set({ index: this.indexer.current });
+  }
 
-			this.ui.on('index', this._onChange);
-			this.ui.on(UI.EVENT.PREV, this._onChange);
-			this.ui.on(UI.EVENT.NEXT, this._onChange);
+  dispose() {
+    if (!this.data) return;
 
-			this.data.option.get('touchMove') && this.ui.on(TouchEvent.START, this._onChange);
+    stage.off('tick', this._onTick);
+    stage.off(TouchEvent.MOVE, this._onChange);
+    stage.off(TouchEvent.END, this._onChange);
 
-			this.autoplay.start();
+    this.ui.off('index', this._onChange);
+    this.ui.off(UI.EVENT.PREV, this._onChange);
+    this.ui.off(UI.EVENT.NEXT, this._onChange);
 
-			stage.on('tick', this._onTick);
+    this.data.option.get('touchMove') && this.ui.off(TouchEvent.START, this._onChange);
 
-		}, (message) => {
-			console.log("first ready rejected : ", message);
-		});
-	}
+    this.ui.dispose();
 
+    this.dom.off('resize', this._onResize);
 
-	prev() {
-		this.data.option.get('touchMove') && this.ui.off(TouchEvent.START, this._onChange);
-		this.autoplay.stop();
-		this.indexer.prev();
-		this.ui.pager.set({index:this.indexer.current});
-	}
+    this.indexer.off('complete', this._onCompleteSlide);
 
+    if (!this.data.option.loop) {
+      this.indexer.off('head', this._onChange);
+      this.indexer.off('tail', this._onChange);
+    }
 
-	next() {
-		this.data.option.get('touchMove') && this.ui.off(TouchEvent.START, this._onChange);
-		this.autoplay.stop();
-		this.indexer.next();
-		this.ui.pager.set({index:this.indexer.current});
-	}
+    this.renderer.gl.dispose();
+    this.renderer.default.dispose();
 
+    this.container.dispose();
 
-	dispose() {
-
-		if(!this.data) return;
-
-		stage.off('tick', this._onTick);
-		stage.off(TouchEvent.MOVE, this._onChange);
-		stage.off(TouchEvent.END, this._onChange);
-
-		this.ui.off('index', this._onChange);
-		this.ui.off(UI.EVENT.PREV, this._onChange);
-		this.ui.off(UI.EVENT.NEXT, this._onChange);
-
-		this.data.option.get('touchMove') && this.ui.off(TouchEvent.START, this._onChange);
-
-		this.ui.dispose();
-
-		this.dom.off('resize', this._onResize);
-
-		this.indexer.off('complete', this._onCompleteSlide);
-
-		if(!this.data.option.loop) {
-			this.indexer.off('head', this._onChange);
-			this.indexer.off('tail', this._onChange);
-		}
-
-		this.renderer.gl.dispose();
-		this.renderer.default.dispose();
-
-		this.container.dispose();
-
-		this.data = undefined;
-	}
+    this.data = undefined;
+  }
 }
-

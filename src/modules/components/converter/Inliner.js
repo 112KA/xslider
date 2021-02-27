@@ -1,160 +1,139 @@
-import {cloner} from './Cloner'
-import {net} from '../Net'
-
+import { cloner } from './Cloner';
+import { net } from '../Net';
 
 export const Inliner = {
+  URL_REGEX: /url\(['"]?([^'"]+?)['"]?\)/g,
 
-	URL_REGEX : /url\(['"]?([^'"]+?)['"]?\)/g,
-
-
-	resolveFonts() {
-		return new Promise((resolve, reject) => {
-			if(this.inlinedFontString) {
-				resolve();
-			}
-			else {
-				const fontStrings = this.readFontRules().map((rule) => rule.cssText);
-				this.inlineFonts(fontStrings)
-					.then((inlinedFontStrings) => {
-						this.inlinedFontString = inlinedFontStrings.join(" ");
-						// this.inlinedFontString = inlinedFontStrings.join("\n");
-						// console.log("this.inlinedFontString", this.inlinedFontString)
-						resolve();
-					})
-			}
-		})
-	},
-
-	readFontRules() {
-
-		const fontRules = [];
-
-		const list = document.styleSheets;
-
-		for(let j=0; j<list.length; j++) {
-			let ss = list[j];
-
-			if(ss.cssRules) {
-				for(let i=0; i<ss.cssRules.length; i++) {
-					let rule = ss.cssRules[i];
-					if(rule.type === CSSRule.FONT_FACE_RULE) {
-						fontRules.push(rule);
-					}
-				}
-			}
-		}
-
-		// console.log("fontRules", fontRules)
-
-		return fontRules;
-	},
-
-	inlineFonts(fontStrings) {
-		const arr = fontStrings.map((string) => this._inline(string));
-		return Promise.all(arr);
-	},
-
-
-	inlineNode(node) {
-		return cloner.cloneNode(node)
-			.then(this.inlineImage.bind(this))
-	},
-
-
-	_inline(string) {
-		// console.log('string', string)
-		const urls = this.searchUrls(string);
-		const arr = [];
-
-		urls.map((url) => {
-			const p = net.getDataURI(url)
-				.then((dataURI) => {
-					string = string.replace(url, dataURI);
-				});
-			arr.push(p);
-		});
-
-		return Promise.all(arr).then(() => string);
-	},
-
-
-	searchUrls(string) {
-        const result = [];
-        let match;
-        while ((match = this.URL_REGEX.exec(string)) !== null) {
-            result.push(match[1]);
-        }
-        return result.filter((url) => {
-            return this.isDataURI(url);
+  resolveFonts() {
+    return new Promise((resolve, reject) => {
+      if (this.inlinedFontString) {
+        resolve();
+      } else {
+        const fontStrings = this.readFontRules().map(rule => rule.cssText);
+        this.inlineFonts(fontStrings).then(inlinedFontStrings => {
+          this.inlinedFontString = inlinedFontStrings.join(' ');
+          // this.inlinedFontString = inlinedFontStrings.join("\n");
+          // console.log("this.inlinedFontString", this.inlinedFontString)
+          resolve();
         });
-	},
+      }
+    });
+  },
 
+  readFontRules() {
+    const fontRules = [];
 
-	inlineImage(node) {
-		return new Promise((resolve, reject) => {
-			Promise.resolve(node)
-				.then(this.inlineImageElement.bind(this))
-				.then(this.inlineBackgroundImage.bind(this))
-				.then(() => {
-					if(node.hasChildNodes()) {
-				        const children = node.childNodes;
-						const arr = [];
+    const list = document.styleSheets;
 
-				        children.forEach((child, i, list) => {
-				        	let p = this.inlineImage(child);
-				        	arr.push(p);
-				    	});
+    for (let j = 0; j < list.length; j++) {
+      let ss = list[j];
 
-				    	Promise.all(arr).then(()=> {
-				    		resolve(node);
-				    	});
-					}
-					else {
-						resolve(node);
-					}
-				});
-		});
-	},
+      if (ss.cssRules) {
+        for (let i = 0; i < ss.cssRules.length; i++) {
+          let rule = ss.cssRules[i];
+          if (rule.type === CSSRule.FONT_FACE_RULE) {
+            fontRules.push(rule);
+          }
+        }
+      }
+    }
 
+    // console.log("fontRules", fontRules)
 
-	inlineImageElement: function(node) {
-		if(!(node instanceof HTMLImageElement)) return node;
+    return fontRules;
+  },
 
-		if(this.isDataURI(node.src)) return node;
+  inlineFonts(fontStrings) {
+    const arr = fontStrings.map(string => this._inline(string));
+    return Promise.all(arr);
+  },
 
-		// return node;
+  inlineNode(node) {
+    return cloner.cloneNode(node).then(this.inlineImage.bind(this));
+  },
 
-		return new Promise((resolve, reject) => {
+  _inline(string) {
+    // console.log('string', string)
+    const urls = this.searchUrls(string);
+    const arr = [];
 
-			net.getDataURI(node.src)
-				.then((dataURI) => {
-					node.onload = () => {
-						resolve(node);
-					}
-					node.onerror = reject;
-					node.src = dataURI;
-			});
-		});
-	},
+    urls.map(url => {
+      const p = net.getDataURI(url).then(dataURI => {
+        string = string.replace(url, dataURI);
+      });
+      arr.push(p);
+    });
 
+    return Promise.all(arr).then(() => string);
+  },
 
-	inlineBackgroundImage(node) {
-		if(!(node instanceof Element)) return node;
+  searchUrls(string) {
+    const result = [];
+    let match;
+    while ((match = this.URL_REGEX.exec(string)) !== null) {
+      result.push(match[1]);
+    }
+    return result.filter(url => {
+      return this.isDataURI(url);
+    });
+  },
 
-		const background = node.style.getPropertyValue('background');
-		if(!background) return node;
+  inlineImage(node) {
+    return new Promise((resolve, reject) => {
+      Promise.resolve(node)
+        .then(this.inlineImageElement.bind(this))
+        .then(this.inlineBackgroundImage.bind(this))
+        .then(() => {
+          if (node.hasChildNodes()) {
+            const children = node.childNodes;
+            const arr = [];
 
-		return this._inline(background)
-			.then((inlined) => {
-                node.style.setProperty('background', inlined);
-                return node;
-			});
-	},
+            children.forEach((child, i, list) => {
+              let p = this.inlineImage(child);
+              arr.push(p);
+            });
 
+            Promise.all(arr).then(() => {
+              resolve(node);
+            });
+          } else {
+            resolve(node);
+          }
+        });
+    });
+  },
 
-	isDataURI(string) {
-		return string.search(/^(data:)/) === -1;
-	}
+  inlineImageElement: function (node) {
+    if (!(node instanceof HTMLImageElement)) return node;
 
-	
-}
+    if (this.isDataURI(node.src)) return node;
+
+    // return node;
+
+    return new Promise((resolve, reject) => {
+      net.getDataURI(node.src).then(dataURI => {
+        node.onload = () => {
+          resolve(node);
+        };
+        node.onerror = reject;
+        node.src = dataURI;
+      });
+    });
+  },
+
+  inlineBackgroundImage(node) {
+    if (!(node instanceof Element)) return node;
+
+    const background = node.style.getPropertyValue('background');
+    if (!background) return node;
+
+    return this._inline(background).then(inlined => {
+      node.style.setProperty('background', inlined);
+      return node;
+    });
+  },
+
+  isDataURI(string) {
+    return string.search(/^(data:)/) === -1;
+  },
+};

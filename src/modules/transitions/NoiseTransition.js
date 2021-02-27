@@ -1,12 +1,11 @@
-import {BaseTransition} from './BaseTransition'
-import {Vec2, Vec3, Vec4} from '../geom/Vec'
+import { BaseTransition } from './BaseTransition';
+import { Vec2, Vec3, Vec4 } from '../geom/Vec';
 
 /**
  * It's based on {@link https://logik-matchbook.org/shader/crok_transitions crok_transitions by Gaëtan Renaudeau}.
  */
 export const NoiseTransition = BaseTransition.extend({
-
-    fragmentShader : `
+  fragmentShader: `
 precision highp float;
 
 uniform sampler2D texture0;
@@ -159,24 +158,23 @@ void main(void) {
 }
 `,
 
-	uniforms: {
-		time:{ value: 0 },
-		
-		zoom:{ value: 0.3 },
+  uniforms: {
+    time: { value: 0 },
 
-		dark_low:{ value: 100 },
-		dark_high:{ value: 200 },
-		dark_low:{ value: 200 },
-		dark_high:{ value: 255 },
-		contrast:{ value: 1 },
-		brightness:{ value: 1 },
-		saturation:{ value: 100 },
-		light_tint: { value: new Vec3(0.5, 0.5, 0.5) },
-		dark_tint: { value: new Vec3(0.2, 0.2, 0.2) },
-		t_amount:{ value: 0.5 },
-		exposure:{ value: 30 },
-		horzFuzzOpt:{ value: 10 },
-		rgbOffsetOpt:{ value: 20 },
-	}
+    zoom: { value: 0.3 },
 
+    dark_low: { value: 100 },
+    dark_high: { value: 200 },
+    dark_low: { value: 200 },
+    dark_high: { value: 255 },
+    contrast: { value: 1 },
+    brightness: { value: 1 },
+    saturation: { value: 100 },
+    light_tint: { value: new Vec3(0.5, 0.5, 0.5) },
+    dark_tint: { value: new Vec3(0.2, 0.2, 0.2) },
+    t_amount: { value: 0.5 },
+    exposure: { value: 30 },
+    horzFuzzOpt: { value: 10 },
+    rgbOffsetOpt: { value: 20 },
+  },
 });

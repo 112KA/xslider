@@ -1,11 +1,11 @@
-import {EventDispatcher} from '../../../core/EventDispatcher'
+import { EventDispatcher } from '../../../core/EventDispatcher';
 
 export class Asset extends EventDispatcher {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.needsUpdate = true;
+    this.needsUpdate = true;
 
-        this.location = undefined;
-    }
+    this.location = undefined;
+  }
 }

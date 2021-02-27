@@ -1,138 +1,124 @@
-import {env} from './Environment'
-import {Event, TouchEvent} from './Event'
-import {EventDispatcher} from './EventDispatcher'
+import { env } from './Environment';
+import { Event, TouchEvent } from './Event';
+import { EventDispatcher } from './EventDispatcher';
 
 export class InteractiveObject extends EventDispatcher {
+  constructor() {
+    super();
 
-	constructor() {
-		super();
+    this._defineHandlers();
 
-		this._defineHandlers();
+    this.on('target', this._on.changeTarget);
+  }
 
-		this.on('target', this._on.changeTarget);
-	}
+  _defineHandlers() {
+    this._on = {
+      bubble: e => {
+        this.dispatch(e.type, e);
+      },
 
+      changeTarget: o => {
+        if (o.value0) {
+          for (let type in this._listeners) {
+            this._autoRemoveListener(o.value0, type);
+          }
+        }
+        this.off();
+      },
 
-	_defineHandlers() {
+      touch: e => {
+        if (env.support.touch) {
+          let touch = e.touches[0];
+          if (touch) {
+            e.clientX = touch.clientX;
+            e.clientY = touch.clientY;
+          } else {
+            e.clientX = this.clientX0;
+            e.clientY = this.clientY0;
+          }
+        }
 
-		this._on = {
-			bubble : (e) => {
-				this.dispatch(e.type, e);
-			},
+        if (!this.clientX0) {
+          this.clientX0 = e.clientX;
+          this.clientY0 = e.clientY;
+        }
 
-			changeTarget : (o) => {
-				if(o.value0) {
-					for(let type in this._listeners) {
-						this._autoRemoveListener(o.value0, type);
-					}
-				}
-				this.off();
-			},
+        e.clientX0 = this.clientX0;
+        e.clientY0 = this.clientY0;
 
-			touch : (e) => {
+        this.clientX0 = e.clientX;
+        this.clientY0 = e.clientY;
 
-				if(env.support.touch) {
-					let touch = e.touches[0]
-					if(touch) {
-						e.clientX = touch.clientX;
-						e.clientY = touch.clientY;
-					}
-					else {
-						e.clientX = this.clientX0;
-						e.clientY = this.clientY0;
-					}
-				}
+        this.dispatch(e.type, e);
+      },
 
-				if(!this.clientX0) {
-					this.clientX0 = e.clientX;
-					this.clientY0 = e.clientY;
-				}
+      touchStart: e => {
+        this.clientX0 = this.clientY0 = undefined;
+      },
+    };
+  }
 
-				e.clientX0 = this.clientX0;
-				e.clientY0 = this.clientY0;
+  dispose() {
+    this.off();
+  }
 
-				this.clientX0 = e.clientX;
-				this.clientY0 = e.clientY;
+  on(type, listener, options) {
+    super.on(type, listener, options);
 
-				this.dispatch(e.type, e);
-			},
+    const target = this.get('target');
+    this._autoAddListener(target, type);
 
-			touchStart : (e) => {
-				this.clientX0 = this.clientY0 = undefined;
-			}
-		}
-	}
+    return this;
+  }
 
+  off(type, listener) {
+    super.off(type, listener);
 
-	dispose() {
-		this.off();
-	}
+    const target = this.get('target');
+    this._autoRemoveListener(target, type);
 
+    return this;
+  }
 
-	on(type, listener, options) {
+  _autoAddListener(target, type) {
+    if (!target) return;
 
-		super.on(type, listener, options);
+    if (this._listeners[type].length == 1) {
+      switch (type) {
+        case TouchEvent.START:
+        case TouchEvent.MOVE:
+        case TouchEvent.END:
+          target.addEventListener(type, this._on.touch);
+          break;
+        case 'click':
+          target.addEventListener(type, this._on.bubble);
+          break;
+      }
 
-		const target = this.get('target');
-		this._autoAddListener(target, type);
-		
-		return this;
-	}
+      if (type == TouchEvent.MOVE) {
+        target.addEventListener(TouchEvent.START, this._on.touchStart);
+      }
+    }
+  }
 
+  _autoRemoveListener(target, type) {
+    if (!target) return;
 
-	off(type, listener) {
+    if (!this._listeners[type] || this._listeners[type].length == 0) {
+      switch (type) {
+        case TouchEvent.START:
+        case TouchEvent.MOVE:
+        case TouchEvent.END:
+          target.removeEventListener(type, this._on.touch);
+          break;
+        case 'click':
+          target.removeEventListener(type, this._on.bubble);
+          break;
+      }
 
-		super.off(type, listener);
-
-		const target = this.get('target');
-		this._autoRemoveListener(target, type);
-		
-		return this;
-	}
-
-
-	_autoAddListener(target, type) {
-
-		if(!target) return;
-
-		if(this._listeners[type].length == 1) {
-			switch(type) {
-				case TouchEvent.START:
-				case TouchEvent.MOVE:
-				case TouchEvent.END:
-					target.addEventListener(type, this._on.touch);
-					break;
-				case 'click':
-					target.addEventListener(type, this._on.bubble);
-					break;
-			}
-
-			if(type == TouchEvent.MOVE) {
-				target.addEventListener(TouchEvent.START, this._on.touchStart);
-			}
-		}
-	}
-
-
-	_autoRemoveListener(target, type) {
-
-		if(!target) return;
-
-		if(!this._listeners[type] || this._listeners[type].length == 0) {
-			switch(type) {
-				case TouchEvent.START:
-				case TouchEvent.MOVE:
-				case TouchEvent.END:
-					target.removeEventListener(type, this._on.touch);
-					break;
-				case 'click':
-					target.removeEventListener(type, this._on.bubble);
-					break;
-			}
-
-			if(type == TouchEvent.MOVE) {
-				target.removeEventListener(TouchEvent.START, this._on.touchStart);
-			}
-		}
-	}
+      if (type == TouchEvent.MOVE) {
+        target.removeEventListener(TouchEvent.START, this._on.touchStart);
+      }
+    }
+  }
 }
