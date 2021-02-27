@@ -1,108 +1,111 @@
 const path = require('path');
 const webpack = require("webpack");
-const ConcatPlugin = require('webpack-concat-plugin');
-
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ConcatPlugin = require('webpack-concat-files-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 
-
-const DEV = process.env.NODE_ENV !== 'production';
-
-module.exports = {
-	entry: {
-		xslider: './src/xslider.js',
-	},
-
-	output: {
-		filename: DEV ? 'dist/[name].js' : 'dist/[name].min.js',
-		// path: path.join(__dirname, 'dist')
-		path: __dirname,
-		// library: 'XSlider',
-		// libraryTarget: 'window',
-		// libraryTarget: 'umd',
-		// umdNamedDefine: true,
-		// globalObject: "typeof self !== 'undefined' ? self : this"
-		// globalObject: "typeof self !== 'undefined' ? self : window"
-		// globalObject: "window"
-	},
-
-	module: {
-		rules: [{
-			test: /\.js$/,
-			exclude: /node_modules/,
-			use: [{
-				loader: 'babel-loader',
-				options: {
-					presets: ["@babel/preset-env"],
-					plugins: ['@babel/transform-runtime'],
-					cacheDirectory: true
-				}
-			}],
-		},
-		{
-			test: /\.scss$/,
-			// use: ['style-loader', 'css-loader', 'sass-loader']
-			use: ExtractTextPlugin.extract({
-				fallback: 'style-loader',
-				use: ['css-loader', 'sass-loader'],
-			}),
-		}],
-	},
-
-	optimization: DEV ? {} : {
-		minimize: true,
-		minimizer: [new TerserPlugin({
-			terserOptions: {
-				ecma: 6,
-				compress: true,
-				output: {
-					comments: false,
-					beautify: false
-				}
-			}
-		})]
-	},
-
-	plugins: DEV ? [
-		new ConcatPlugin({
-			// examples
-			uglify: false,
-			sourceMap: false,
-			name: 'vendor',
-			outputPath: './samples/asset/js/',
-			fileName: '[name].js',
-			filesToConcat: [
-				// './node_modules/three/build/three.min.js', 
-				// './node_modules/dom-to-image/dist/dom-to-image.min.js'
-				// './node_modules/dom-to-image/src/dom-to-image.js'
-				'./node_modules/dat.gui/build/dat.gui.min.js',
-				// './node_modules/babel-polyfill/dist/polyfill.min.js'
-			],
-			attributes: {
-				async: false
-			}
-		}),
+module.exports = (env, options) => {
+	const DEV = options.mode === "development";
+	const plugins = [
 		new webpack.DefinePlugin({
 			XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
 		}),
-		new ExtractTextPlugin('dist/xslider.css'),
-		// new webpack.optimize.UglifyJsPlugin()
-	] : [
-			new webpack.DefinePlugin({
-				XSLIDER_VERSION: JSON.stringify(require("./package.json").version)
-			}),
-			// new webpack.optimize.UglifyJsPlugin({
-			// 	compress: { warnings: false }
-			// }),
-			new ExtractTextPlugin(DEV ? 'dist/xslider.css' : 'dist/xslider.min.css'),
-		],
+		new MiniCssExtractPlugin({
+			filename: DEV ? "xslider.css" : "xslider.min.css",
+		}),
+	]
 
-	devServer: {
-		contentBase: __dirname,
-		// watchContentBase: true,
-		port: 3000,
-		inline: true,
-	},
+	if (DEV) {
+		plugins.push(
+			new ConcatPlugin({
+				bundles: [
+					{
+						dest: './samples/asset/js/vender.js',
+						src: [
+							// './node_modules/three/build/three.min.js',
+							// './node_modules/dom-to-image/dist/dom-to-image.min.js'
+							// './node_modules/dom-to-image/src/dom-to-image.js'
+							'./node_modules/dat.gui/build/dat.gui.min.js',
+							// './node_modules/babel-polyfill/dist/polyfill.min.js'
+						]
+					},
+				],
+			}))
+	}
 
-	devtool: DEV ? 'source-map' : ''
-};
+	return {
+		entry: {
+			xslider: './src/xslider.js',
+		},
+		output: {
+			filename: DEV ? 'dist/[name].js' : 'dist/[name].min.js',
+			path: __dirname,
+		},
+		module: {
+			rules: [
+				{
+					test: /\.js$/,
+					exclude: /node_modules/,
+					use: [{
+						loader: 'babel-loader',
+						options: {
+							presets: ["@babel/preset-env"],
+							plugins: ['@babel/transform-runtime'],
+							cacheDirectory: true
+						}
+					}],
+				},
+				{
+					test: /\.scss/,
+					use: [
+						{
+							loader: MiniCssExtractPlugin.loader,
+						},
+						{
+							loader: "css-loader",
+							options: {
+								url: false,	// オプションでCSS内のurl()メソッドの取り込みを禁止する
+								sourceMap: DEV,
+								importLoaders: 2,
+							},
+						},
+						{
+							loader: "sass-loader",
+							options: {
+								sourceMap: DEV,
+							},
+						},
+					],
+				}
+			],
+		},
+		optimization: DEV ? {} : {
+			minimize: true,
+			minimizer: [new TerserPlugin({
+				terserOptions: {
+					ecma: 6,
+					compress: true,
+					output: {
+						comments: false,
+						beautify: false
+					}
+				}
+			})]
+		},
+
+		plugins,
+		target: ["web", "es5"], // ES5(IE11等)向けの指定
+
+		devServer: {
+			contentBase: __dirname,
+			port: 3000,
+			hot: true,
+			inline: true,
+			watchContentBase: true,
+			open: true,
+			openPage: '/develop/',
+		},
+
+		devtool: DEV ? 'source-map' : ''
+	}
+}

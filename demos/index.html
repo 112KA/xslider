@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Demo | XSlider</title>
+
+    <link href="../dist/xslider.min.css" rel="stylesheet">
+
+    <style>
+        @font-face {
+            font-family: 'Noto Sans';
+            font-style: italic;
+            font-weight: 700;
+            src: local('Noto Sans Bold Italic'), local('NotoSans-BoldItalic'), url(https://fonts.gstatic.com/s/notosans/v7/o-0TIpQlx3QUlC5A4PNr4Az5ZuyDzW1IPrie.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background: #eee;
+        }
+
+        /* html {
+            font-size: 0.83em;
+        } */
+
+        a {
+            color: white;
+        }
+
+        a:hover {
+            color: #ccc;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .xslider-view {
+            color: white;
+            /* background: #ffd700; */
+            text-align: center;
+            font: italic normal 700 normal 16px/23px "Noto Sans", sans-serif;
+        }
+
+        .xslider-view p,
+        .xslider li {
+            font-size: 14px;
+        }
+
+        .xslider-layer-gl {
+            /* font-size: 1em; */
+        }
+
+        .xslider-layer-ui {
+            color: white;
+        }
+
+        .xslider-slide:nth-child(3) .xslider-layer-gl {
+            background: url('assets/image/slide4.jpg') no-repeat center;
+            background-size: cover;
+        }
+
+        .xslider-slide:nth-child(4) .xslider-layer-ui p {
+            font-size: 20px;
+            color: #333;
+        }
+
+
+        .xslider-view .layer-content {
+            text-align: left;
+            width: calc(100% - 100px);
+            max-width: 600px;
+        }
+
+        .xslider-layer-gl>div {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="xslider">
+            <div class="xslider-view">
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"
+                        style="background: linear-gradient(to right bottom, #051937, #323851, #595a6d, #81808a, #a8a8a8);">
+                    </div>
+                    <div class="xslider-layer-ui">
+                        <div class="layer-content">
+                            <h1>XSlider</h1>
+                            <p>WebGL Shader Slider</p>
+                            <p><a href="https://github.com/112KA/xslider" target="_blank">github</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl"
+                        style="background-image: linear-gradient(to right bottom, #051937, #323851, #595a6d, #81808a, #a8a8a8);">
+                        <div>
+                            <div class="layer-content">
+                                <h2>What is it?</h2>
+                                <p>XSlider is a slider library using webgl shader for transition.</p>
+                                <ul>
+                                    <li>Shader transition is easy to customize.</li>
+                                    <li>No external dependency.</li>
+                                    <li>Treat DOM structure as webgl texture.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="xslider-layer-ui"></div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl">
+                        <p>This is a texture layer that makes the shader transition.<br />Using svg
+                            &lt;foreignObject&gt; tag to render images and text to texture.</p>
+                    </div>
+                    <div class="xslider-layer-ui">
+                        <p>This is a DOM layer.<br />Can set hyperlink like this &gt;&gt;&gt; <a
+                                href="https://github.com/112KA/xslider" target="_blank">github</a></p>
+                    </div>
+                </div>
+                <div class="xslider-slide">
+                    <div class="xslider-layer-gl" style="background: #ffd700;"></div>
+                    <div class="xslider-layer-ui">
+                        <p>Enjoy!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="xslider-pager"></div>
+            <div class="xslider-prev"></div>
+            <div class="xslider-next"></div>
+        </div>
+    </div>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/92/three.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.2/dat.gui.js"></script>
+    <script src="../dist/xslider.js"></script>
+    <script>
+
+        var query = {};
+
+        if (window.location.hash) {
+            var tmp = window.location.hash.substring(1);
+            tmp = tmp.split('&');
+
+            for (var i = 0; i < tmp.length; i++) {
+                var element = tmp[i].split("=");
+                var paramName = decodeURIComponent(element[0]);
+                var paramValue = decodeURIComponent(element[1]);
+                query[paramName] = paramValue;
+            }
+        }
+        else {
+            query.touchMoveEnabled = true;
+            query.throwable = true;
+
+            query.loop = true;
+        }
+
+        var transitions = ['Base', 'CrossWarp', "CrossZoom", "Cube", "Morph", "Noise", "Pixelate", "PixelateWipe"];
+        var index = transitions.indexOf(query['transition']);
+        index = index == -1 ? transitions.indexOf("PixelateWipe") : index;
+
+        var target = {
+            transition: transitions[index],
+
+            loop: 'loop' in query,
+
+            touchMoveEnabled: 'touchMoveEnabled' in query,
+            throwable: 'throwable' in query,
+
+            autoplayEnabled: 'autoplayEnabled' in query,
+        };
+
+        var buildOptions = function () {
+            return {
+                // debug: XSlider.Debug.DISPLAY.DOM,
+                // debug: XSlider.Debug.DISPLAY.SVG,
+                // debug: XSlider.Debug.DISPLAY.IMG,
+                transition: XSlider[target.transition + "Transition"],
+                loop: target.loop,
+                touchMove: target.touchMoveEnabled ? {
+                    throwable: target.throwable
+                } : false,
+                autoplay: target.autoplayEnabled ? {
+                    delay: 3000
+                } : false
+            }
+        };
+
+        var gui = new dat.GUI();
+
+        var folders = {
+            touchMove: gui.addFolder('touchMove'),
+            autoplay: gui.addFolder('autoplay'),
+        }
+
+        var listeners = {
+            transition: gui.add(target, 'transition', transitions),
+
+            loop: gui.add(target, 'loop', true),
+
+            touchMoveEnabled: folders.touchMove.add(target, 'touchMoveEnabled', true),
+            throwable: folders.touchMove.add(target, 'throwable', true),
+
+            autoplayEnabled: folders.autoplay.add(target, 'autoplayEnabled', true),
+        };
+
+        XSlider.stage.ready()
+            .then(function () {
+                var slider = new XSlider('.xslider', buildOptions());
+                console.log(buildOptions())
+
+                var reset = function (v) {
+                    slider.dispose();
+
+                    slider.setup('.xslider', buildOptions());
+
+                    var s = '';
+                    s += 'transition=' + target.transition;
+                    target.loop && (s += '&loop');
+                    target.touchMoveEnabled && (s += '&touchMoveEnabled');
+                    target.throwable && (s += '&throwable');
+                    target.autoplayEnabled && (s += '&autoplayEnabled');
+
+                    location.hash = s;
+                }
+
+                Object.keys(listeners).forEach(function (key) {
+                    listeners[key].onFinishChange(reset);
+                });
+
+            });
+
+    </script>
+</body>
+
+</html>
