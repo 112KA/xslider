@@ -10,7 +10,7 @@
 		//In some browsers, if a stylesheet is loaded from a different domain, calling cssRules results in SecurityError.
 		<link href="https://fonts.googleapis.com/css?family=Noto+Sans:700i" rel="stylesheet"> 
 	-->
-	<link href="../dist/xslider.css" rel="stylesheet">
+	<link href="../dist/xslider.min.css" rel="stylesheet">
 
 	<style>
 		@font-face {
@@ -112,11 +112,13 @@
 
 	<script src="../demos/assets/js/vender.js"></script>
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.2/dat.gui.js"></script> -->
-	<!-- <script src="../dist/xslider.umd.js"></script> -->
 	<script src="../dist/xslider.min.js"></script>
+	<!-- <script src="../dist/xslider.min.js"></script> -->
 	<script src="TestTransition.js"></script>
 	<script>
 		var query = {};
+
+		// console.log('XSlider', XSlider)
 
 		if (window.location.hash) {
 			var tmp = window.location.hash.substring(1);
@@ -187,9 +189,6 @@
 
 			autoplayEnabled: folders.autoplay.add(target, 'autoplayEnabled', true),
 		};
-
-		console.log(XSlider)
-		console.log(XSlider.stage)
 
 		XSlider.stage.ready()
 			.then(function () {

@@ -20,7 +20,8 @@
     height: 100%; }
     .xslider-view .xslider-slide-active {
       display: block; }
-    .xslider-view .xslider-slide > img, .xslider-view .xslider-slide > canvas {
+    .xslider-view .xslider-slide > img,
+    .xslider-view .xslider-slide > canvas {
       position: absolute; }
 
 .xslider-layer-gl {
@@ -61,7 +62,8 @@
       background: #00ff7a;
       opacity: 1; }
 
-.xslider-prev, .xslider-next {
+.xslider-prev,
+.xslider-next {
   width: 27px;
   height: 44px;
   position: absolute;
@@ -69,7 +71,8 @@
   cursor: pointer;
   background-repeat: no-repeat;
   margin-top: -22px; }
-  .xslider-prev.xslider-disabled, .xslider-next.xslider-disabled {
+  .xslider-prev.xslider-disabled,
+  .xslider-next.xslider-disabled {
     opacity: 0.3;
     cursor: auto;
     pointer-events: none; }
@@ -84,5 +87,3 @@
 
 .xslider-debug .xslider-layer-gl {
   display: block; }
-
-/*# sourceMappingURL=xslider.css.map*/

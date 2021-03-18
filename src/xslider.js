@@ -39,13 +39,5 @@ XSlider.Debug = Option.Debug;
 
 if (typeof window !== 'undefined') {
   window.XSlider = XSlider;
-} else if (typeof global !== 'undefined') {
-  global.XSlider = XSlider;
 }
-
-// window.XSlider = XSlider;
-// export { XSlider }
-// export XSlider
 export default XSlider;
-// exports { XSlider };
-// module.exports = XSlider
