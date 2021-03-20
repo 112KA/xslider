@@ -120,32 +120,9 @@ export class SlideContainer extends EventDispatcher {
   constructor() {
     super();
 
-    this._defineHandlers();
+    this._bindMethods(['_onChangeSlide']);
 
     this.width = this.height = -1;
-  }
-
-  _defineHandlers() {
-    this._onChangeSlide = e => {
-      // console.log(e);
-
-      let removeOld = false;
-
-      switch (e.type) {
-        case 'slide0':
-          this.updateSlide(0);
-          removeOld = e.value0 !== undefined;
-          break;
-        case 'slide1':
-          this.updateSlide(1);
-          removeOld = e.value0 !== undefined && e.value0 !== this.get('slide0');
-          break;
-      }
-
-      if (removeOld) {
-        e.value0.element.classList.remove('xslider-slide-active');
-      }
-    };
   }
 
   ready(indexer) {
@@ -228,5 +205,26 @@ export class SlideContainer extends EventDispatcher {
         resolve();
       });
     });
+  }
+
+  _onChangeSlide(e) {
+    // console.log(e);
+
+    let removeOld = false;
+
+    switch (e.type) {
+      case 'slide0':
+        this.updateSlide(0);
+        removeOld = e.value0 !== undefined;
+        break;
+      case 'slide1':
+        this.updateSlide(1);
+        removeOld = e.value0 !== undefined && e.value0 !== this.get('slide0');
+        break;
+    }
+
+    if (removeOld) {
+      e.value0.element.classList.remove('xslider-slide-active');
+    }
   }
 }

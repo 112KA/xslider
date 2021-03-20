@@ -6,21 +6,9 @@ export class DefaultRenderer extends BaseRenderer {
   constructor() {
     super();
 
-    this._defineHandlers();
-  }
-
-  _defineHandlers() {
     this.dx = 0;
-    this._onTick = e => {
-      console.log('e: ', e);
 
-      this.dx = 30 * Math.sin(e.time / 1000);
-
-      const slide0 = this.data.list[0];
-      if (slide0) {
-        slide0.layer.ui.style.webkitTransform = 'translate(' + this.dx + 'px, 0)';
-      }
-    };
+    this._bindMethods(['_onTick']);
   }
 
   setup(data, container) {
@@ -59,5 +47,16 @@ export class DefaultRenderer extends BaseRenderer {
 
     slide.layer.ui.style.webkitTransform = 'translate(' + dx + 'px, 0) scale(1)';
     // slide.layer.ui.style.opacity = opacity;
+  }
+
+  _onTick(e) {
+    // console.log('e: ', e);
+
+    this.dx = 30 * Math.sin(e.time / 1000);
+
+    const slide0 = this.data.list[0];
+    if (slide0) {
+      slide0.layer.ui.style.webkitTransform = 'translate(' + this.dx + 'px, 0)';
+    }
   }
 }

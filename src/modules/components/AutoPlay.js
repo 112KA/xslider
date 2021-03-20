@@ -5,17 +5,7 @@ export class AutoPlay extends EventDispatcher {
   constructor() {
     super();
 
-    this._defineHandlers();
-  }
-
-  _defineHandlers() {
-    this._on = {
-      tick: e => {
-        if (e.time > this.option.delay) {
-          this.dispatch(AutoPlay.EVENT.TICK);
-        }
-      },
-    };
+    this._bindMethods(['_onTick']);
   }
 
   get enabled() {
@@ -28,13 +18,19 @@ export class AutoPlay extends EventDispatcher {
 
   start() {
     if (this.enabled) {
-      stage.on('tick', this._on.tick);
+      stage.on('tick', this._onTick);
     }
   }
 
   stop() {
     if (this.enabled) {
-      stage.off('tick', this._on.tick);
+      stage.off('tick', this._onTick);
+    }
+  }
+
+  _onTick(e) {
+    if (e.time > this.option.delay) {
+      this.dispatch(AutoPlay.EVENT.TICK);
     }
   }
 }

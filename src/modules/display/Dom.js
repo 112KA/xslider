@@ -4,19 +4,9 @@ export class Dom extends EventDispatcher {
   constructor() {
     super();
 
-    this._defineHandlers();
+    this._bindMethods(['_onResize']);
 
     // this.canvas = document.createElement('canvas');
-  }
-
-  _defineHandlers() {
-    this._onResize = e => {
-      if (this._width != this.width || this._height != this.height) {
-        this._width = this.width;
-        this._height = this.height;
-        this.dispatch('resize', { type: 'resize', width: this._width, height: this._height });
-      }
-    };
   }
 
   get width() {
@@ -45,5 +35,13 @@ export class Dom extends EventDispatcher {
     this._width = this._height = undefined;
     stage.off('resize', this._onResize);
     this.container.classList.remove('xslider-container', 'xslider-debug');
+  }
+
+  _onResize(e) {
+    if (this._width != this.width || this._height != this.height) {
+      this._width = this.width;
+      this._height = this.height;
+      this.dispatch('resize', { type: 'resize', width: this._width, height: this._height });
+    }
   }
 }

@@ -46,11 +46,11 @@ class Stage extends InteractiveObject {
     if (this._listeners[type].length == 1) {
       switch (type) {
         case 'tick':
-          this.ticker.on(type, this._on.bubble);
+          this.ticker.on(type, this._onBubble);
           this.ticker.start();
           break;
         case 'resize':
-          target.addEventListener(type, this._on.bubble);
+          target.addEventListener(type, this._onBubble);
           break;
       }
     }
@@ -64,11 +64,11 @@ class Stage extends InteractiveObject {
     if (!this._listeners[type] || this._listeners[type].length == 0) {
       switch (type) {
         case 'tick':
-          this.ticker.off(type, this._on.bubble);
+          this.ticker.off(type, this._onBubble);
           this.ticker.stop();
           break;
         case 'resize':
-          target.removeEventListener(type, this._on.bubble);
+          target.removeEventListener(type, this._onBubble);
           break;
       }
     }

@@ -5,20 +5,8 @@ import { Pager } from './Pager';
 export class UI extends InteractiveObject {
   constructor() {
     super();
-  }
 
-  _defineHandlers() {
-    super._defineHandlers();
-
-    this._onPrev = e => {
-      e.preventDefault();
-      this.dispatch(UI.EVENT.PREV);
-    };
-
-    this._onNext = e => {
-      e.preventDefault();
-      this.dispatch(UI.EVENT.NEXT);
-    };
+    this._bindMethods(['_onPrev', '_onNext']);
   }
 
   setup(data) {
@@ -29,7 +17,7 @@ export class UI extends InteractiveObject {
     if (dom.pager) {
       this.pager = this.pager || new Pager();
       this.pager.setup(data);
-      this.pager.on('index', this._on.bubble);
+      this.pager.on('index', this._onBubble);
     }
 
     if (dom.prev) {
@@ -47,12 +35,12 @@ export class UI extends InteractiveObject {
 
   dispose() {
     if (this.pager) {
-      this.pager.off('index', this._on.bubble);
+      this.pager.off('index', this._onBubble);
       this.pager.dispose();
     }
 
     if (this.prev) {
-      this.prev.off('click', this._offPrev);
+      this.prev.off('click', this._onPrev);
       this.prev.dispose();
     }
 
@@ -60,6 +48,16 @@ export class UI extends InteractiveObject {
       this.next.off('click', this._onNext);
       this.next.dispose();
     }
+  }
+
+  _onPrev(e) {
+    e.preventDefault();
+    this.dispatch(UI.EVENT.PREV);
+  }
+
+  _onNext(e) {
+    e.preventDefault();
+    this.dispatch(UI.EVENT.NEXT);
   }
 }
 

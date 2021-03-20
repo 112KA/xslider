@@ -4,22 +4,7 @@ export class Pager extends EventDispatcher {
   constructor() {
     super();
 
-    this._defineHandlers();
-  }
-
-  _defineHandlers() {
-    this._onClick = e => {
-      const index = this.list.indexOf(e.target);
-      this.set({ index: index });
-    };
-
-    this._onChangeIndex = e => {
-      if (e.value0 !== undefined) {
-        this.list[e.value0].classList.remove('xslider-active');
-      }
-
-      this.list[e.value].classList.add('xslider-active');
-    };
+    this._bindMethods(['_onClick', '_onChangeIndex']);
   }
 
   setup(data) {
@@ -48,5 +33,18 @@ export class Pager extends EventDispatcher {
       span.removeEventListener('click', this._onClick);
       this.container.removeChild(span);
     });
+  }
+
+  _onClick(e) {
+    const index = this.list.indexOf(e.target);
+    this.set({ index: index });
+  }
+
+  _onChangeIndex(e) {
+    if (e.value0 !== undefined) {
+      this.list[e.value0].classList.remove('xslider-active');
+    }
+
+    this.list[e.value].classList.add('xslider-active');
   }
 }

@@ -1,6 +1,4 @@
 import './xslider.scss';
-// const XSlider = require('./modules/main.js').default;
-// const XSlider = require('./modules/main.js')
 import XSlider from './modules/main.js';
 import { stage } from './modules/core/Stage.js';
 import { BaseTransition } from './modules/transitions/BaseTransition';

@@ -4,6 +4,10 @@ export class EventDispatcher {
     this._properties = {};
   }
 
+  _bindMethods(methods) {
+    methods.forEach(fn => (this[fn] = this[fn].bind(this)));
+  }
+
   get listeners() {
     return this._listeners;
   }

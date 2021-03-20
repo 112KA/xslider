@@ -6,56 +6,9 @@ export class InteractiveObject extends EventDispatcher {
   constructor() {
     super();
 
-    this._defineHandlers();
+    this._bindMethods(['_onBubble', '_onChangeTarget', '_onTouch', '_onTouchStart']);
 
-    this.on('target', this._on.changeTarget);
-  }
-
-  _defineHandlers() {
-    this._on = {
-      bubble: e => {
-        this.dispatch(e.type, e);
-      },
-
-      changeTarget: o => {
-        if (o.value0) {
-          for (let type in this._listeners) {
-            this._autoRemoveListener(o.value0, type);
-          }
-        }
-        this.off();
-      },
-
-      touch: e => {
-        if (env.support.touch) {
-          let touch = e.touches[0];
-          if (touch) {
-            e.clientX = touch.clientX;
-            e.clientY = touch.clientY;
-          } else {
-            e.clientX = this.clientX0;
-            e.clientY = this.clientY0;
-          }
-        }
-
-        if (!this.clientX0) {
-          this.clientX0 = e.clientX;
-          this.clientY0 = e.clientY;
-        }
-
-        e.clientX0 = this.clientX0;
-        e.clientY0 = this.clientY0;
-
-        this.clientX0 = e.clientX;
-        this.clientY0 = e.clientY;
-
-        this.dispatch(e.type, e);
-      },
-
-      touchStart: e => {
-        this.clientX0 = this.clientY0 = undefined;
-      },
-    };
+    this.on('target', this._onChangeTarget);
   }
 
   dispose() {
@@ -88,15 +41,15 @@ export class InteractiveObject extends EventDispatcher {
         case TouchEvent.START:
         case TouchEvent.MOVE:
         case TouchEvent.END:
-          target.addEventListener(type, this._on.touch);
+          target.addEventListener(type, this._onTouch);
           break;
         case 'click':
-          target.addEventListener(type, this._on.bubble);
+          target.addEventListener(type, this._onBubble);
           break;
       }
 
       if (type == TouchEvent.MOVE) {
-        target.addEventListener(TouchEvent.START, this._on.touchStart);
+        target.addEventListener(TouchEvent.START, this._onTouchStart);
       }
     }
   }
@@ -109,16 +62,59 @@ export class InteractiveObject extends EventDispatcher {
         case TouchEvent.START:
         case TouchEvent.MOVE:
         case TouchEvent.END:
-          target.removeEventListener(type, this._on.touch);
+          target.removeEventListener(type, this._onTouch);
           break;
         case 'click':
-          target.removeEventListener(type, this._on.bubble);
+          target.removeEventListener(type, this._onBubble);
           break;
       }
 
       if (type == TouchEvent.MOVE) {
-        target.removeEventListener(TouchEvent.START, this._on.touchStart);
+        target.removeEventListener(TouchEvent.START, this._onTouchStart);
       }
     }
+  }
+
+  _onBubble(e) {
+    this.dispatch(e.type, e);
+  }
+
+  _onChangeTarget(o) {
+    if (o.value0) {
+      for (let type in this._listeners) {
+        this._autoRemoveListener(o.value0, type);
+      }
+    }
+    this.off();
+  }
+
+  _onTouch(e) {
+    if (env.support.touch) {
+      let touch = e.touches[0];
+      if (touch) {
+        e.clientX = touch.clientX;
+        e.clientY = touch.clientY;
+      } else {
+        e.clientX = this.clientX0;
+        e.clientY = this.clientY0;
+      }
+    }
+
+    if (!this.clientX0) {
+      this.clientX0 = e.clientX;
+      this.clientY0 = e.clientY;
+    }
+
+    e.clientX0 = this.clientX0;
+    e.clientY0 = this.clientY0;
+
+    this.clientX0 = e.clientX;
+    this.clientY0 = e.clientY;
+
+    this.dispatch(e.type, e);
+  }
+
+  _onTouchStart(e) {
+    this.clientX0 = this.clientY0 = undefined;
   }
 }

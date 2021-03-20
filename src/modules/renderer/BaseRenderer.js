@@ -25,11 +25,7 @@ export class GLRenderer extends BaseRenderer {
     super();
 
     this.canvas = document.createElement('canvas');
-
-    this._defineHandlers();
   }
-
-  _defineHandlers() {}
 
   setup(data, container) {
     super.setup(data, container);
