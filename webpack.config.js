@@ -50,11 +50,11 @@ module.exports = (env, options) => {
           use: [
             {
               loader: 'babel-loader',
-              options: {
-                presets: ['@babel/preset-env'],
-                plugins: ['@babel/transform-runtime'],
-                cacheDirectory: true,
-              },
+              // options: {
+              //   presets: ['@babel/preset-env'],
+              //   plugins: ['@babel/transform-runtime'],
+              //   cacheDirectory: true,
+              // },
             },
           ],
         },

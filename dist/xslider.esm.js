@@ -1,4 +1,4 @@
-var XSLIDER_VERSION = "1.0.10"
+var XSLIDER_VERSION = "1.1.0"
 
 var Utils = {
   extend: function extend(base, o) {

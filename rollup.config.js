@@ -2,11 +2,8 @@ import buble from 'rollup-plugin-buble';
 import scss from 'rollup-plugin-scss';
 import { terser } from 'rollup-plugin-terser';
 
-// const input = 'src/index.js',
 const input = 'src/xslider.js',
   inputESM = {
-    // 'dist/xslider.esm': 'src/index.esm.js',
-    // 'dist/xslider.esm': 'src/index.js',
     'dist/xslider.esm': 'src/xslider.js',
   },
   intro = () => 'var XSLIDER_VERSION = ' + JSON.stringify(require('./package.json').version);
@@ -21,10 +18,7 @@ export default [
       scss({
         output: 'dist/xslider.css',
       }),
-      // commonjs(),
-      buble({
-        target: { ie: 11 },
-      }),
+      buble(),
     ],
     output: {
       name: 'XSlider',
@@ -33,7 +27,6 @@ export default [
       indent: false,
       intro,
     },
-    // exclude: 'node_modules/**',
   },
   {
     input,
@@ -42,9 +35,7 @@ export default [
         output: 'dist/xslider.min.css',
         outputStyle: 'compressed',
       }),
-      buble({
-        target: { ie: 11 },
-      }),
+      buble(),
       terser(),
     ],
     output: {
@@ -65,9 +56,7 @@ export default [
       scss({
         output: 'dist/xslider.css',
       }),
-      buble({
-        target: {ie:11}
-      })
+      buble()
     ],
     output: {
       dir: './',

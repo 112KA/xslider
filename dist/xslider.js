@@ -4,7 +4,7 @@ typeof define === 'function' && define.amd ? define(factory) :
 (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.XSlider = factory());
 }(this, (function () { 'use strict';
 
-var XSLIDER_VERSION = "1.0.10"
+var XSLIDER_VERSION = "1.1.0"
 
 var Utils = {
   extend: function extend(base, o) {

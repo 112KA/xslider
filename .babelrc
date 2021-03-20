@@ -1,0 +1,10 @@
+// process.env.NODE_ENV = "test";
+{
+  "presets": ["@babel/preset-env"],
+  "plugins": ["@babel/transform-runtime"],
+  "env": {
+    "test": {
+      "presets": [["@babel/preset-env", { "targets": { "node": "current" } }]]
+    }
+  }
+}
