@@ -7,22 +7,21 @@ export class Pager extends EventDispatcher {
     this._bindMethods(['_onClick', '_onChangeIndex']);
   }
 
-  setup(data) {
-    this.container = data.dom.pager;
+  setup(dom) {
+    this.element = dom.pager;
     this.list = [];
 
-    const length = data.dom.slides.length;
+    const length = dom.pages.length;
 
     for (let i = 0; i < length; i++) {
       let span = document.createElement('span');
-      this.container.appendChild(span);
+      this.element.appendChild(span);
 
       span.addEventListener('click', this._onClick);
       this.list.push(span);
     }
 
     this.on('index', this._onChangeIndex);
-    this.set({ index: data.option.initialSlideIndex });
   }
 
   dispose() {
@@ -31,20 +30,21 @@ export class Pager extends EventDispatcher {
 
     this.list.forEach(span => {
       span.removeEventListener('click', this._onClick);
-      this.container.removeChild(span);
+      this.element.removeChild(span);
     });
   }
 
   _onClick(e) {
     const index = this.list.indexOf(e.target);
-    this.set({ index: index });
+    this.set({ index });
   }
 
   _onChangeIndex(e) {
-    if (e.value0 !== undefined) {
-      this.list[e.value0].classList.remove('xslider-active');
-    }
+    this.index = e.value;
+  }
 
-    this.list[e.value].classList.add('xslider-active');
+  set index(value) {
+    this.list.forEach(span => span.classList.remove('xslider-active'));
+    this.list[value].classList.add('xslider-active');
   }
 }

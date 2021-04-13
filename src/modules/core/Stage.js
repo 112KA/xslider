@@ -1,7 +1,7 @@
 import { Event, TouchEvent } from '../core/Event';
 import { InteractiveObject } from '../core/InteractiveObject';
 import { env } from '../core/Environment';
-import { Ticker } from './Ticker';
+import { Ticker } from '../services/Ticker';
 
 class Stage extends InteractiveObject {
   constructor() {

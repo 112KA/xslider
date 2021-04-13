@@ -7,22 +7,23 @@
     top: 0;
     left: 0; }
 
-.xslider-view {
+.xslider-slide {
   width: 100%;
   height: 100%; }
-  .xslider-view .xslider-slide {
-    display: none;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%; }
-    .xslider-view .xslider-slide-active {
-      display: block; }
-    .xslider-view .xslider-slide > img,
-    .xslider-view .xslider-slide > canvas {
-      position: absolute; }
+
+.xslider-page {
+  display: none;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+  .xslider-page-active {
+    display: block; }
+  .xslider-page > img,
+  .xslider-page > canvas {
+    position: absolute; }
 
 .xslider-layer-gl {
   position: absolute;
@@ -47,6 +48,7 @@
   position: absolute;
   left: 0;
   bottom: 10px;
+  z-index: 1;
   text-align: center;
   width: 100%; }
   .xslider-pager > span {
@@ -62,17 +64,16 @@
       background: #00ff7a;
       opacity: 1; }
 
-.xslider-prev,
-.xslider-next {
+.xslider-prev, .xslider-next {
   width: 27px;
   height: 44px;
   position: absolute;
   top: 50%;
+  z-index: 1;
   cursor: pointer;
   background-repeat: no-repeat;
   margin-top: -22px; }
-  .xslider-prev.xslider-disabled,
-  .xslider-next.xslider-disabled {
+  .xslider-prev.xslider-disabled, .xslider-next.xslider-disabled {
     opacity: 0.3;
     cursor: auto;
     pointer-events: none; }

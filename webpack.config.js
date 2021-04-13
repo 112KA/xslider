@@ -1,8 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const ConcatPlugin = require('webpack-concat-files-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, options) => {
   const DEV = options.mode === 'development';
@@ -10,9 +10,9 @@ module.exports = (env, options) => {
     new webpack.DefinePlugin({
       XSLIDER_VERSION: JSON.stringify(require('./package.json').version),
     }),
-    new MiniCssExtractPlugin({
-      filename: DEV ? 'xslider.css' : 'xslider.min.css',
-    }),
+    // new MiniCssExtractPlugin({
+    //   filename: DEV ? 'xslider.css' : 'xslider.min.css',
+    // }),
   ];
 
   if (DEV) {
@@ -50,20 +50,15 @@ module.exports = (env, options) => {
           use: [
             {
               loader: 'babel-loader',
-              // options: {
-              //   presets: ['@babel/preset-env'],
-              //   plugins: ['@babel/transform-runtime'],
-              //   cacheDirectory: true,
-              // },
             },
           ],
         },
         {
           test: /\.scss/,
           use: [
-            {
-              loader: MiniCssExtractPlugin.loader,
-            },
+            // {
+            //   loader: MiniCssExtractPlugin.loader,
+            // },
             {
               loader: 'css-loader',
               options: {
@@ -82,23 +77,23 @@ module.exports = (env, options) => {
         },
       ],
     },
-    optimization: DEV
-      ? {}
-      : {
-          minimize: true,
-          minimizer: [
-            new TerserPlugin({
-              terserOptions: {
-                ecma: 6,
-                compress: true,
-                output: {
-                  comments: false,
-                  beautify: false,
-                },
-              },
-            }),
-          ],
-        },
+    // optimization: DEV
+    //   ? {}
+    //   : {
+    //       minimize: true,
+    //       minimizer: [
+    //         new TerserPlugin({
+    //           terserOptions: {
+    //             ecma: 6,
+    //             compress: true,
+    //             output: {
+    //               comments: false,
+    //               beautify: false,
+    //             },
+    //           },
+    //         }),
+    //       ],
+    //     },
 
     plugins,
 

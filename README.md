@@ -6,70 +6,79 @@ XSlider is a slider library using webgl shader for transition.
 - No external dependency.
 - Treat DOM structure as webgl texture.
 - It switches continuously when several slides are skipped  
-![slide sample](https://raw.githubusercontent.com/wiki/112KA/xslider/images/xslider_slide.gif)
+  ![slide sample](https://raw.githubusercontent.com/wiki/112KA/xslider/images/xslider_slide.gif)
 - You can grab a slide and throw it  
-![drag sample](https://raw.githubusercontent.com/wiki/112KA/xslider/images/xslider_drag.gif)
+  ![drag sample](https://raw.githubusercontent.com/wiki/112KA/xslider/images/xslider_drag.gif)
 
 [demo](https://112ka.github.io/xslider/demo/)
 
 ## Installing / Getting started
 
 ### Download and install:
+
 ```shell
 yarn add xslider
 ```
+
 or
+
 ```shell
 npm install xslider
 ```
 
 ### Include CSS and JS files:
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     ...
-    <link rel="stylesheet" href="path/to/xslider.min.css">
-</head>
-<body>
+    <link rel="stylesheet" href="path/to/xslider.min.css" />
+  </head>
+  <body>
     ...
     <script src="path/to/xslider.min.js"></script>
-</body>
+  </body>
 </html>
 ```
 
 ## Usage
+
 A minimum sample is [Here](https://112ka.github.io/xslider/samples/base/).
 
 ### html
+
 ```html
 <div class="xslider">
-    <div class="xslider-view">
-        <div class="xslider-slide">
-            <div class="xslider-layer-gl">Elements as texture</div>
-            <div class="xslider-layer-ui">Elements as DOM</div>
-        </div>
-        <div class="xslider-slide"></div>
-        ...
+  <div class="xslider-page">
+    <div class="xslider-page">
+      <div class="xslider-layer-gl">Elements as texture</div>
+      <div class="xslider-layer-ui">Elements as DOM</div>
     </div>
-    <div class="xslider-pager"></div>
+    <div class="xslider-page"></div>
+    ...
+  </div>
+  <div class="xslider-pager"></div>
 </div>
 ```
 
 ### css
+
 ```css
 .xslider {
-    width: 400px; height: 300px;
+  width: 400px;
+  height: 300px;
 }
 ```
 
 ### js
+
 ```js
-new XSlider(".xslider");
+new XSlider('.xslider');
 ```
 
-
 ## API
+
 ### new XSlider(selector, options) or setup(selector, options)
 
 ```js
@@ -83,25 +92,28 @@ new XSlider(selector, options);
 ```
 
 #### options
-| Name | Type | Default | Description |
-| - | - | - | - |
-| transition | Object | Xslider.BaseTransition | Transition effect. |
-| easing | Number | 0.15 | Easing coefficient of transition. <br>Adjust the transition time with this parameter. |
-| initialSlideIndex | Number | 0 | Index number of initial slide. |
-| loop | Boolean | true | Loop slide flag. |
-| touchMove | Boolean or Object | { <br>    throwable:true <br>} | Object with touch parameters.  |
-| autoplay | Boolean or Object | false | Object with autoplay parameters.<br> { <br>delay:3000 <br> } |
+
+| Name              | Type              | Default                     | Description                                                                           |
+| ----------------- | ----------------- | --------------------------- | ------------------------------------------------------------------------------------- |
+| transition        | Object            | Xslider.BaseTransition      | Transition effect.                                                                    |
+| easing            | Number            | 0.15                        | Easing coefficient of transition. <br>Adjust the transition time with this parameter. |
+| initialSlideIndex | Number            | 0                           | Index number of initial slide.                                                        |
+| loop              | Boolean           | true                        | Loop slide flag.                                                                      |
+| touchMove         | Boolean or Object | { <br> throwable:true <br>} | Object with touch parameters.                                                         |
+| autoplay          | Boolean or Object | false                       | Object with autoplay parameters.<br> { <br>delay:3000 <br> }                          |
 
 ## Browser Supports
-| Chrome | IE | Edge | Firefox | Safari |
-| :-: | :-: | :-: | :-: | :-: |
-| Yes | - | - | Yes | Yes |
+
+| Chrome | IE  | Edge | Firefox | Safari |
+| :----: | :-: | :--: | :-----: | :----: |
+|  Yes   |  -  |  -   |   Yes   |  Yes   |
+
 - IE11 and below do not support SVG &lt;foreignObject&gt; tag.
 - In Microsoft Edge, the background image of &lt;foreignObject&gt; tag can not be drawn on canvas.<br>https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/17408255/
 
 | Android | iOS |
-| :-: | :-: |
-| 5+ | 8+ |
+| :-----: | :-: |
+|   5+    | 8+  |
 
 <!--
 ### Prerequisites
@@ -176,7 +188,7 @@ If the api is external, link to api documentation. If not describe your api incl
 ## Database
 
 Explaining what database (and version) has been used. Provide download links.
-Documents your database design and schemas, relations etc... 
+Documents your database design and schemas, relations etc...
 -->
 
 ## Licensing

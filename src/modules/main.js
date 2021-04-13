@@ -1,21 +1,23 @@
-import { Data } from './components/Data';
-import { SlideController } from './SlideController';
+import { Controller } from './Controller';
 import { EventDispatcher } from './core/EventDispatcher';
-import { Utils } from './components/Utils';
+import { State } from './domain/State';
+import { View } from './display/View';
+// import { Utils } from './components/Utils';
 
 export default class XSlider extends EventDispatcher {
   constructor(...args) {
     super();
 
-    this.data = new Data();
-    this.controller = new SlideController();
+    this.state = new State();
+    this.view = new View();
+    this.controller = new Controller(this.state, this.view);
 
-    Utils.delegate(this, {
-      prev: this.controller.prev,
-      next: this.controller.next,
+    Object.assign(this, {
+      prev: this.controller._onPrev,
+      next: this.controller._onNext,
       autoplay: {
-        start: this.controller.autoplay.start,
-        stop: this.controller.autoplay.stop,
+        start: this.controller.services.autoplay.start,
+        stop: this.controller.services.autoplay.stop,
       },
     });
 
@@ -25,15 +27,18 @@ export default class XSlider extends EventDispatcher {
   setup(...args) {
     // console.log('args: ', args);
 
-    this.dispose();
+    if (this.isSetup) this.dispose();
+    this.isSetup = true;
 
-    this.data.setup(...args);
-
-    this.controller.setup(this.renderer, this.data);
+    this.state.setup(args[1]);
+    this.view.setup(args[0], this.state.option);
+    this.controller.setup();
   }
 
   dispose() {
+    this.isSetup = false;
     this.controller.dispose();
-    this.data.dispose();
+    this.view.dispose();
+    this.state.dispose();
   }
 }

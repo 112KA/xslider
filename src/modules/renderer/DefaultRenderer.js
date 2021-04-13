@@ -1,62 +1,34 @@
 import { BaseRenderer } from './BaseRenderer';
-import { Utils } from '../components/Utils';
-import { stage } from '../core/Stage';
+// import { clamp } from '../components/Utils';
 
 export class DefaultRenderer extends BaseRenderer {
   constructor() {
     super();
 
     this.dx = 0;
-
-    this._bindMethods(['_onTick']);
   }
 
-  setup(data, container) {
-    super.setup(data, container);
-  }
+  render(i0, i1, progress) {
+    super.render(i0, i1, progress);
 
-  dispose() {
-    super.dispose();
-  }
+    const page0 = this.slide.list[i0],
+      page1 = this.slide.list[i1];
 
-  render(indexer) {
-    super.render(indexer);
+    // let opacity = 1.0 - Utils.clamp(progress, 0, 0.5) / 0.5;
+    let dx = -progress * this.width;
+    this.updatePage(page0, dx /*, opacity*/);
 
-    const slide0 = this.data.list[indexer.i0],
-      slide1 = this.data.list[indexer.i1];
-
-    let opacity = 1.0 - Utils.clamp(indexer.progress, 0, 0.5) / 0.5;
-    let dx = -indexer.progress * this.width;
-    this.updateSlide(slide0, opacity, dx);
-
-    if (slide0 != slide1) {
-      opacity = Utils.clamp(indexer.progress - 0.5, 0, 0.5) / 0.5;
-      dx = (1 - indexer.progress) * this.width;
-      this.updateSlide(slide1, opacity, dx);
+    if (page0 != page1) {
+      // opacity = Utils.clamp(progress - 0.5, 0, 0.5) / 0.5;
+      dx = (1 - progress) * this.width;
+      this.updatePage(page1, dx /*, opacity*/);
     }
-
-    // stage.on("tick", this._onTick);
   }
 
-  resize(w, h) {
-    super.resize(w, h);
-  }
-
-  updateSlide(slide, opacity, dx) {
+  updatePage(slide, dx, opacity) {
     if (!slide || !slide.layer.ui) return;
 
     slide.layer.ui.style.webkitTransform = 'translate(' + dx + 'px, 0) scale(1)';
     // slide.layer.ui.style.opacity = opacity;
-  }
-
-  _onTick(e) {
-    // console.log('e: ', e);
-
-    this.dx = 30 * Math.sin(e.time / 1000);
-
-    const slide0 = this.data.list[0];
-    if (slide0) {
-      slide0.layer.ui.style.webkitTransform = 'translate(' + this.dx + 'px, 0)';
-    }
   }
 }

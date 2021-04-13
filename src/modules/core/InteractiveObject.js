@@ -6,7 +6,7 @@ export class InteractiveObject extends EventDispatcher {
   constructor() {
     super();
 
-    this._bindMethods(['_onBubble', '_onChangeTarget', '_onTouch', '_onTouchStart']);
+    this._bindMethods(['_onChangeTarget', '_onTouch', '_onTouchStart']);
 
     this.on('target', this._onChangeTarget);
   }
@@ -73,10 +73,6 @@ export class InteractiveObject extends EventDispatcher {
         target.removeEventListener(TouchEvent.START, this._onTouchStart);
       }
     }
-  }
-
-  _onBubble(e) {
-    this.dispatch(e.type, e);
   }
 
   _onChangeTarget(o) {

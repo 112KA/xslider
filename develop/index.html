@@ -10,7 +10,7 @@
 		//In some browsers, if a stylesheet is loaded from a different domain, calling cssRules results in SecurityError.
 		<link href="https://fonts.googleapis.com/css?family=Noto+Sans:700i" rel="stylesheet"> 
 	-->
-	<link href="../dist/xslider.min.css" rel="stylesheet">
+	<link href="../dist/xslider.css" rel="stylesheet">
 
 	<style>
 		@font-face {
@@ -29,7 +29,7 @@
 			padding: 0;
 		}
 
-		.xslider-view {
+		.xslider-slide {
 			font: italic normal 700 normal 16px/23px 'Noto Sans', sans-serif;
 		}
 
@@ -53,22 +53,22 @@
 			color: white;
 		}
 
-		.xslider-view .xslider-slide:nth-child(1) .xslider-layer-gl {
+		.xslider-slide .xslider-page:nth-child(1) .xslider-layer-gl {
 			background: url('../demos/assets/image/slide1.jpg') no-repeat center;
 			background-size: cover;
 		}
 
-		.xslider-view .xslider-slide:nth-child(2) .xslider-layer-gl {
+		.xslider-slide .xslider-page:nth-child(2) .xslider-layer-gl {
 			background: url('../demos/assets/image/slide2.jpg') no-repeat center;
 			background-size: cover;
 		}
 
-		.xslider-view .xslider-slide:nth-child(3) .xslider-layer-gl {
+		.xslider-slide .xslider-page:nth-child(3) .xslider-layer-gl {
 			background: url('../demos/assets/image/slide3.jpg') no-repeat center;
 			background-size: cover;
 		}
 
-		.xslider-view .xslider-slide:nth-child(4) .xslider-layer-gl {
+		.xslider-slide .xslider-page:nth-child(4) .xslider-layer-gl {
 			background: url('../demos/assets/image/slide4.jpg') no-repeat center;
 			background-size: cover;
 		}
@@ -78,26 +78,26 @@
 
 <body>
 	<div id="xslider">
-		<div class="xslider-view">
-			<div class="xslider-slide">
+		<div class="xslider-slide">
+			<div class="xslider-page">
 				<div class="xslider-layer-gl">
 					<p>Slider1 Texture Text</p>
 				</div>
 				<div class="xslider-layer-ui">Slide1</div>
 			</div>
-			<div class="xslider-slide">
+			<div class="xslider-page">
 				<div class="xslider-layer-gl">
 					<p>Slider2 Texture Text</p>
 				</div>
 				<div class="xslider-layer-ui">Slide2</div>
 			</div>
-			<div class="xslider-slide">
+			<div class="xslider-page">
 				<div class="xslider-layer-gl">
 					<p>Slider3 Texture Text</p>
 				</div>
 				<div class="xslider-layer-ui">Slide3</div>
 			</div>
-			<div class="xslider-slide">
+			<div class="xslider-page">
 				<div class="xslider-layer-gl">
 					<p>Slider4 Texture Text</p>
 				</div>
@@ -112,7 +112,7 @@
 
 	<script src="../demos/assets/js/vender.js"></script>
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.2/dat.gui.js"></script> -->
-	<script src="../dist/xslider.min.js"></script>
+	<script src="../dist/xslider.js"></script>
 	<!-- <script src="../dist/xslider.min.js"></script> -->
 	<script src="TestTransition.js"></script>
 	<script>
@@ -169,6 +169,7 @@
 					init: function () { console.log('option :: on init'); }
 				},
 				easing: 0.25,
+				// initialSlideIndex:1,
 			}
 		};
 

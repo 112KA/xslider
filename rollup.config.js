@@ -1,12 +1,18 @@
-import buble from 'rollup-plugin-buble';
+import { babel } from '@rollup/plugin-babel';
 import scss from 'rollup-plugin-scss';
 import { terser } from 'rollup-plugin-terser';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 
 const input = 'src/xslider.js',
   inputESM = {
     'dist/xslider.esm': 'src/xslider.js',
   },
-  intro = () => 'var XSLIDER_VERSION = ' + JSON.stringify(require('./package.json').version);
+  intro = () => 'var XSLIDER_VERSION = ' + JSON.stringify(require('./package.json').version),
+  babelOption = {
+    babelHelpers: 'bundled',
+    // babelHelpers: 'runtime',
+  };
 
 export default [
   // UMD builds
@@ -18,7 +24,9 @@ export default [
       scss({
         output: 'dist/xslider.css',
       }),
-      buble(),
+      nodeResolve(),
+      commonjs(),
+      babel(babelOption),
     ],
     output: {
       name: 'XSlider',
@@ -35,7 +43,9 @@ export default [
         output: 'dist/xslider.min.css',
         outputStyle: 'compressed',
       }),
-      buble(),
+      nodeResolve(),
+      commonjs(),
+      babel(babelOption),
       terser(),
     ],
     output: {
@@ -56,7 +66,9 @@ export default [
       scss({
         output: 'dist/xslider.css',
       }),
-      buble()
+      nodeResolve(),
+      commonjs(),
+      babel(babelOption),
     ],
     output: {
       dir: './',

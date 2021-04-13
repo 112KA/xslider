@@ -17,11 +17,7 @@ export const Option = {
 
   get: function (property, module) {
     if (module) {
-      if (!this[module]) {
-        return undefined;
-      } else {
-        return this[module][property];
-      }
+      return !this[module] ? undefined : this[module][property];
     } else {
       return this[property];
     }

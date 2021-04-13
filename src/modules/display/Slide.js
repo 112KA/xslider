@@ -1,26 +1,27 @@
+import { EventDispatcher } from '../core/EventDispatcher';
+import { InteractiveObject } from '../core/InteractiveObject';
+
 import { net } from '../components/Net';
 import { cloner } from '../components/converter/Cloner';
 import { Inliner } from '../components/converter/Inliner';
 import { converter } from '../components/converter/SvgConverter';
 // import {Bench} from '../components/debug/Bench'
-import { Option } from '../components/Option';
+import { Option } from '../domain/Option';
 
-import { EventDispatcher } from '../core/EventDispatcher';
-
-export class Slide {
-  constructor(slide, debug) {
-    this.element = slide;
-    this.debug = debug;
+export class Page {
+  constructor(page, debug) {
+    this.element = page;
+    // this.debug = debug;
     this.canvas = document.createElement('canvas');
     this.image = new Image();
     this.layer = {
-      gl: slide.querySelector('.xslider-layer-gl'),
-      ui: slide.querySelector('.xslider-layer-ui'),
+      gl: page.querySelector('.xslider-layer-gl'),
+      ui: page.querySelector('.xslider-layer-ui'),
     };
 
-    if (this.debug == Option.Debug.DISPLAY.IMG) {
-      this.element.insertBefore(this.image, this.layer.gl);
-    }
+    // if (this.debug == Option.Debug.DISPLAY.IMG) {
+    //   this.element.insertBefore(this.image, this.layer.gl);
+    // }
 
     // this.element.insertBefore(this.canvas, this.layer.gl);
 
@@ -32,33 +33,17 @@ export class Slide {
     this.layer.gl && this.layer.gl.classList.remove('xslider-capture');
   }
 
-  ready() {
-    return new Promise((resolve, reject) => {
-      //処理済
-      if (this.inlinedNode) {
-        resolve();
-      }
-      //textureなし
-      else if (!this.layer.gl) {
-        resolve();
-      } else {
-        Inliner.inlineNode(this.layer.gl).then(inlined => {
-          this.inlinedNode = inlined;
+  async ready() {
+    if (!this.isReadied && this.hasTexture) {
+      this.inlinedNode = await Inliner.inlineNode(this.layer.gl);
 
-          resolve();
-        });
-
-        // // Utils.toSvg(this.layer.gl)
-        // converter.from(this.layer.gl)
-        // 	.then((svg) => {
-        // 		this.svg = svg;
-        // 		this.layer.gl.classList.remove("xslider-capture");
-        // 		this.needsResize = true;
-        // 		// document.querySelector('#xslider').appendChild(this.svg.documentElement.cloneNode(true));
-        // 		resolve();
-        // 	});
-      }
-    });
+      // // Utils.toSvg(this.layer.gl)
+      // const svg = await converter.from(this.layer.gl)
+      // this.svg = svg;
+      // this.layer.gl.classList.remove("xslider-capture");
+      // this.needsResize = true;
+      // // document.querySelector('#xslider').appendChild(this.svg.documentElement.cloneNode(true));
+    }
   }
 
   loadSvg(w, h) {
@@ -69,96 +54,111 @@ export class Slide {
     // string = string.replace(/#/g, '%23').replace(/\n/g, '%0A')
     const uri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(string);
 
-    if (this.debug == Option.Debug.DISPLAY.SVG) {
-      if (this._svg0 === undefined) {
-        this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
-      } else {
-        const node = this.svg.childNodes[0];
-        this.element.replaceChild(node, this._svg0);
-        this._svg0 = node;
-      }
-    }
+    // if (this.debug == Option.Debug.DISPLAY.SVG) {
+    //   if (this._svg0 === undefined) {
+    //     this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
+    //   } else {
+    //     const node = this.svg.childNodes[0];
+    //     this.element.replaceChild(node, this._svg0);
+    //     this._svg0 = node;
+    //   }
+    // }
     return net.loadImage(this.image, uri);
   }
 
-  resize(w, h) {
-    return new Promise((resolve, reject) => {
-      if (!this.needsResize) {
-        resolve();
-      } else {
-        this.needsResize = false;
+  async resize(w, h) {
+    if (this.needsResize) {
+      this.needsResize = false;
 
-        this.canvas.width = w;
-        this.canvas.height = h;
+      this.canvas.width = w;
+      this.canvas.height = h;
 
-        if (this.layer.gl) {
-          this.layer.gl.classList.add('xslider-capture');
+      if (this.hasTexture) {
+        this.layer.gl.classList.add('xslider-capture');
 
-          cloner.cloneStyle(this.layer.gl, this.inlinedNode, Slide.EXCLUDES);
+        cloner.cloneStyle(this.layer.gl, this.inlinedNode, Page.EXCLUDES);
 
-          this.layer.gl.classList.remove('xslider-capture');
+        this.layer.gl.classList.remove('xslider-capture');
 
-          this.loadSvg(w, h).then(() => {
-            const c = this.canvas.getContext('2d');
-            c.clearRect(0, 0, w, h);
-            c.drawImage(this.image, 0, 0, w, h);
-            // console.log(this.image, w, h);
+        await this.loadSvg(w, h);
 
-            resolve();
-          });
-        } else {
-          resolve();
-        }
+        const c = this.canvas.getContext('2d');
+        c.clearRect(0, 0, w, h);
+        c.drawImage(this.image, 0, 0, w, h);
+        // console.log(this.image, w, h);
       }
-    });
+    }
+  }
+
+  /**
+   * 準備ができたかどうか
+   */
+  get isReadied() {
+    return this.inlinedNode !== undefined;
+  }
+
+  /**
+   * textureありかどうか
+   */
+  get hasTexture() {
+    return this.layer.gl !== undefined;
   }
 }
 
-Slide.EXCLUDES = ['background', 'left', 'right', 'width', 'height'];
+Page.EXCLUDES = ['background', 'left', 'right', 'width', 'height'];
 
-export class SlideContainer extends EventDispatcher {
+export class Slide extends InteractiveObject {
   constructor() {
     super();
 
-    this._bindMethods(['_onChangeSlide']);
-
+    this.list = [];
     this.width = this.height = -1;
+
+    this._bindMethods(['_onChangePage']);
   }
 
-  ready(indexer) {
-    const slide0 = indexer.data.list[indexer.i0];
-    let slide1 = undefined;
+  setup(dom, mesh) {
+    this.set({ target: dom.list });
 
-    const arr = [slide0.ready()];
-
-    if (indexer.i1 !== undefined) {
-      slide1 = indexer.data.list[indexer.i1];
-      arr.push(slide1.ready());
-    }
-
-    return Promise.all(arr).then(() => {
-      this.set({ slide0: slide0, slide1: slide1 });
+    dom.pages.forEach(element => {
+      this.list.push(new Page(element));
     });
+
+    this.mesh = mesh;
+    this.mesh && (this.uniforms = this.mesh.material.uniforms);
+
+    this.on('page0', this._onChangePage);
+    this.on('page1', this._onChangePage);
   }
 
-  setup(mesh) {
-    this.mesh = mesh;
-    if (this.mesh) {
-      this.uniforms = this.mesh.material.uniforms;
+  async ready(i0, i1) {
+    const page0 = this.list[i0];
+    let page1 = undefined;
+
+    const arr = [page0.ready()];
+
+    if (i1 !== undefined) {
+      page1 = this.list[i1];
+      arr.push(page1.ready());
     }
 
-    this.on('slide0', this._onChangeSlide);
-    this.on('slide1', this._onChangeSlide);
+    await Promise.all(arr);
+
+    this.set({ page0, page1 });
   }
 
   dispose() {
-    this.off('slide0', this._onChangeSlide);
-    this.off('slide1', this._onChangeSlide);
+    this.list.forEach(page => {
+      page.dispose();
+    });
 
-    const slide0 = this.get('slide0');
-    const slide1 = this.get('slide1');
-    slide0.element.classList.remove('xslider-slide-active');
-    slide1 && slide1.element.classList.remove('xslider-slide-active');
+    this.off('page0', this._onChangePage);
+    this.off('page1', this._onChangePage);
+
+    const page0 = this.get('page0');
+    const page1 = this.get('page1');
+    page0.element.classList.remove('xslider-page-active');
+    page1 && page1.element.classList.remove('xslider-page-active');
   }
 
   resize(w, h) {
@@ -169,62 +169,47 @@ export class SlideContainer extends EventDispatcher {
       this.uniforms.resolution.value.set(w, h);
     }
 
-    return Promise.all([this.updateSlide(0), this.updateSlide(1)]);
+    this.list.forEach(page => {
+      page.needsResize = true;
+    });
+
+    return Promise.all([this.updatePage(0), this.updatePage(1)]);
   }
 
-  updateSlide(slideIndex) {
+  async updatePage(pageIndex) {
     if (this.width == -1 && this.height == -1) return;
 
-    const slide = this.get('slide' + slideIndex);
+    const page = this.get('page' + pageIndex);
 
-    return new Promise((resolve, reject) => {
-      // console.log(this.uniforms);
-      // console.log(this.uniforms.texture0.value.image);
-      // console.log(this.uniforms.texture1.value.image);
-      // console.log(slide);
-      // console.log(slideIndex, this.uniforms.texture0.value.image == this.uniforms.texture1.value.image);
+    if (page) {
+      page.element.classList.add('xslider-page-active');
 
-      if (!slide) {
-        if (this.uniforms) {
-          const texture = this.uniforms['texture' + slideIndex].value;
-          texture.image = undefined;
-          texture.needsUpdate = true;
-        }
-        resolve();
-      }
+      await page.resize(this.width, this.height);
+    }
 
-      slide.element.classList.add('xslider-slide-active');
-
-      slide.resize(this.width, this.height).then(() => {
-        if (this.uniforms) {
-          const texture = this.uniforms['texture' + slideIndex].value;
-          texture.image = slide.canvas;
-          texture.needsUpdate = true;
-        }
-
-        resolve();
-      });
-    });
+    if (this.uniforms) {
+      const texture = this.uniforms['texture' + pageIndex].value;
+      texture.image = page ? page.canvas : undefined;
+      texture.needsUpdate = true;
+    }
   }
 
-  _onChangeSlide(e) {
-    // console.log(e);
-
+  _onChangePage(e) {
     let removeOld = false;
 
     switch (e.type) {
-      case 'slide0':
-        this.updateSlide(0);
+      case 'page0':
+        this.updatePage(0);
         removeOld = e.value0 !== undefined;
         break;
-      case 'slide1':
-        this.updateSlide(1);
-        removeOld = e.value0 !== undefined && e.value0 !== this.get('slide0');
+      case 'page1':
+        this.updatePage(1);
+        removeOld = e.value0 !== undefined && e.value0 !== this.get('page0');
         break;
     }
 
     if (removeOld) {
-      e.value0.element.classList.remove('xslider-slide-active');
+      e.value0.element.classList.remove('xslider-page-active');
     }
   }
 }

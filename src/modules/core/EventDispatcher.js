@@ -2,6 +2,8 @@ export class EventDispatcher {
   constructor() {
     this._listeners = {};
     this._properties = {};
+
+    this._bindMethods(['_onBubble']);
   }
 
   _bindMethods(methods) {
@@ -76,5 +78,9 @@ export class EventDispatcher {
     }
 
     return this;
+  }
+
+  _onBubble(e) {
+    this.dispatch(e.type, e);
   }
 }

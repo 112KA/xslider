@@ -1,4 +1,3 @@
-import { Utils } from '../components/Utils';
 import { Vec2, Vec3, Vec4 } from '../geom/Vec';
 
 export const BaseTransition = {
@@ -33,6 +32,6 @@ void main(void) {
   },
 
   extend(o) {
-    return Utils.extend(this, o);
+    return Object.assign({}, this, o);
   },
 };

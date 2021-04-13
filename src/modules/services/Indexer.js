@@ -1,26 +1,22 @@
 import { EventDispatcher } from '../core/EventDispatcher';
 
 export class Indexer extends EventDispatcher {
-  constructor() {
-    super();
-  }
+  setup(dom, option) {
+    this.dom = dom;
+    this.option = option;
 
-  setup(data) {
-    this.data = data;
-
-    this._target = data.option.initialSlideIndex;
+    this._target = option.initialSlideIndex;
     this._v = this._target - 1;
-    this._length = data.dom.slides.length;
+    this._length = this.dom.pages.length;
 
     this._state = Indexer.STATE.DEFAULT;
 
     this.progress = 0;
 
-    this.set({
-      head: undefined,
-      tail: undefined,
-    });
-    !this.data.option.loop && (this._target = this.constrain(this._target));
+    this.head = false;
+    this.tail = false;
+
+    !this.option.loop && (this._target = this.constrain(this._target));
 
     this.tick();
   }
@@ -28,17 +24,17 @@ export class Indexer extends EventDispatcher {
   prev() {
     this._target--;
 
-    !this.data.option.loop && (this._target = this.constrain(this._target));
+    !this.option.loop && (this._target = this.constrain(this._target));
   }
 
   next() {
     this._target++;
 
-    !this.data.option.loop && (this._target = this.constrain(this._target));
+    !this.option.loop && (this._target = this.constrain(this._target));
   }
 
   to(index) {
-    if (this.data.option.loop) {
+    if (this.option.loop) {
       let d0 = index - this.current,
         d1,
         diff;
@@ -66,7 +62,7 @@ export class Indexer extends EventDispatcher {
     this._v += v;
     this._move = v;
 
-    !this.data.option.loop && (this._v = this.constrain(this._v));
+    !this.option.loop && (this._v = this.constrain(this._v));
 
     this._target = this._v;
   }
@@ -74,7 +70,7 @@ export class Indexer extends EventDispatcher {
   up() {
     this._state = Indexer.STATE.UP;
 
-    !this.data.option.get('throwable', 'touchMove') && (this._move = 0);
+    !this.option.get('throwable', 'touchMove') && (this._move = 0);
   }
 
   get current() {
@@ -92,10 +88,9 @@ export class Indexer extends EventDispatcher {
 
   constrain(v) {
     const ret = v < 0 ? 0 : this._length - 1 < v ? this._length - 1 : v;
-    this.set({
-      head: ret == 0,
-      tail: ret == this._length - 1,
-    });
+    this.head = ret === 0;
+    this.tail = ret === this._length - 1;
+    // console.log(ret == 0, ret == this._length - 1);
     return ret;
   }
 
@@ -109,7 +104,7 @@ export class Indexer extends EventDispatcher {
       case Indexer.STATE.UP:
         this._target += this._move;
 
-        !this.data.option.loop && (this._target = this.constrain(this._target));
+        !this.option.loop && (this._target = this.constrain(this._target));
 
         this._move *= 0.95;
         this._v = this._target;
@@ -121,9 +116,9 @@ export class Indexer extends EventDispatcher {
         break;
 
       default:
-        !this.data.option.loop && (this._target = this.constrain(this._target));
+        !this.option.loop && (this._target = this.constrain(this._target));
 
-        this._v += (this._target - this._v) * this.data.option.easing;
+        this._v += (this._target - this._v) * this.option.easing;
 
         if (Math.abs(this._target - this._v) < 0.001) {
           this._v = this._target;

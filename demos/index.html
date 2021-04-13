@@ -48,14 +48,14 @@
             height: 100%;
         }
 
-        .xslider-view {
+        .xslider-slide {
             color: white;
             /* background: #ffd700; */
             text-align: center;
             font: italic normal 700 normal 16px/23px "Noto Sans", sans-serif;
         }
 
-        .xslider-view p,
+        .xslider-slide p,
         .xslider li {
             font-size: 14px;
         }
@@ -68,18 +68,18 @@
             color: white;
         }
 
-        .xslider-slide:nth-child(3) .xslider-layer-gl {
+        .xslider-page:nth-child(3) .xslider-layer-gl {
             background: url('assets/image/slide4.jpg') no-repeat center;
             background-size: cover;
         }
 
-        .xslider-slide:nth-child(4) .xslider-layer-ui p {
+        .xslider-page:nth-child(4) .xslider-layer-ui p {
             font-size: 20px;
             color: #333;
         }
 
 
-        .xslider-view .layer-content {
+        .xslider-slide .layer-content {
             text-align: left;
             width: calc(100% - 100px);
             max-width: 600px;
@@ -98,8 +98,8 @@
 <body>
     <div class="container">
         <div class="xslider">
-            <div class="xslider-view">
-                <div class="xslider-slide">
+            <div class="xslider-slide">
+                <div class="xslider-page">
                     <div class="xslider-layer-gl"
                         style="background: linear-gradient(to right bottom, #051937, #323851, #595a6d, #81808a, #a8a8a8);">
                     </div>
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="xslider-slide">
+                <div class="xslider-page">
                     <div class="xslider-layer-gl"
                         style="background-image: linear-gradient(to right bottom, #051937, #323851, #595a6d, #81808a, #a8a8a8);">
                         <div>
@@ -128,7 +128,7 @@
                     </div>
                     <div class="xslider-layer-ui"></div>
                 </div>
-                <div class="xslider-slide">
+                <div class="xslider-page">
                     <div class="xslider-layer-gl">
                         <p>This is a texture layer that makes the shader transition.<br />Using svg
                             &lt;foreignObject&gt; tag to render images and text to texture.</p>
@@ -138,7 +138,7 @@
                                 href="https://github.com/112KA/xslider" target="_blank">github</a></p>
                     </div>
                 </div>
-                <div class="xslider-slide">
+                <div class="xslider-page">
                     <div class="xslider-layer-gl" style="background: #ffd700;"></div>
                     <div class="xslider-layer-ui">
                         <p>Enjoy!</p>

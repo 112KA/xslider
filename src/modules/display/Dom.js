@@ -5,8 +5,6 @@ export class Dom extends EventDispatcher {
     super();
 
     this._bindMethods(['_onResize']);
-
-    // this.canvas = document.createElement('canvas');
   }
 
   get width() {
@@ -21,12 +19,15 @@ export class Dom extends EventDispatcher {
     this.container = document.querySelector(selector);
     this.container.classList.add('xslider-container');
 
-    this.view = this.container.querySelector('.xslider-view');
-    this.slides = this.view.querySelectorAll('.xslider-slide');
+    this.list = this.container.querySelector('.xslider-slide');
+    this.pages = this.list.querySelectorAll('.xslider-page');
 
     this.pager = this.container.querySelector('.xslider-pager');
     this.prev = this.container.querySelector('.xslider-prev');
     this.next = this.container.querySelector('.xslider-next');
+
+    this.canvas = document.createElement('canvas');
+    this.container.insertBefore(this.canvas, this.list);
 
     stage.on('resize', this._onResize);
   }
@@ -35,6 +36,7 @@ export class Dom extends EventDispatcher {
     this._width = this._height = undefined;
     stage.off('resize', this._onResize);
     this.container.classList.remove('xslider-container', 'xslider-debug');
+    this.container.removeChild(this.canvas);
   }
 
   _onResize(e) {

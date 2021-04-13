@@ -16,15 +16,16 @@ void main(void) {
 `;
 
 export class ThreeRenderer extends GLRenderer {
-  constructor() {
+  constructor(canvas) {
     super();
 
+    this.canvas = canvas;
     this.camera = new THREE.PerspectiveCamera(60, 1, 1, 10000);
     this.scene = new THREE.Scene();
   }
 
-  setup(data, container) {
-    super.setup(data, container);
+  setup(data) {
+    super.setup(data, undefined);
 
     this.renderer = new THREE.WebGLRenderer({
       antialias: false,
