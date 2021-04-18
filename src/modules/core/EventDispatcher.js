@@ -39,9 +39,10 @@ export class EventDispatcher {
   }
 
   dispatch(type, options) {
+    !type && console.error('invalid Event type', type);
     if (this._listeners.hasOwnProperty(type)) {
       this._listeners[type].forEach(o => {
-        let tmp = options || { type: type };
+        let tmp = options || { type };
         o.listener(tmp);
       });
     }

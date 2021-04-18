@@ -14,6 +14,8 @@ export class State extends EventDispatcher {
       head: false,
       tail: false,
       time: 0,
+      numPages: 0,
+      isDrag: false,
     });
   }
 

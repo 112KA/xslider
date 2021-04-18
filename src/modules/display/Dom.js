@@ -1,12 +1,4 @@
-import { EventDispatcher } from '../core/EventDispatcher';
-import { stage } from '../core/Stage';
-export class Dom extends EventDispatcher {
-  constructor() {
-    super();
-
-    this._bindMethods(['_onResize']);
-  }
-
+export class Dom {
   get width() {
     return this.container.clientWidth;
   }
@@ -28,22 +20,15 @@ export class Dom extends EventDispatcher {
 
     this.canvas = document.createElement('canvas');
     this.container.insertBefore(this.canvas, this.list);
-
-    stage.on('resize', this._onResize);
   }
 
   dispose() {
-    this._width = this._height = undefined;
-    stage.off('resize', this._onResize);
     this.container.classList.remove('xslider-container', 'xslider-debug');
     this.container.removeChild(this.canvas);
   }
 
-  _onResize(e) {
-    if (this._width != this.width || this._height != this.height) {
-      this._width = this.width;
-      this._height = this.height;
-      this.dispatch('resize', { type: 'resize', width: this._width, height: this._height });
-    }
+  set slideTouchDisabled(v) {
+    const method = v ? 'add' : 'remove';
+    this.list.classList[method]('xslider-disabled');
   }
 }

@@ -12,13 +12,12 @@ export class XRenderer extends BaseRenderer {
 
     this.canvas = canvas;
     this.scene = new Scene3D();
-    // this.scene.context.color.b = 1;
     this.model = new XModel();
     this.mesh = this.model.mesh;
 
     this.scene.addChild(this.model);
 
-    this._uniform0 = {
+    this._uniforms = {
       texture0: { value: new Texture() },
       texture1: { value: new Texture() },
       progress: { value: 0 },
@@ -36,18 +35,16 @@ export class XRenderer extends BaseRenderer {
     this.mesh.material = new XMaterial({
       vertexShader: transition.vertexShader,
       fragmentShader: transition.fragmentShader,
-      uniforms: Object.assign({}, this._uniform0, transition.uniforms),
+      uniforms: Object.assign({}, this._uniforms, transition.uniforms),
     });
   }
 
   dispose() {
-    super.dispose();
-
     GLGraphics.deleteProgram(this.mesh.material.program);
     this.mesh.material = undefined;
   }
 
-  render(i0, i1, progress) {
+  render() {
     GLGraphics.clear(this.scene.context);
     GLGraphics.renderModel(this.model);
   }

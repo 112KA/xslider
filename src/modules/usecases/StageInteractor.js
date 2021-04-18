@@ -1,52 +1,33 @@
-import { EventDispatcher } from '../core/EventDispatcher';
 import { Inliner } from '../components/converter/Inliner';
 
-export class StageInteractor extends EventDispatcher {
+export class StageInteractor {
   constructor(state, services) {
-    super();
     this.state = state;
     this.services = services;
-
-    this._bindMethods(['tick']);
   }
 
   async ready() {
-    const { ticker, autoplay, listeners } = this.services;
     try {
       await Inliner.resolveFonts();
 
-      // autoplay.start();
-      ticker.start();
+      const { indexer, resize, tick, touch } = this.services;
 
-      listeners.touchStart.add();
+      indexer.setup();
+      resize.setup();
+      tick.setup(indexer);
+      tick.start();
+      touch.start('on');
     } catch (err) {
       console.warn('first ready rejected : ', err);
     }
   }
 
   dispose() {
-    const { ticker, autoplay, listeners } = this.services;
-    ticker.stop();
+    const { autoplay, resize, tick, touch } = this.services;
+
     autoplay.stop();
-
-    listeners.touchStart.remove();
+    resize.dispose();
+    tick.stop();
+    touch.start('off');
   }
-
-  tick(e) {
-    const { indexer } = this.services;
-    indexer.tick();
-
-    const { i0, i1, progress, current, head, tail } = indexer;
-    this.state.set({
-      i0,
-      i1,
-      progress,
-      index: current,
-      time: e.time,
-      head,
-      tail,
-    });
-  }
-
-  resize() {}
 }

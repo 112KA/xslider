@@ -16,16 +16,16 @@ export class DefaultRenderer extends BaseRenderer {
 
     // let opacity = 1.0 - Utils.clamp(progress, 0, 0.5) / 0.5;
     let dx = -progress * this.width;
-    this.updatePage(page0, dx /*, opacity*/);
+    this._updatePage(page0, dx /*, opacity*/);
 
     if (page0 != page1) {
       // opacity = Utils.clamp(progress - 0.5, 0, 0.5) / 0.5;
       dx = (1 - progress) * this.width;
-      this.updatePage(page1, dx /*, opacity*/);
+      this._updatePage(page1, dx /*, opacity*/);
     }
   }
 
-  updatePage(slide, dx, opacity) {
+  _updatePage(slide, dx, opacity) {
     if (!slide || !slide.layer.ui) return;
 
     slide.layer.ui.style.webkitTransform = 'translate(' + dx + 'px, 0) scale(1)';

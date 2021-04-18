@@ -13,8 +13,8 @@ export default class XSlider extends EventDispatcher {
     this.controller = new Controller(this.state, this.view);
 
     Object.assign(this, {
-      prev: this.controller._onPrev,
-      next: this.controller._onNext,
+      prev: this.controller.usecases.slide.prev,
+      next: this.controller.usecases.slide.next,
       autoplay: {
         start: this.controller.services.autoplay.start,
         stop: this.controller.services.autoplay.stop,
@@ -31,7 +31,7 @@ export default class XSlider extends EventDispatcher {
     this.isSetup = true;
 
     this.state.setup(args[1]);
-    this.view.setup(args[0], this.state.option);
+    this.view.setup(args[0], this.state);
     this.controller.setup();
   }
 

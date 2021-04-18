@@ -17,6 +17,10 @@ $color: #00ff7a;
     // overflow: hidden;
     width: 100%;
     height: 100%;
+
+    &.xslider-disabled {
+      pointer-events: none;
+    }
   }
 
   &-page {

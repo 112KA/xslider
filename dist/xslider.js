@@ -1997,6 +1997,8 @@ var EventDispatcher = /*#__PURE__*/function () {
   }, {
     key: "dispatch",
     value: function dispatch(type, options) {
+      !type && console.error('invalid Event type', type);
+
       if (this._listeners.hasOwnProperty(type)) {
         this._listeners[type].forEach(function (o) {
           var tmp = options || {
@@ -2095,6 +2097,10 @@ Environment.support = {
 };
 var env = new Environment();
 
+var Event = {
+  CHANGE: 'change',
+  AUTOPLAY_NEXT: 'autoplayNext'
+};
 var types = [];
 
 if (env.support.touch) {
@@ -3323,12 +3329,13 @@ var AutoPlay = /*#__PURE__*/function (_EventDispatcher) {
 
   var _super = _createSuper(AutoPlay);
 
-  function AutoPlay() {
+  function AutoPlay(state) {
     var _this;
 
     _classCallCheck(this, AutoPlay);
 
     _this = _super.call(this);
+    _this.state = state;
 
     _this._bindMethods(['_onTick']);
 
@@ -3338,84 +3345,74 @@ var AutoPlay = /*#__PURE__*/function (_EventDispatcher) {
   _createClass(AutoPlay, [{
     key: "enabled",
     get: function get() {
-      return this.option != undefined;
-    }
-  }, {
-    key: "setup",
-    value: function setup(option) {
-      this.option = option;
+      return this.state.option.autoplay != undefined;
     }
   }, {
     key: "start",
     value: function start() {
-      if (this.enabled) {
-        stage.on('tick', this._onTick);
-      }
+      this.enabled && stage.on('tick', this._onTick);
     }
   }, {
     key: "stop",
     value: function stop() {
-      if (this.enabled) {
-        stage.off('tick', this._onTick);
-      }
+      this.enabled && stage.off('tick', this._onTick);
     }
   }, {
     key: "_onTick",
     value: function _onTick(e) {
-      if (e.time > this.option.delay) {
-        this.dispatch(AutoPlay.EVENT.TICK);
+      if (e.time > this.state.option.autoplay.delay) {
+        this.dispatch(Event.AUTOPLAY_NEXT);
       }
     }
   }]);
 
   return AutoPlay;
 }(EventDispatcher);
-AutoPlay.EVENT = {
-  TICK: 'autoplay_tick'
-};
 
 var Indexer = /*#__PURE__*/function (_EventDispatcher) {
   _inherits(Indexer, _EventDispatcher);
 
   var _super = _createSuper(Indexer);
 
-  function Indexer() {
+  function Indexer(state) {
+    var _this;
+
     _classCallCheck(this, Indexer);
 
-    return _super.apply(this, arguments);
+    _this = _super.call(this);
+    _this.state = state;
+    return _this;
   }
 
   _createClass(Indexer, [{
     key: "setup",
-    value: function setup(dom, option) {
-      this.dom = dom;
-      this.option = option;
-      this._target = option.initialSlideIndex;
+    value: function setup() {
+      this._target = this.state.option.initialSlideIndex;
       this._v = this._target - 1;
-      this._length = this.dom.pages.length;
+      this._length = this.state.get('numPages');
       this._state = Indexer.STATE.DEFAULT;
       this.progress = 0;
       this.head = false;
       this.tail = false;
-      !this.option.loop && (this._target = this.constrain(this._target));
+      !this.state.option.loop && (this._target = this.constrain(this._target));
       this.tick();
     }
   }, {
     key: "prev",
     value: function prev() {
       this._target--;
-      !this.option.loop && (this._target = this.constrain(this._target));
+      !this.state.option.loop && (this._target = this.constrain(this._target));
     }
   }, {
     key: "next",
     value: function next() {
       this._target++;
-      !this.option.loop && (this._target = this.constrain(this._target));
+      !this.state.option.loop && (this._target = this.constrain(this._target));
     }
   }, {
     key: "to",
     value: function to(index) {
-      if (this.option.loop) {
+      if (this.state.option.loop) {
         var d0 = index - this.current,
             d1,
             diff;
@@ -3444,14 +3441,14 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
     value: function move(v) {
       this._v += v;
       this._move = v;
-      !this.option.loop && (this._v = this.constrain(this._v));
+      !this.state.option.loop && (this._v = this.constrain(this._v));
       this._target = this._v;
     }
   }, {
     key: "up",
     value: function up() {
       this._state = Indexer.STATE.UP;
-      !this.option.get('throwable', 'touchMove') && (this._move = 0);
+      !this.state.option.get('throwable', 'touchMove') && (this._move = 0);
     }
   }, {
     key: "current",
@@ -3489,7 +3486,7 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
 
         case Indexer.STATE.UP:
           this._target += this._move;
-          !this.option.loop && (this._target = this.constrain(this._target));
+          !this.state.option.loop && (this._target = this.constrain(this._target));
           this._move *= 0.95;
           this._v = this._target;
 
@@ -3501,8 +3498,8 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
           break;
 
         default:
-          !this.option.loop && (this._target = this.constrain(this._target));
-          this._v += (this._target - this._v) * this.option.easing;
+          !this.state.option.loop && (this._target = this.constrain(this._target));
+          this._v += (this._target - this._v) * this.state.option.easing;
 
           if (Math.abs(this._target - this._v) < 0.001) {
             this._v = this._target;
@@ -3531,6 +3528,148 @@ Indexer.STATE = {
   UP: 'UP'
 };
 
+var Resize = /*#__PURE__*/function (_EventDispatcher) {
+  _inherits(Resize, _EventDispatcher);
+
+  var _super = _createSuper(Resize);
+
+  function Resize(state, view) {
+    var _this;
+
+    _classCallCheck(this, Resize);
+
+    _this = _super.call(this);
+    _this.state = state;
+    _this.view = view;
+
+    _this._bindMethods(['_onResize']);
+
+    return _this;
+  }
+
+  _createClass(Resize, [{
+    key: "setup",
+    value: function setup() {
+      this.observer = new ResizeObserver(this._onResize);
+      this.observer.observe(this.view.dom.container);
+    }
+  }, {
+    key: "dispose",
+    value: function dispose() {
+      this.observer.disconnect();
+    }
+  }, {
+    key: "_onResize",
+    value: function _onResize() {
+      this.dispatch('resize');
+    }
+  }]);
+
+  return Resize;
+}(EventDispatcher);
+
+var Tick = /*#__PURE__*/function (_EventDispatcher) {
+  _inherits(Tick, _EventDispatcher);
+
+  var _super = _createSuper(Tick);
+
+  function Tick(state) {
+    var _this;
+
+    _classCallCheck(this, Tick);
+
+    _this = _super.call(this);
+    _this.state = state;
+
+    _this._bindMethods(['_onTick']);
+
+    return _this;
+  }
+
+  _createClass(Tick, [{
+    key: "setup",
+    value: function setup(indexer) {
+      this.indexer = indexer;
+    }
+  }, {
+    key: "start",
+    value: function start() {
+      stage.on('tick', this._onTick);
+    }
+  }, {
+    key: "stop",
+    value: function stop() {
+      stage.off('tick', this._onTick);
+    }
+  }, {
+    key: "_onTick",
+    value: function _onTick(e) {
+      this.indexer.tick();
+      var _this$indexer = this.indexer,
+          i0 = _this$indexer.i0,
+          i1 = _this$indexer.i1,
+          progress = _this$indexer.progress,
+          current = _this$indexer.current,
+          head = _this$indexer.head,
+          tail = _this$indexer.tail;
+      this.state.set({
+        i0: i0,
+        i1: i1,
+        progress: progress,
+        index: current,
+        time: e.time,
+        head: head,
+        tail: tail
+      });
+    }
+  }]);
+
+  return Tick;
+}(EventDispatcher);
+
+var Touch = /*#__PURE__*/function (_EventDispatcher) {
+  _inherits(Touch, _EventDispatcher);
+
+  var _super = _createSuper(Touch);
+
+  function Touch(state, view) {
+    var _this;
+
+    _classCallCheck(this, Touch);
+
+    _this = _super.call(this);
+    _this.state = state;
+    _this.view = view;
+    return _this;
+  }
+
+  _createClass(Touch, [{
+    key: "enabled",
+    get: function get() {
+      return this.state.option.get('touchMove');
+    }
+  }, {
+    key: "start",
+    value: function start(flag) {
+      if (this.enabled) {
+        this.view.slide[flag](TouchEvent.START, this._onBubble);
+      }
+    }
+  }, {
+    key: "move",
+    value: function move(flag) {
+      console.log('move', flag);
+      stage[flag](TouchEvent.MOVE, this._onBubble);
+      stage[flag](TouchEvent.END, this._onBubble);
+      this.state.set({
+        isDown: flag === 'on'
+      });
+    }
+  }]);
+
+  return Touch;
+}(EventDispatcher);
+
 var SlideInteractor = /*#__PURE__*/function (_EventDispatcher) {
   _inherits(SlideInteractor, _EventDispatcher);
 
@@ -3555,48 +3694,48 @@ var SlideInteractor = /*#__PURE__*/function (_EventDispatcher) {
     value: function index(e) {
       var _this$services = this.services,
           indexer = _this$services.indexer,
-          ticker = _this$services.ticker;
+          tick = _this$services.tick;
       indexer.to(e.value);
-      ticker.start();
+      tick.start();
     }
   }, {
     key: "next",
     value: function next(e) {
       e.preventDefault && e.preventDefault();
       var _this$services2 = this.services,
-          indexer = _this$services2.indexer,
-          ticker = _this$services2.ticker,
           autoplay = _this$services2.autoplay,
-          listeners = _this$services2.listeners;
-      listeners.touchStart.remove();
-      indexer.next();
-      ticker.start();
+          indexer = _this$services2.indexer,
+          tick = _this$services2.tick,
+          touch = _this$services2.touch;
+      tick.start();
+      touch.start('off');
       autoplay.stop();
+      indexer.next();
     }
   }, {
     key: "prev",
     value: function prev(e) {
       e.preventDefault && e.preventDefault();
       var _this$services3 = this.services,
-          indexer = _this$services3.indexer,
-          ticker = _this$services3.ticker,
           autoplay = _this$services3.autoplay,
-          listeners = _this$services3.listeners;
-      listeners.touchStart.remove();
-      indexer.prev();
-      ticker.start();
+          indexer = _this$services3.indexer,
+          tick = _this$services3.tick,
+          touch = _this$services3.touch;
+      tick.start();
+      touch.start('off');
       autoplay.stop();
+      indexer.prev();
     }
   }, {
     key: "complete",
     value: function complete() {
       var _this$services4 = this.services,
-          ticker = _this$services4.ticker,
           autoplay = _this$services4.autoplay,
-          listeners = _this$services4.listeners;
-      listeners.touchStart.add();
+          tick = _this$services4.tick,
+          touch = _this$services4.touch;
+      tick.stop();
+      touch.start('on');
       autoplay.start();
-      ticker.stop();
     }
   }]);
 
@@ -5134,58 +5273,49 @@ var Inliner = {
   }
 };
 
-var StageInteractor = /*#__PURE__*/function (_EventDispatcher) {
-  _inherits(StageInteractor, _EventDispatcher);
-
-  var _super = _createSuper(StageInteractor);
-
+var StageInteractor = /*#__PURE__*/function () {
   function StageInteractor(state, services) {
-    var _this;
-
     _classCallCheck(this, StageInteractor);
 
-    _this = _super.call(this);
-    _this.state = state;
-    _this.services = services;
-
-    _this._bindMethods(['tick']);
-
-    return _this;
+    this.state = state;
+    this.services = services;
   }
 
   _createClass(StageInteractor, [{
     key: "ready",
     value: function () {
       var _ready = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this$services, ticker, listeners;
+        var _this$services, indexer, resize, tick, touch;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _this$services = this.services, ticker = _this$services.ticker, _this$services.autoplay, listeners = _this$services.listeners;
-                _context.prev = 1;
-                _context.next = 4;
+                _context.prev = 0;
+                _context.next = 3;
                 return Inliner.resolveFonts();
 
-              case 4:
-                // autoplay.start();
-                ticker.start();
-                listeners.touchStart.add();
-                _context.next = 11;
+              case 3:
+                _this$services = this.services, indexer = _this$services.indexer, resize = _this$services.resize, tick = _this$services.tick, touch = _this$services.touch;
+                indexer.setup();
+                resize.setup();
+                tick.setup(indexer);
+                tick.start();
+                touch.start('on');
+                _context.next = 14;
                 break;
 
-              case 8:
-                _context.prev = 8;
-                _context.t0 = _context["catch"](1);
+              case 11:
+                _context.prev = 11;
+                _context.t0 = _context["catch"](0);
                 console.warn('first ready rejected : ', _context.t0);
 
-              case 11:
+              case 14:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[1, 8]]);
+        }, _callee, this, [[0, 11]]);
       }));
 
       function ready() {
@@ -5198,77 +5328,72 @@ var StageInteractor = /*#__PURE__*/function (_EventDispatcher) {
     key: "dispose",
     value: function dispose() {
       var _this$services2 = this.services,
-          ticker = _this$services2.ticker,
           autoplay = _this$services2.autoplay,
-          listeners = _this$services2.listeners;
-      ticker.stop();
+          resize = _this$services2.resize,
+          tick = _this$services2.tick,
+          touch = _this$services2.touch;
       autoplay.stop();
-      listeners.touchStart.remove();
+      resize.dispose();
+      tick.stop();
+      touch.start('off');
     }
-  }, {
-    key: "tick",
-    value: function tick(e) {
-      var indexer = this.services.indexer;
-      indexer.tick();
-      var i0 = indexer.i0,
-          i1 = indexer.i1,
-          progress = indexer.progress,
-          current = indexer.current,
-          head = indexer.head,
-          tail = indexer.tail;
-      this.state.set({
-        i0: i0,
-        i1: i1,
-        progress: progress,
-        index: current,
-        time: e.time,
-        head: head,
-        tail: tail
-      });
-    }
-  }, {
-    key: "resize",
-    value: function resize() {}
   }]);
 
   return StageInteractor;
-}(EventDispatcher);
+}();
 
-var TouchInteractor = /*#__PURE__*/function () {
+var TouchInteractor = /*#__PURE__*/function (_EventDispatcher) {
+  _inherits(TouchInteractor, _EventDispatcher);
+
+  var _super = _createSuper(TouchInteractor);
+
   function TouchInteractor(state, services) {
+    var _this;
+
     _classCallCheck(this, TouchInteractor);
 
-    this.state = state;
-    this.services = services;
+    _this = _super.call(this);
+    _this.state = state;
+    _this.services = services;
+
+    _this._bindMethods(['start', 'move', 'end']);
+
+    return _this;
   }
 
   _createClass(TouchInteractor, [{
     key: "start",
     value: function start() {
       var _this$services = this.services,
+          autoplay = _this$services.autoplay,
           indexer = _this$services.indexer,
-          ticker = _this$services.ticker,
-          autoplay = _this$services.autoplay;
-      indexer.down();
-      ticker.start();
+          tick = _this$services.tick,
+          touch = _this$services.touch;
       autoplay.stop();
+      indexer.down();
+      tick.start();
+      touch.move('on');
     }
   }, {
     key: "move",
-    value: function move(dx) {
+    value: function move(e) {
+      var dx = (e.clientX - e.clientX0) / this.state.get('width');
       var indexer = this.services.indexer;
       indexer.move(-dx);
     }
   }, {
     key: "end",
     value: function end() {
-      var indexer = this.services.indexer;
+      var _this$services2 = this.services,
+          indexer = _this$services2.indexer,
+          touch = _this$services2.touch;
       indexer.up();
+      touch.move('off');
     }
   }]);
 
   return TouchInteractor;
-}();
+}(EventDispatcher);
 
 var IndexPresenter = /*#__PURE__*/function (_EventDispatcher) {
   _inherits(IndexPresenter, _EventDispatcher);
@@ -5550,7 +5675,7 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
     _this.state = state;
     _this.view = view;
 
-    _this._bindMethods(['time', 'resize']);
+    _this._bindMethods(['time', 'resize', 'touch']);
 
     return _this;
   }
@@ -5558,25 +5683,23 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
   _createClass(StagePresenter, [{
     key: "setup",
     value: function setup() {
-      var _this$view = this.view;
-          _this$view.dom;
-          _this$view.slide;
+      var dom = this.view.dom;
 
       if (this.state.option.debug == Option.Debug.DISPLAY.DOM) {
-        this.dom.container.classList.add('xslider-debug');
+        dom.container.classList.add('xslider-debug');
       }
     }
   }, {
     key: "time",
     value: function () {
       var _time = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this$view2, renderer, slide, i0, i1, progress, time;
+        var _this$view, renderer, slide, i0, i1, progress, time;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _this$view2 = this.view, renderer = _this$view2.renderer, slide = _this$view2.slide, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress'), time = this.state.get('time');
+                _this$view = this.view, renderer = _this$view.renderer, slide = _this$view.slide, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress'), time = this.state.get('time');
                 _context.next = 3;
                 return slide.ready(i0, i1);
 
@@ -5608,25 +5731,29 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
     key: "resize",
     value: function () {
       var _resize = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var _this$view3, renderer, slide, dom, width, height, i0, i1, progress;
+        var _this$view2, renderer, slide, dom, width, height, i0, i1, progress;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _this$view3 = this.view, renderer = _this$view3.renderer, slide = _this$view3.slide, dom = _this$view3.dom, width = dom.width, height = dom.height, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress');
+                _this$view2 = this.view, renderer = _this$view2.renderer, slide = _this$view2.slide, dom = _this$view2.dom, width = dom.width, height = dom.height, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress');
+                this.state.set({
+                  width: width,
+                  height: height
+                });
                 dom.canvas.setAttribute('width', width);
                 dom.canvas.setAttribute('height', height);
                 renderer["default"].resize(width, height);
                 renderer.gl.resize(width, height);
-                _context2.next = 7;
+                _context2.next = 8;
                 return slide.resize(width, height);
 
-              case 7:
+              case 8:
                 renderer["default"].render(i0, i1, progress);
                 renderer.gl.render(i0, i1, progress);
 
-              case 9:
+              case 10:
               case "end":
                 return _context2.stop();
             }
@@ -5640,48 +5767,41 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
 
       return resize;
     }()
+  }, {
+    key: "touch",
+    value: function touch() {
+      var isDown = this.state.get('isDown');
+      console.log('touch', isDown);
+      var dom = this.view.dom;
+      dom.touchDisabled = isDown;
+    }
   }]);
 
   return StagePresenter;
 }(EventDispatcher);
 
-var Controller = /*#__PURE__*/function (_EventDispatcher) {
-  _inherits(Controller, _EventDispatcher);
-
-  var _super = _createSuper(Controller);
-
+var Controller = /*#__PURE__*/function () {
   function Controller(state, view) {
-    var _this;
-
     _classCallCheck(this, Controller);
 
-    _this = _super.call(this);
-    _this.state = state;
-    _this.view = view;
-
-    _this._bindMethods(['_onTouch', '_addTouchStartListener', '_removeTouchStartListener']);
-
-    _this.services = {
-      indexer: new Indexer(),
-      ticker: new Ticker(),
-      autoplay: new AutoPlay(),
-      listeners: {
-        touchStart: {
-          add: _this._addTouchStartListener,
-          remove: _this._removeTouchStartListener
-        }
-      }
+    this.state = state;
+    this.view = view;
+    this.services = {
+      indexer: new Indexer(state),
+      autoplay: new AutoPlay(state),
+      resize: new Resize(state, view),
+      tick: new Tick(state),
+      touch: new Touch(state, view)
     };
-    _this.usecases = {
-      stage: new StageInteractor(_this.state, _this.services),
-      slide: new SlideInteractor(_this.state, _this.services),
-      touch: new TouchInteractor(_this.state, _this.services)
+    this.usecases = {
+      stage: new StageInteractor(this.state, this.services),
+      slide: new SlideInteractor(this.state, this.services),
+      touch: new TouchInteractor(this.state, this.services)
     };
-    _this.presenters = {
-      index: new IndexPresenter(_this.state, _this.view),
-      stage: new StagePresenter(_this.state, _this.view)
+    this.presenters = {
+      stage: new StagePresenter(this.state, this.view),
+      index: new IndexPresenter(this.state, this.view)
     };
-    return _this;
   }
 
   _createClass(Controller, [{
@@ -5690,34 +5810,33 @@ var Controller = /*#__PURE__*/function (_EventDispatcher) {
       var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var _this$view$pager, _this$view$prev, _this$view$next;
 
-        var _this$services, indexer, ticker, autoplay;
+        var _this$services, autoplay, indexer, resize, touch;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _this$services = this.services, indexer = _this$services.indexer, ticker = _this$services.ticker, autoplay = _this$services.autoplay;
-                this.dom = this.view.dom;
-                indexer.setup(this.dom, this.state.option);
-                _context.next = 5;
+                _context.next = 2;
                 return this.usecases.stage.ready();
 
-              case 5:
+              case 2:
+                _this$services = this.services, autoplay = _this$services.autoplay, indexer = _this$services.indexer, resize = _this$services.resize, touch = _this$services.touch;
+                autoplay.on(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
+                indexer.on('complete', this.usecases.slide.complete);
+                resize.on('resize', this.presenters.stage.resize);
+                touch.on(TouchEvent.START, this.usecases.touch.start);
+                touch.on(TouchEvent.MOVE, this.usecases.touch.move);
+                touch.on(TouchEvent.END, this.usecases.touch.end);
                 (_this$view$pager = this.view.pager) === null || _this$view$pager === void 0 ? void 0 : _this$view$pager.on('index', this.usecases.slide.index);
                 (_this$view$prev = this.view.prev) === null || _this$view$prev === void 0 ? void 0 : _this$view$prev.on('click', this.usecases.slide.prev);
                 (_this$view$next = this.view.next) === null || _this$view$next === void 0 ? void 0 : _this$view$next.on('click', this.usecases.slide.next);
-                indexer.on('complete', this.usecases.slide.complete);
-                autoplay.on(AutoPlay.EVENT.TICK, this.usecases.slide.next);
-                autoplay.setup(this.state.option.autoplay);
-                ticker.on('tick', this.usecases.stage.tick);
                 this.state.on('index', this.presenters.index.index);
                 this.state.on('head', this.presenters.index.head);
                 this.state.on('tail', this.presenters.index.tail);
                 this.state.on('time', this.presenters.stage.time);
-                this.dom.on('resize', this.presenters.stage.resize);
-                this.presenters.stage.resize();
+                this.state.on('isDown', this.presenters.stage.touch);
 
-              case 18:
+              case 17:
               case "end":
                 return _context.stop();
             }
@@ -5736,61 +5855,30 @@ var Controller = /*#__PURE__*/function (_EventDispatcher) {
     value: function dispose() {
       var _this$view$pager2, _this$view$prev2, _this$view$next2;
 
-      var _this$services2 = this.services,
-          indexer = _this$services2.indexer,
-          ticker = _this$services2.ticker,
-          autoplay = _this$services2.autoplay;
       this.usecases.stage.dispose();
+      var _this$services2 = this.services,
+          autoplay = _this$services2.autoplay,
+          indexer = _this$services2.indexer,
+          resize = _this$services2.resize,
+          touch = _this$services2.touch;
+      autoplay.off(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
+      indexer.off('complete', this.usecases.slide.complete);
+      resize.on('resize', this.presenters.stage.resize);
+      touch.off(TouchEvent.MOVE, this.usecases.touch.move);
+      touch.off(TouchEvent.END, this.usecases.touch.end);
       (_this$view$pager2 = this.view.pager) === null || _this$view$pager2 === void 0 ? void 0 : _this$view$pager2.off('index', this.usecases.slide.index);
       (_this$view$prev2 = this.view.prev) === null || _this$view$prev2 === void 0 ? void 0 : _this$view$prev2.off('click', this.usecases.slide.prev);
       (_this$view$next2 = this.view.next) === null || _this$view$next2 === void 0 ? void 0 : _this$view$next2.off('click', this.usecases.slide.next);
-      stage.off(TouchEvent.MOVE, this._onTouch);
-      stage.off(TouchEvent.END, this._onTouch);
-      indexer.off('complete', this.usecases.slide.complete);
-      autoplay.off(AutoPlay.EVENT.TICK, this.usecases.slide.next);
-      ticker.off('tick', this.usecases.stage.tick);
       this.state.off('index', this.presenters.index.index);
       this.state.off('head', this.presenters.index.head);
       this.state.off('tail', this.presenters.index.tail);
       this.state.off('time', this.presenters.stage.time);
-      this.dom.off('resize', this.presenters.stage.resize);
-    }
-  }, {
-    key: "_onTouch",
-    value: function _onTouch(e) {
-      switch (e.type) {
-        case TouchEvent.START:
-          stage.on(TouchEvent.MOVE, this._onTouch);
-          stage.on(TouchEvent.END, this._onTouch);
-          this.usecases.touch.start();
-          break;
-
-        case TouchEvent.MOVE:
-          var dx = (e.clientX - e.clientX0) / this.dom.width;
-          this.usecases.touch.move(dx);
-          break;
-
-        case TouchEvent.END:
-          stage.off(TouchEvent.MOVE, this._onTouch);
-          stage.off(TouchEvent.END, this._onTouch);
-          this.usecases.touch.end();
-          break;
-      }
-    }
-  }, {
-    key: "_addTouchStartListener",
-    value: function _addTouchStartListener() {
-      this.state.option.get('touchMove') && this.view.slide.on(TouchEvent.START, this._onTouch);
-    }
-  }, {
-    key: "_removeTouchStartListener",
-    value: function _removeTouchStartListener() {
-      this.state.option.get('touchMove') && this.view.slide.off(TouchEvent.START, this._onTouch);
+      this.state.off('isDown', this.presenters.stage.touch);
     }
   }]);
 
   return Controller;
-}(EventDispatcher);
+}();
 
 var State = /*#__PURE__*/function (_EventDispatcher) {
   _inherits(State, _EventDispatcher);
@@ -5812,7 +5900,9 @@ var State = /*#__PURE__*/function (_EventDispatcher) {
       height: 0,
       head: false,
       tail: false,
-      time: 0
+      time: 0,
+      numPages: 0,
+      isDown: false
     });
 
     return _this;
@@ -6331,21 +6421,9 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
   return Slide;
 }(InteractiveObject);
 
-var Dom = /*#__PURE__*/function (_EventDispatcher) {
-  _inherits(Dom, _EventDispatcher);
-
-  var _super = _createSuper(Dom);
-
+var Dom = /*#__PURE__*/function () {
   function Dom() {
-    var _this;
-
     _classCallCheck(this, Dom);
-
-    _this = _super.call(this);
-
-    _this._bindMethods(['_onResize']);
-
-    return _this;
   }
 
   _createClass(Dom, [{
@@ -6370,33 +6448,28 @@ var Dom = /*#__PURE__*/function (_EventDispatcher) {
       this.next = this.container.querySelector('.xslider-next');
       this.canvas = document.createElement('canvas');
       this.container.insertBefore(this.canvas, this.list);
-      stage.on('resize', this._onResize);
     }
   }, {
     key: "dispose",
     value: function dispose() {
-      this._width = this._height = undefined;
-      stage.off('resize', this._onResize);
       this.container.classList.remove('xslider-container', 'xslider-debug');
       this.container.removeChild(this.canvas);
     }
   }, {
-    key: "_onResize",
-    value: function _onResize(e) {
-      if (this._width != this.width || this._height != this.height) {
-        this._width = this.width;
-        this._height = this.height;
-        this.dispatch('resize', {
-          type: 'resize',
-          width: this._width,
-          height: this._height
-        });
+    key: "touchDisabled",
+    set: function set(v) {
+      console.log('touchDisabled', v);
+
+      if (v) {
+        this.list.classList.add('xslider-disabled');
+      } else {
+        this.list.classList.remove('xslider-disabled');
       }
     }
   }]);
 
   return Dom;
-}(EventDispatcher);
+}();
 
 var BaseRenderer = /*#__PURE__*/function (_EventDispatcher) {
   _inherits(BaseRenderer, _EventDispatcher);
@@ -6456,21 +6529,23 @@ var DefaultRenderer = /*#__PURE__*/function (_BaseRenderer) {
           page1 = this.slide.list[i1]; // let opacity = 1.0 - Utils.clamp(progress, 0, 0.5) / 0.5;
 
       var dx = -progress * this.width;
-      this.updatePage(page0, dx
+
+      this._updatePage(page0, dx
       /*, opacity*/
       );
 
       if (page0 != page1) {
         // opacity = Utils.clamp(progress - 0.5, 0, 0.5) / 0.5;
         dx = (1 - progress) * this.width;
-        this.updatePage(page1, dx
+
+        this._updatePage(page1, dx
         /*, opacity*/
         );
       }
     }
   }, {
-    key: "updatePage",
-    value: function updatePage(slide, dx, opacity) {
+    key: "_updatePage",
+    value: function _updatePage(slide, dx, opacity) {
       if (!slide || !slide.layer.ui) return;
       slide.layer.ui.style.webkitTransform = 'translate(' + dx + 'px, 0) scale(1)'; // slide.layer.ui.style.opacity = opacity;
     }
@@ -8960,14 +9035,13 @@ var XRenderer = /*#__PURE__*/function (_BaseRenderer) {
 
     _this = _super.call(this);
     _this.canvas = canvas;
-    _this.scene = new Scene3D(); // this.scene.context.color.b = 1;
-
+    _this.scene = new Scene3D();
     _this.model = new XModel();
     _this.mesh = _this.model.mesh;
 
     _this.scene.addChild(_this.model);
 
-    _this._uniform0 = {
+    _this._uniforms = {
       texture0: {
         value: new Texture()
       },
@@ -8994,14 +9068,12 @@ var XRenderer = /*#__PURE__*/function (_BaseRenderer) {
       this.mesh.material = new XMaterial({
         vertexShader: transition.vertexShader,
         fragmentShader: transition.fragmentShader,
-        uniforms: Object.assign({}, this._uniform0, transition.uniforms)
+        uniforms: Object.assign({}, this._uniforms, transition.uniforms)
       });
     }
   }, {
     key: "dispose",
     value: function dispose() {
-      _get(_getPrototypeOf(XRenderer.prototype), "dispose", this).call(this);
-
       GLGraphics.deleteProgram(this.mesh.material.program);
       this.mesh.material = undefined;
     }
@@ -9043,8 +9115,11 @@ var View = /*#__PURE__*/function (_EventDispatcher) {
 
   _createClass(View, [{
     key: "setup",
-    value: function setup(selector, option) {
+    value: function setup(selector, state) {
       this.dom.setup(selector);
+      state.set({
+        numPages: this.dom.pages.length
+      });
 
       if (this.dom.pager) {
         this.pager = this.pager || new Pager();
@@ -9061,9 +9136,9 @@ var View = /*#__PURE__*/function (_EventDispatcher) {
         this.next.setup(this.dom.next);
       }
 
-      this.renderer["default"].setup(option, this.slide);
-      this.renderer.gl = this.selectRenderer(option);
-      this.renderer.gl.setup(option, this.slide);
+      this.renderer["default"].setup(state.option, this.slide);
+      this.renderer.gl = this.selectRenderer(state.option);
+      this.renderer.gl.setup(state.option, this.slide);
       this.slide.setup(this.dom, this.renderer.gl.mesh);
     }
   }, {
@@ -9151,8 +9226,8 @@ var XSlider = /*#__PURE__*/function (_EventDispatcher) {
     _this.view = new View();
     _this.controller = new Controller(_this.state, _this.view);
     Object.assign(_assertThisInitialized(_this), {
-      prev: _this.controller._onPrev,
-      next: _this.controller._onNext,
+      prev: _this.controller.usecases.slide.prev,
+      next: _this.controller.usecases.slide.next,
       autoplay: {
         start: _this.controller.services.autoplay.start,
         stop: _this.controller.services.autoplay.stop
@@ -9171,7 +9246,7 @@ var XSlider = /*#__PURE__*/function (_EventDispatcher) {
       if (this.isSetup) this.dispose();
       this.isSetup = true;
       this.state.setup(arguments.length <= 1 ? undefined : arguments[1]);
-      this.view.setup(arguments.length <= 0 ? undefined : arguments[0], this.state.option);
+      this.view.setup(arguments.length <= 0 ? undefined : arguments[0], this.state);
       this.controller.setup();
     }
   }, {

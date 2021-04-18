@@ -11,35 +11,35 @@ export class SlideInteractor extends EventDispatcher {
   }
 
   index(e) {
-    const { indexer, ticker } = this.services;
+    const { indexer, tick } = this.services;
     indexer.to(e.value);
-    ticker.start();
+    tick.start();
   }
 
   next(e) {
     e.preventDefault && e.preventDefault();
 
-    const { indexer, ticker, autoplay, listeners } = this.services;
-    listeners.touchStart.remove();
-    indexer.next();
-    ticker.start();
+    const { autoplay, indexer, tick, touch } = this.services;
+    tick.start();
+    touch.start('off');
     autoplay.stop();
+    indexer.next();
   }
 
   prev(e) {
     e.preventDefault && e.preventDefault();
 
-    const { indexer, ticker, autoplay, listeners } = this.services;
-    listeners.touchStart.remove();
-    indexer.prev();
-    ticker.start();
+    const { autoplay, indexer, tick, touch } = this.services;
+    tick.start();
+    touch.start('off');
     autoplay.stop();
+    indexer.prev();
   }
 
   complete() {
-    const { ticker, autoplay, listeners } = this.services;
-    listeners.touchStart.add();
+    const { autoplay, tick, touch } = this.services;
+    tick.stop();
+    touch.start('on');
     autoplay.start();
-    ticker.stop();
   }
 }

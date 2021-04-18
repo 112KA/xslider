@@ -2,6 +2,7 @@ import { env } from './Environment';
 
 export const Event = {
   CHANGE: 'change',
+  AUTOPLAY_NEXT: 'autoplayNext',
 };
 
 const types = [];

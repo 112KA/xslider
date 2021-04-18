@@ -21,8 +21,10 @@ export class View extends EventDispatcher {
     };
   }
 
-  setup(selector, option) {
+  setup(selector, state) {
     this.dom.setup(selector);
+
+    state.set({ numPages: this.dom.pages.length });
 
     if (this.dom.pager) {
       this.pager = this.pager || new Pager();
@@ -39,10 +41,10 @@ export class View extends EventDispatcher {
       this.next.setup(this.dom.next);
     }
 
-    this.renderer.default.setup(option, this.slide);
+    this.renderer.default.setup(state.option, this.slide);
 
-    this.renderer.gl = this.selectRenderer(option);
-    this.renderer.gl.setup(option, this.slide);
+    this.renderer.gl = this.selectRenderer(state.option);
+    this.renderer.gl.setup(state.option, this.slide);
 
     this.slide.setup(this.dom, this.renderer.gl.mesh);
   }
@@ -77,18 +79,5 @@ export class View extends EventDispatcher {
     this.renderer.default.dispose();
 
     this.dom.dispose();
-  }
-
-  async resize() {
-    const w = this.dom.width,
-      h = this.dom.height;
-
-    this.dom.canvas.setAttribute('width', w);
-    this.dom.canvas.setAttribute('height', h);
-
-    this.renderer.default.resize(w, h);
-    this.renderer.gl.resize(w, h);
-
-    await this.slide.resize(w, h);
   }
 }
