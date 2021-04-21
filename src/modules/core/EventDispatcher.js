@@ -38,6 +38,38 @@ export class EventDispatcher {
     }
   }
 
+  /**
+   * propertiesの値のうちいずれかが更新されていたら、${type}をdispatch
+   *
+   * @param {String} type - event name
+   * @param {Object} properties
+   */
+  setTogether(type, properties) {
+    if (!properties) return;
+    let updated = false,
+      values = {},
+      values0 = {};
+
+    for (let key in properties) {
+      if (
+        (this._properties[key] === undefined && properties[key] !== undefined) ||
+        this._properties[key] !== properties[key]
+      ) {
+        updated = true;
+      }
+      values0[key] = this._properties[key];
+      values[key] = this._properties[key] = properties[key];
+    }
+
+    if (updated) {
+      this.dispatch(type, {
+        type,
+        values,
+        values0,
+      });
+    }
+  }
+
   dispatch(type, options) {
     !type && console.error('invalid Event type', type);
     if (this._listeners.hasOwnProperty(type)) {

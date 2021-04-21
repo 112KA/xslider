@@ -1,4 +1,3 @@
-import { EventDispatcher } from '../core/EventDispatcher';
 import { InteractiveObject } from '../core/InteractiveObject';
 
 import { net } from '../components/Net';

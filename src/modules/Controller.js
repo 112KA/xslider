@@ -32,10 +32,9 @@ export class Controller {
   async setup() {
     await this.usecases.stage.ready();
 
-    const { autoplay, indexer, resize, touch } = this.services;
+    const { autoplay, indexer, touch } = this.services;
     autoplay.on(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
     indexer.on('complete', this.usecases.slide.complete);
-    resize.on('resize', this.presenters.stage.resize);
     touch.on(TouchEvent.START, this.usecases.touch.start);
     touch.on(TouchEvent.MOVE, this.usecases.touch.move);
     touch.on(TouchEvent.END, this.usecases.touch.end);
@@ -48,16 +47,16 @@ export class Controller {
     this.state.on('head', this.presenters.index.head);
     this.state.on('tail', this.presenters.index.tail);
     this.state.on('time', this.presenters.stage.time);
+    this.state.on('resize', this.presenters.stage.resize);
     this.state.on('isDrag', this.presenters.stage.drag);
   }
 
   dispose() {
     this.usecases.stage.dispose();
 
-    const { autoplay, indexer, resize, touch } = this.services;
+    const { autoplay, indexer, touch } = this.services;
     autoplay.off(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
     indexer.off('complete', this.usecases.slide.complete);
-    resize.on('resize', this.presenters.stage.resize);
     touch.off(TouchEvent.MOVE, this.usecases.touch.move);
     touch.off(TouchEvent.END, this.usecases.touch.end);
 
@@ -69,6 +68,7 @@ export class Controller {
     this.state.off('head', this.presenters.index.head);
     this.state.off('tail', this.presenters.index.tail);
     this.state.off('time', this.presenters.stage.time);
+    this.state.off('resize', this.presenters.stage.resize);
     this.state.off('isDrag', this.presenters.stage.drag);
   }
 }

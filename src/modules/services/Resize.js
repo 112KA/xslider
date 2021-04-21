@@ -19,6 +19,9 @@ export class Resize extends EventDispatcher {
   }
 
   _onResize() {
-    this.dispatch('resize');
+    this.state.setTogether('resize', {
+      width: this.view.dom.width,
+      height: this.view.dom.height,
+    });
   }
 }

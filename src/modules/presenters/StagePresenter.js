@@ -41,11 +41,6 @@ export class StagePresenter extends EventDispatcher {
       width = dom.width,
       height = dom.height;
 
-    this.state.set({
-      width,
-      height,
-    });
-
     dom.canvas.setAttribute('width', width);
     dom.canvas.setAttribute('height', height);
 
