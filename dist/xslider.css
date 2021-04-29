@@ -14,7 +14,7 @@
     pointer-events: none; }
 
 .xslider-page {
-  display: none;
+  visibility: hidden;
   overflow: hidden;
   position: absolute;
   top: 0;
@@ -22,7 +22,7 @@
   width: 100%;
   height: 100%; }
   .xslider-page-active {
-    display: block; }
+    visibility: visible; }
   .xslider-page > img,
   .xslider-page > canvas {
     position: absolute; }

@@ -2,6 +2,8 @@ export const clamp = (v, min, max) => {
   return Math.max(min, Math.min(max, v));
 };
 
+export const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 // export const getQuery = (key, cached = true) => {
 //   if (!this._query || !cached) {
 //     this._query = {};

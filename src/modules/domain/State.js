@@ -5,6 +5,16 @@ export class State extends EventDispatcher {
   constructor() {
     super();
 
+    this.dispose();
+  }
+
+  setup(options) {
+    this.option = Object.assign({}, Option, options);
+  }
+
+  dispose() {
+    this.option = undefined;
+
     this.set({
       i0: 0,
       i1: 1,
@@ -17,13 +27,5 @@ export class State extends EventDispatcher {
       numPages: 0,
       isDrag: false,
     });
-  }
-
-  setup(options) {
-    this.option = Object.assign({}, Option, options);
-  }
-
-  dispose() {
-    this.option = undefined;
   }
 }

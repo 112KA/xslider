@@ -2,7 +2,6 @@ import { Controller } from './Controller';
 import { EventDispatcher } from './core/EventDispatcher';
 import { State } from './domain/State';
 import { View } from './display/View';
-// import { Utils } from './components/Utils';
 
 export default class XSlider extends EventDispatcher {
   constructor(...args) {

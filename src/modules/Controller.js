@@ -1,5 +1,6 @@
 import { Event, TouchEvent } from './core/Event';
 // import {Bench} from './components/debug/Bench'
+import { wait } from './components/Utils';
 import { AutoPlay, Indexer, Resize, Tick, Touch } from './services/index';
 import { TouchInteractor, StageInteractor, SlideInteractor } from './usecases/index';
 import { IndexPresenter, StagePresenter } from './presenters/index';
@@ -30,9 +31,15 @@ export class Controller {
   }
 
   async setup() {
+    //indexser setup
+    //slide setup
+    //resize
     await this.usecases.stage.ready();
+    await this.presenters.stage.setup();
 
-    const { autoplay, indexer, touch } = this.services;
+    const { autoplay, indexer, tick, touch, resize } = this.services;
+    resize.setup();
+    tick.start();
     autoplay.on(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
     indexer.on('complete', this.usecases.slide.complete);
     touch.on(TouchEvent.START, this.usecases.touch.start);
@@ -43,11 +50,11 @@ export class Controller {
     this.view.prev?.on('click', this.usecases.slide.prev);
     this.view.next?.on('click', this.usecases.slide.next);
 
+    this.state.on('resize', this.presenters.stage.resize);
     this.state.on('index', this.presenters.index.index);
     this.state.on('head', this.presenters.index.head);
     this.state.on('tail', this.presenters.index.tail);
     this.state.on('time', this.presenters.stage.time);
-    this.state.on('resize', this.presenters.stage.resize);
     this.state.on('isDrag', this.presenters.stage.drag);
   }
 
