@@ -45,46 +45,44 @@ export class Page {
     }
   }
 
-  loadSvg(w, h) {
+  async _loadSvg(w, h) {
     this.svg = converter.convert(this.inlinedNode, w, h);
 
     let string = new XMLSerializer().serializeToString(this.svg);
-    // console.log('string', string)
+    // console.log('string', string);
     // string = string.replace(/#/g, '%23').replace(/\n/g, '%0A')
     const uri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(string);
 
     // if (this.debug == Option.Debug.DISPLAY.SVG) {
-    //   if (this._svg0 === undefined) {
-    //     this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
-    //   } else {
-    //     const node = this.svg.childNodes[0];
-    //     this.element.replaceChild(node, this._svg0);
-    //     this._svg0 = node;
-    //   }
+    // if (this._svg0 === undefined) {
+    //   this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
+    // } else {
+    //   const node = this.svg.childNodes[0];
+    //   this.element.replaceChild(node, this._svg0);
+    //   this._svg0 = node;
     // }
-    return net.loadImage(this.image, uri);
+    // }
+    await net.loadImage(this.image, uri);
   }
 
   async resize(w, h) {
-    if (this.needsResize) {
-      this.needsResize = false;
+    if (this.hasTexture) {
+      if (this.needsResize) {
+        this.needsResize = false;
 
-      this.canvas.width = w;
-      this.canvas.height = h;
-
-      if (this.hasTexture) {
+        this.canvas.width = w;
+        this.canvas.height = h;
         this.layer.gl.classList.add('xslider-capture');
 
         cloner.cloneStyle(this.layer.gl, this.inlinedNode, Page.EXCLUDES);
 
         this.layer.gl.classList.remove('xslider-capture');
 
-        await this.loadSvg(w, h);
+        await this._loadSvg(w, h);
 
-        const c = this.canvas.getContext('2d');
-        c.clearRect(0, 0, w, h);
-        c.drawImage(this.image, 0, 0, w, h);
-        // console.log(this.image, w, h);
+        const ctx = this.canvas.getContext('2d');
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(this.image, 0, 0, w, h);
       }
     }
   }
@@ -102,6 +100,11 @@ export class Page {
   get hasTexture() {
     return this.layer.gl !== undefined;
   }
+
+  set active(v) {
+    const method = v ? 'add' : 'remove';
+    this.element.classList[method]('xslider-page-active');
+  }
 }
 
 Page.EXCLUDES = ['background', 'left', 'right', 'width', 'height'];
@@ -111,7 +114,7 @@ export class Slide extends InteractiveObject {
     super();
 
     this.list = [];
-    this.width = this.height = -1;
+    this.width = this.height = undefined;
 
     this._bindMethods(['_onChangePage']);
   }
@@ -156,11 +159,11 @@ export class Slide extends InteractiveObject {
 
     const page0 = this.get('page0');
     const page1 = this.get('page1');
-    page0.element.classList.remove('xslider-page-active');
-    page1 && page1.element.classList.remove('xslider-page-active');
+    page0.active = false;
+    page1 && (page1.active = false);
   }
 
-  resize(w, h) {
+  async resize(w, h) {
     this.width = w;
     this.height = h;
 
@@ -172,16 +175,35 @@ export class Slide extends InteractiveObject {
       page.needsResize = true;
     });
 
-    return Promise.all([this.updatePage(0), this.updatePage(1)]);
+    await Promise.all([this._updatePage(0), this._updatePage(1)]);
   }
 
-  async updatePage(pageIndex) {
-    if (this.width == -1 && this.height == -1) return;
+  _onChangePage(e) {
+    let removeOld = false;
+
+    switch (e.type) {
+      case 'page0':
+        this._updatePage(0);
+        removeOld = e.value0 !== undefined;
+        break;
+      case 'page1':
+        this._updatePage(1);
+        removeOld = e.value0 !== undefined && e.value0 !== this.get('page0');
+        break;
+    }
+
+    if (removeOld) {
+      e.value0.active = false;
+    }
+  }
+
+  async _updatePage(pageIndex) {
+    if (this.width === undefined && this.height === undefined) return;
 
     const page = this.get('page' + pageIndex);
 
     if (page) {
-      page.element.classList.add('xslider-page-active');
+      page.active = true;
 
       await page.resize(this.width, this.height);
     }
@@ -190,25 +212,6 @@ export class Slide extends InteractiveObject {
       const texture = this.uniforms['texture' + pageIndex].value;
       texture.image = page ? page.canvas : undefined;
       texture.needsUpdate = true;
-    }
-  }
-
-  _onChangePage(e) {
-    let removeOld = false;
-
-    switch (e.type) {
-      case 'page0':
-        this.updatePage(0);
-        removeOld = e.value0 !== undefined;
-        break;
-      case 'page1':
-        this.updatePage(1);
-        removeOld = e.value0 !== undefined && e.value0 !== this.get('page0');
-        break;
-    }
-
-    if (removeOld) {
-      e.value0.element.classList.remove('xslider-page-active');
     }
   }
 }

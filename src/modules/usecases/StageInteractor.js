@@ -1,4 +1,5 @@
 import { Inliner } from '../components/converter/Inliner';
+// import { wait } from '../components/Utils';
 
 export class StageInteractor {
   constructor(state, services) {
@@ -13,10 +14,12 @@ export class StageInteractor {
       const { indexer, resize, tick, touch } = this.services;
 
       indexer.setup();
-      resize.setup();
       tick.setup(indexer);
-      tick.start();
+      // tick.start();
       touch.start('on');
+      const { i0, i1 } = indexer;
+      this.state.set({ i0, i1 });
+      // resize.setup();
     } catch (err) {
       console.warn('first ready rejected : ', err);
     }

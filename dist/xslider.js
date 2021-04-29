@@ -1881,7 +1881,7 @@ var arrayMethodHasSpeciesSupport = function (METHOD_NAME) {
 var HAS_SPECIES_SUPPORT$2 = arrayMethodHasSpeciesSupport('splice');
 var max$1 = Math.max;
 var min$4 = Math.min;
-var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
+var MAX_SAFE_INTEGER$1 = 0x1FFFFFFFFFFFFF;
 var MAXIMUM_ALLOWED_LENGTH_EXCEEDED = 'Maximum allowed length exceeded'; // `Array.prototype.splice` method
 // https://tc39.es/ecma262/#sec-array.prototype.splice
 // with adding support of @@species
@@ -1910,7 +1910,7 @@ _export({
       actualDeleteCount = min$4(max$1(toInteger(deleteCount), 0), len - actualStart);
     }
 
-    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER) {
+    if (len + insertCount - actualDeleteCount > MAX_SAFE_INTEGER$1) {
       throw TypeError(MAXIMUM_ALLOWED_LENGTH_EXCEEDED);
     }
 
@@ -1992,6 +1992,38 @@ var EventDispatcher = /*#__PURE__*/function () {
             value0: v0
           });
         }
+      }
+    }
+    /**
+     * propertiesの値のうちいずれかが更新されていたら、${type}をdispatch
+     *
+     * @param {String} type - event name
+     * @param {Object} properties
+     */
+
+  }, {
+    key: "setTogether",
+    value: function setTogether(type, properties) {
+      if (!properties) return;
+      var updated = false,
+          values = {},
+          values0 = {};
+
+      for (var key in properties) {
+        if (this._properties[key] === undefined && properties[key] !== undefined || this._properties[key] !== properties[key]) {
+          updated = true;
+        }
+
+        values0[key] = this._properties[key];
+        values[key] = this._properties[key] = properties[key];
+      }
+
+      if (updated) {
+        this.dispatch(type, {
+          type: type,
+          values: values,
+          values0: values0
+        });
       }
     }
   }, {
@@ -2601,7 +2633,7 @@ var REJECTED = 2;
 var HANDLED = 1;
 var UNHANDLED = 2;
 var Internal, OwnPromiseCapability, PromiseWrapper, nativeThen;
-var FORCED$4 = isForced_1(PROMISE, function () {
+var FORCED$5 = isForced_1(PROMISE, function () {
   var GLOBAL_CORE_JS_PROMISE = inspectSource(PromiseConstructor) !== String(PromiseConstructor);
 
   if (!GLOBAL_CORE_JS_PROMISE) {
@@ -2633,7 +2665,7 @@ var FORCED$4 = isForced_1(PROMISE, function () {
     /* empty */
   }) instanceof FakePromise);
 });
-var INCORRECT_ITERATION = FORCED$4 || !checkCorrectnessOfIteration(function (iterable) {
+var INCORRECT_ITERATION = FORCED$5 || !checkCorrectnessOfIteration(function (iterable) {
   PromiseConstructor.all(iterable)['catch'](function () {
     /* empty */
   });
@@ -2796,7 +2828,7 @@ var internalResolve = function (state, value, unwrap) {
 }; // constructor polyfill
 
 
-if (FORCED$4) {
+if (FORCED$5) {
   // 25.4.3.1 Promise(executor)
   PromiseConstructor = function Promise(executor) {
     anInstance(this, PromiseConstructor, PROMISE);
@@ -2888,7 +2920,7 @@ if (FORCED$4) {
 _export({
   global: true,
   wrap: true,
-  forced: FORCED$4
+  forced: FORCED$5
 }, {
   Promise: PromiseConstructor
 });
@@ -2899,7 +2931,7 @@ PromiseWrapper = getBuiltIn(PROMISE); // statics
 _export({
   target: PROMISE,
   stat: true,
-  forced: FORCED$4
+  forced: FORCED$5
 }, {
   // `Promise.reject` method
   // https://tc39.es/ecma262/#sec-promise.reject
@@ -2912,7 +2944,7 @@ _export({
 _export({
   target: PROMISE,
   stat: true,
-  forced: FORCED$4
+  forced: FORCED$5
 }, {
   // `Promise.resolve` method
   // https://tc39.es/ecma262/#sec-promise.resolve
@@ -2985,6 +3017,69 @@ if (!toStringTagSupport) {
     unsafe: true
   });
 }
+
+var slice = [].slice;
+var MSIE = /MSIE .\./.test(engineUserAgent); // <- dirty ie9- check
+
+var wrap = function (scheduler) {
+  return function (handler, timeout
+  /* , ...arguments */
+  ) {
+    var boundArgs = arguments.length > 2;
+    var args = boundArgs ? slice.call(arguments, 2) : undefined;
+    return scheduler(boundArgs ? function () {
+      // eslint-disable-next-line no-new-func -- spec requirement
+      (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
+    } : handler, timeout);
+  };
+}; // ie9- setTimeout & setInterval additional parameters fix
+// https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
+
+
+_export({
+  global: true,
+  bind: true,
+  forced: MSIE
+}, {
+  // `setTimeout` method
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
+  setTimeout: wrap(global$1.setTimeout),
+  // `setInterval` method
+  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
+  setInterval: wrap(global$1.setInterval)
+});
+
+var wait = function wait(ms) {
+  return new Promise(function (resolve) {
+    return setTimeout(resolve, ms);
+  });
+}; // export const getQuery = (key, cached = true) => {
+//   if (!this._query || !cached) {
+//     this._query = {};
+//     //最初の?を除いた文字列を取得
+//     let query = window.location.search.substring(1);
+//     let parameters = query.split('&');
+//     for (let i = 0; i < parameters.length; i++) {
+//       let element = parameters[i].split('=');
+//       let paramName = decodeURIComponent(element[0]);
+//       let paramValue = decodeURIComponent(element[1]);
+//       this._query[paramName] = paramValue;
+//     }
+//   }
+//   return this._query[key];
+// };
+// toSvg(dom) {
+// 	return new Promise((resolve, reject) => {
+// 		domtoimage.toSvg(dom)
+// 			.then((uri) => {
+// 				// console.log('uri: ', uri);
+// 				const svgString = uri.replace("data:image/svg+xml;charset=utf-8,","");
+// 				const parser = new DOMParser();
+// 				const svg = parser.parseFromString(svgString, "image/svg+xml");
+// 				resolve(svg);
+// 			});
+// 	});
+// }
 
 var InteractiveObject = /*#__PURE__*/function (_EventDispatcher) {
   _inherits(InteractiveObject, _EventDispatcher);
@@ -3389,13 +3484,16 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
     value: function setup() {
       this._target = this.state.option.initialSlideIndex;
       this._v = this._target - 1;
-      this._length = this.state.get('numPages');
+      this._numPages = this.state.get('numPages');
       this._state = Indexer.STATE.DEFAULT;
       this.progress = 0;
       this.head = false;
       this.tail = false;
-      !this.state.option.loop && (this._target = this.constrain(this._target));
-      this.tick();
+      !this.state.option.loop && (this._target = this.constrain(this._target)); // this.tick();
+
+      var v = this._v % this._numPages + this._numPages;
+      this._i0 = Math.floor(v) % this._numPages;
+      this._i1 = this._target;
     }
   }, {
     key: "prev",
@@ -3418,10 +3516,10 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
             diff;
 
         if (d0 > 0) {
-          d1 = d0 - this._length;
+          d1 = d0 - this._numPages;
           diff = d0 > -d1 ? d1 : d0;
         } else {
-          d1 = d0 + this._length;
+          d1 = d0 + this._numPages;
           diff = -d0 > d1 ? d1 : d0;
         }
 
@@ -3453,8 +3551,8 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
   }, {
     key: "current",
     get: function get() {
-      var v = this._target % this._length + this._length;
-      return Math.round(v) % this._length;
+      var v = this._target % this._numPages + this._numPages;
+      return Math.round(v) % this._numPages;
     }
   }, {
     key: "i0",
@@ -3469,9 +3567,9 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
   }, {
     key: "constrain",
     value: function constrain(v) {
-      var ret = v < 0 ? 0 : this._length - 1 < v ? this._length - 1 : v;
+      var ret = v < 0 ? 0 : this._numPages - 1 < v ? this._numPages - 1 : v;
       this.head = ret === 0;
-      this.tail = ret === this._length - 1; // console.log(ret == 0, ret == this._length - 1);
+      this.tail = ret === this._numPages - 1; // console.log(ret == 0, ret == this._numPages - 1);
 
       return ret;
     }
@@ -3509,11 +3607,11 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
           break;
       }
 
-      var v = this._v % this._length + this._length;
+      var v = this._v % this._numPages + this._numPages;
       this.progress = v % 1;
-      this._i0 = Math.floor(v) % this._length;
+      this._i0 = Math.floor(v) % this._numPages;
 
-      var i1 = Math.ceil(v) % this._length;
+      var i1 = Math.ceil(v) % this._numPages;
 
       this._i1 = this._i0 !== i1 ? i1 : undefined;
       complete && this.dispatch('complete');
@@ -3561,7 +3659,11 @@ var Resize = /*#__PURE__*/function (_EventDispatcher) {
   }, {
     key: "_onResize",
     value: function _onResize() {
-      this.dispatch('resize');
+      console.log('_onResize');
+      this.state.setTogether('resize', {
+        width: this.view.dom.width,
+        height: this.view.dom.height
+      });
     }
   }]);
 
@@ -3658,11 +3760,10 @@ var Touch = /*#__PURE__*/function (_EventDispatcher) {
   }, {
     key: "move",
     value: function move(flag) {
-      console.log('move', flag);
       stage[flag](TouchEvent.MOVE, this._onBubble);
       stage[flag](TouchEvent.END, this._onBubble);
       this.state.set({
-        isDown: flag === 'on'
+        isDrag: flag === 'on'
       });
     }
   }]);
@@ -4869,37 +4970,6 @@ var Cloner = /*#__PURE__*/function () {
 
 var cloner = new Cloner();
 
-var slice = [].slice;
-var MSIE = /MSIE .\./.test(engineUserAgent); // <- dirty ie9- check
-
-var wrap = function (scheduler) {
-  return function (handler, timeout
-  /* , ...arguments */
-  ) {
-    var boundArgs = arguments.length > 2;
-    var args = boundArgs ? slice.call(arguments, 2) : undefined;
-    return scheduler(boundArgs ? function () {
-      // eslint-disable-next-line no-new-func -- spec requirement
-      (typeof handler == 'function' ? handler : Function(handler)).apply(this, args);
-    } : handler, timeout);
-  };
-}; // ie9- setTimeout & setInterval additional parameters fix
-// https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
-
-
-_export({
-  global: true,
-  bind: true,
-  forced: MSIE
-}, {
-  // `setTimeout` method
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
-  setTimeout: wrap(global$1.setTimeout),
-  // `setInterval` method
-  // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
-  setInterval: wrap(global$1.setInterval)
-});
-
 var MATCH = wellKnownSymbol('match'); // `IsRegExp` abstract operation
 // https://tc39.es/ecma262/#sec-isregexp
 
@@ -5285,7 +5355,7 @@ var StageInteractor = /*#__PURE__*/function () {
     key: "ready",
     value: function () {
       var _ready = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this$services, indexer, resize, tick, touch;
+        var _this$services, indexer, tick, touch, i0, i1;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -5296,26 +5366,32 @@ var StageInteractor = /*#__PURE__*/function () {
                 return Inliner.resolveFonts();
 
               case 3:
-                _this$services = this.services, indexer = _this$services.indexer, resize = _this$services.resize, tick = _this$services.tick, touch = _this$services.touch;
+                _this$services = this.services, indexer = _this$services.indexer, _this$services.resize, tick = _this$services.tick, touch = _this$services.touch;
+                console.log('StageInteractor ready', 'Font resolved');
                 indexer.setup();
-                resize.setup();
-                tick.setup(indexer);
-                tick.start();
+                tick.setup(indexer); // tick.start();
+
                 touch.start('on');
-                _context.next = 14;
+                i0 = indexer.i0, i1 = indexer.i1;
+                this.state.set({
+                  i0: i0,
+                  i1: i1
+                }); // resize.setup();
+
+                _context.next = 15;
                 break;
 
-              case 11:
-                _context.prev = 11;
+              case 12:
+                _context.prev = 12;
                 _context.t0 = _context["catch"](0);
                 console.warn('first ready rejected : ', _context.t0);
 
-              case 14:
+              case 15:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 11]]);
+        }, _callee, this, [[0, 12]]);
       }));
 
       function ready() {
@@ -5675,43 +5751,33 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
     _this.state = state;
     _this.view = view;
 
-    _this._bindMethods(['time', 'resize', 'touch']);
+    _this._bindMethods(['time', 'resize', 'drag']);
 
     return _this;
   }
 
   _createClass(StagePresenter, [{
     key: "setup",
-    value: function setup() {
-      var dom = this.view.dom;
-
-      if (this.state.option.debug == Option.Debug.DISPLAY.DOM) {
-        dom.container.classList.add('xslider-debug');
-      }
-    }
-  }, {
-    key: "time",
     value: function () {
-      var _time = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this$view, renderer, slide, i0, i1, progress, time;
-
+      var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var dom, i0, i1;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _this$view = this.view, renderer = _this$view.renderer, slide = _this$view.slide, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress'), time = this.state.get('time');
-                _context.next = 3;
-                return slide.ready(i0, i1);
+                dom = this.view.dom;
 
-              case 3:
-                slide.uniforms.progress.value = progress;
-
-                if (slide.uniforms.time) {
-                  slide.uniforms.time.value = time;
+                if (this.state.option.debug == Option.Debug.DISPLAY.DOM) {
+                  dom.container.classList.add('xslider-debug');
                 }
 
-                renderer["default"].render(i0, i1, progress);
-                renderer.gl.render(i0, i1, progress);
+                i0 = this.state.get('i0'), i1 = this.state.get('i1');
+                console.log('slide ready', i0, i1);
+                _context.next = 6;
+                return this.view.slide.ready(i0, i1);
+
+              case 6:
+                console.log('slide readied');
 
               case 7:
               case "end":
@@ -5719,6 +5785,46 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
             }
           }
         }, _callee, this);
+      }));
+
+      function setup() {
+        return _setup.apply(this, arguments);
+      }
+
+      return setup;
+    }()
+  }, {
+    key: "time",
+    value: function () {
+      var _time = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+        var _this$view, renderer, slide, i0, i1, progress, time;
+
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _this$view = this.view, renderer = _this$view.renderer, slide = _this$view.slide, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress'), time = this.state.get('time');
+                console.log('time', i0, i1);
+                _context2.next = 4;
+                return slide.ready(i0, i1);
+
+              case 4:
+                slide.uniforms.progress.value = progress;
+
+                if (slide.uniforms.time) {
+                  slide.uniforms.time.value = time;
+                }
+
+                renderer["default"].render(i0, i1, progress);
+                renderer.gl.render();
+                console.log('complete time');
+
+              case 9:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
       }));
 
       function time() {
@@ -5730,35 +5836,31 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
   }, {
     key: "resize",
     value: function () {
-      var _resize = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var _this$view2, renderer, slide, dom, width, height, i0, i1, progress;
+      var _resize = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+        var _this$view2, renderer, slide, dom, width, height;
 
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
-                _this$view2 = this.view, renderer = _this$view2.renderer, slide = _this$view2.slide, dom = _this$view2.dom, width = dom.width, height = dom.height, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress');
-                this.state.set({
-                  width: width,
-                  height: height
-                });
+                _this$view2 = this.view, renderer = _this$view2.renderer, slide = _this$view2.slide, dom = _this$view2.dom, width = dom.width, height = dom.height;
                 dom.canvas.setAttribute('width', width);
                 dom.canvas.setAttribute('height', height);
                 renderer["default"].resize(width, height);
                 renderer.gl.resize(width, height);
-                _context2.next = 8;
+                _context3.next = 7;
                 return slide.resize(width, height);
 
-              case 8:
-                renderer["default"].render(i0, i1, progress);
-                renderer.gl.render(i0, i1, progress);
+              case 7:
+                // await wait(2000);
+                renderer.gl.render();
 
-              case 10:
+              case 8:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
       function resize() {
@@ -5768,12 +5870,11 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
       return resize;
     }()
   }, {
-    key: "touch",
-    value: function touch() {
-      var isDown = this.state.get('isDown');
-      console.log('touch', isDown);
+    key: "drag",
+    value: function drag() {
+      var isDrag = this.state.get('isDrag');
       var dom = this.view.dom;
-      dom.touchDisabled = isDown;
+      dom.slideTouchDisabled = isDrag;
     }
   }]);
 
@@ -5810,7 +5911,7 @@ var Controller = /*#__PURE__*/function () {
       var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var _this$view$pager, _this$view$prev, _this$view$next;
 
-        var _this$services, autoplay, indexer, resize, touch;
+        var _this$services, autoplay, indexer, tick, touch, resize;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -5820,10 +5921,17 @@ var Controller = /*#__PURE__*/function () {
                 return this.usecases.stage.ready();
 
               case 2:
-                _this$services = this.services, autoplay = _this$services.autoplay, indexer = _this$services.indexer, resize = _this$services.resize, touch = _this$services.touch;
+                _context.next = 4;
+                return this.presenters.stage.setup();
+
+              case 4:
+                _this$services = this.services, autoplay = _this$services.autoplay, indexer = _this$services.indexer, tick = _this$services.tick, touch = _this$services.touch, resize = _this$services.resize; // await wait(2000);
+
+                resize.setup();
+                this.state.on('resize', this.presenters.stage.resize);
+                tick.start();
                 autoplay.on(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
                 indexer.on('complete', this.usecases.slide.complete);
-                resize.on('resize', this.presenters.stage.resize);
                 touch.on(TouchEvent.START, this.usecases.touch.start);
                 touch.on(TouchEvent.MOVE, this.usecases.touch.move);
                 touch.on(TouchEvent.END, this.usecases.touch.end);
@@ -5834,9 +5942,9 @@ var Controller = /*#__PURE__*/function () {
                 this.state.on('head', this.presenters.index.head);
                 this.state.on('tail', this.presenters.index.tail);
                 this.state.on('time', this.presenters.stage.time);
-                this.state.on('isDown', this.presenters.stage.touch);
+                this.state.on('isDrag', this.presenters.stage.drag);
 
-              case 17:
+              case 21:
               case "end":
                 return _context.stop();
             }
@@ -5859,11 +5967,9 @@ var Controller = /*#__PURE__*/function () {
       var _this$services2 = this.services,
           autoplay = _this$services2.autoplay,
           indexer = _this$services2.indexer,
-          resize = _this$services2.resize,
           touch = _this$services2.touch;
       autoplay.off(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
       indexer.off('complete', this.usecases.slide.complete);
-      resize.on('resize', this.presenters.stage.resize);
       touch.off(TouchEvent.MOVE, this.usecases.touch.move);
       touch.off(TouchEvent.END, this.usecases.touch.end);
       (_this$view$pager2 = this.view.pager) === null || _this$view$pager2 === void 0 ? void 0 : _this$view$pager2.off('index', this.usecases.slide.index);
@@ -5873,7 +5979,8 @@ var Controller = /*#__PURE__*/function () {
       this.state.off('head', this.presenters.index.head);
       this.state.off('tail', this.presenters.index.tail);
       this.state.off('time', this.presenters.stage.time);
-      this.state.off('isDown', this.presenters.stage.touch);
+      this.state.off('resize', this.presenters.stage.resize);
+      this.state.off('isDrag', this.presenters.stage.drag);
     }
   }]);
 
@@ -5902,7 +6009,7 @@ var State = /*#__PURE__*/function (_EventDispatcher) {
       tail: false,
       time: 0,
       numPages: 0,
-      isDown: false
+      isDrag: false
     });
 
     return _this;
@@ -6058,6 +6165,60 @@ var Pager = /*#__PURE__*/function (_EventDispatcher) {
   return Pager;
 }(EventDispatcher);
 
+var IS_CONCAT_SPREADABLE = wellKnownSymbol('isConcatSpreadable');
+var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
+var MAXIMUM_ALLOWED_INDEX_EXCEEDED = 'Maximum allowed index exceeded'; // We can't use this feature detection in V8 since it causes
+// deoptimization and serious performance degradation
+// https://github.com/zloirock/core-js/issues/679
+
+var IS_CONCAT_SPREADABLE_SUPPORT = engineV8Version >= 51 || !fails(function () {
+  var array = [];
+  array[IS_CONCAT_SPREADABLE] = false;
+  return array.concat()[0] !== array;
+});
+var SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('concat');
+
+var isConcatSpreadable = function (O) {
+  if (!isObject(O)) return false;
+  var spreadable = O[IS_CONCAT_SPREADABLE];
+  return spreadable !== undefined ? !!spreadable : isArray(O);
+};
+
+var FORCED$4 = !IS_CONCAT_SPREADABLE_SUPPORT || !SPECIES_SUPPORT; // `Array.prototype.concat` method
+// https://tc39.es/ecma262/#sec-array.prototype.concat
+// with adding support of @@isConcatSpreadable and @@species
+
+_export({
+  target: 'Array',
+  proto: true,
+  forced: FORCED$4
+}, {
+  // eslint-disable-next-line no-unused-vars -- required for `.length`
+  concat: function concat(arg) {
+    var O = toObject(this);
+    var A = arraySpeciesCreate(O, 0);
+    var n = 0;
+    var i, k, length, len, E;
+
+    for (i = -1, length = arguments.length; i < length; i++) {
+      E = i === -1 ? O : arguments[i];
+
+      if (isConcatSpreadable(E)) {
+        len = toLength(E.length);
+        if (n + len > MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
+
+        for (k = 0; k < len; k++, n++) if (k in E) createProperty(A, n, E[k]);
+      } else {
+        if (n >= MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);
+        createProperty(A, n++, E);
+      }
+    }
+
+    A.length = n;
+    return A;
+  }
+});
+
 /**
  * It's based on {@link https://github.com/tsayen/dom-to-image dom-to-image by Anatolii Saienko}.
  */
@@ -6065,24 +6226,8 @@ var Pager = /*#__PURE__*/function (_EventDispatcher) {
 var converter = {
   parser: new DOMParser(),
   convert: function convert(node, width, height) {
-    /*
-    const svgString = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="`+width+`" height="`+height+`">
-    <foreignObject x="0" y="0" width="100%" height="100%">
-    <body xmlns="http://www.w3.org/1999/xhtml" style="margin:0;">
-    <style>`+Inliner.inlinedFontString+`</style>
-    </body>
-    </foreignObject>
-    </svg>
-    `
-    // console.log('--')
-    // console.log(Inliner.inlinedFontString)
-    const svg = this.parser.parseFromString(svgString, "text/xml");
-    let o = svg.getElementsByTagName('body')[0];
-    o.appendChild(node);
-    */
     node.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
-    var svgString = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + width + "\" height=\"" + height + "\">\n\t\t<foreignObject x=\"0\" y=\"0\" width=\"100%\" height=\"100%\">\n\t\t</foreignObject>\n\t\t</svg>";
+    var svgString = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"".concat(width, "\" height=\"").concat(height, "\">\n        <foreignObject x=\"0\" y=\"0\" width=\"100%\" height=\"100%\"></foreignObject>\n      </svg>");
     var svg = this.parser.parseFromString(svgString, 'text/xml'),
         styleNode = document.createElement('style');
     styleNode.appendChild(document.createTextNode(Inliner.inlinedFontString));
@@ -6127,18 +6272,27 @@ var Page = /*#__PURE__*/function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                console.log('ready');
+
                 if (!(!this.isReadied && this.hasTexture)) {
-                  _context.next = 4;
+                  _context.next = 6;
                   break;
                 }
 
-                _context.next = 3;
+                _context.next = 4;
                 return Inliner.inlineNode(this.layer.gl);
 
-              case 3:
-                this.inlinedNode = _context.sent;
-
               case 4:
+                this.inlinedNode = _context.sent;
+                // // Utils.toSvg(this.layer.gl)
+                // const svg = await converter.from(this.layer.gl)
+                // this.svg = svg;
+                // this.layer.gl.classList.remove("xslider-capture");
+                // this.needsResize = true;
+                // // document.querySelector('#xslider').appendChild(this.svg.documentElement.cloneNode(true));
+                console.log('complete ready'); // await wait(1000);
+
+              case 6:
               case "end":
                 return _context.stop();
             }
@@ -6153,59 +6307,32 @@ var Page = /*#__PURE__*/function () {
       return ready;
     }()
   }, {
-    key: "loadSvg",
-    value: function loadSvg(w, h) {
-      this.svg = converter.convert(this.inlinedNode, w, h);
-      var string = new XMLSerializer().serializeToString(this.svg); // console.log('string', string)
-      // string = string.replace(/#/g, '%23').replace(/\n/g, '%0A')
-
-      var uri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(string); // if (this.debug == Option.Debug.DISPLAY.SVG) {
-      //   if (this._svg0 === undefined) {
-      //     this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
-      //   } else {
-      //     const node = this.svg.childNodes[0];
-      //     this.element.replaceChild(node, this._svg0);
-      //     this._svg0 = node;
-      //   }
-      // }
-
-      return net.loadImage(this.image, uri);
-    }
-  }, {
-    key: "resize",
+    key: "_loadSvg",
     value: function () {
-      var _resize = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(w, h) {
-        var c;
+      var _loadSvg2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(w, h) {
+        var string, uri;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!this.needsResize) {
-                  _context2.next = 13;
-                  break;
-                }
+                this.svg = converter.convert(this.inlinedNode, w, h);
+                string = new XMLSerializer().serializeToString(this.svg); // console.log('string', string);
+                // string = string.replace(/#/g, '%23').replace(/\n/g, '%0A')
 
-                this.needsResize = false;
-                this.canvas.width = w;
-                this.canvas.height = h;
+                uri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(string); // if (this.debug == Option.Debug.DISPLAY.SVG) {
+                // if (this._svg0 === undefined) {
+                //   this._svg0 = this.element.insertBefore(this.svg.childNodes[0], this.layer.gl);
+                // } else {
+                //   const node = this.svg.childNodes[0];
+                //   this.element.replaceChild(node, this._svg0);
+                //   this._svg0 = node;
+                // }
+                // }
 
-                if (!this.hasTexture) {
-                  _context2.next = 13;
-                  break;
-                }
+                _context2.next = 5;
+                return net.loadImage(this.image, uri);
 
-                this.layer.gl.classList.add('xslider-capture');
-                cloner.cloneStyle(this.layer.gl, this.inlinedNode, Page.EXCLUDES);
-                this.layer.gl.classList.remove('xslider-capture');
-                _context2.next = 10;
-                return this.loadSvg(w, h);
-
-              case 10:
-                c = this.canvas.getContext('2d');
-                c.clearRect(0, 0, w, h);
-                c.drawImage(this.image, 0, 0, w, h); // console.log(this.image, w, h);
-
-              case 13:
+              case 5:
               case "end":
                 return _context2.stop();
             }
@@ -6213,7 +6340,56 @@ var Page = /*#__PURE__*/function () {
         }, _callee2, this);
       }));
 
-      function resize(_x, _x2) {
+      function _loadSvg(_x, _x2) {
+        return _loadSvg2.apply(this, arguments);
+      }
+
+      return _loadSvg;
+    }()
+  }, {
+    key: "resize",
+    value: function () {
+      var _resize = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(w, h) {
+        var ctx;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                console.log('resize', this.element);
+
+                if (!this.hasTexture) {
+                  _context3.next = 14;
+                  break;
+                }
+
+                if (!this.needsResize) {
+                  _context3.next = 14;
+                  break;
+                }
+
+                this.needsResize = false;
+                this.canvas.width = w;
+                this.canvas.height = h;
+                this.layer.gl.classList.add('xslider-capture');
+                cloner.cloneStyle(this.layer.gl, this.inlinedNode, Page.EXCLUDES);
+                this.layer.gl.classList.remove('xslider-capture');
+                _context3.next = 11;
+                return this._loadSvg(w, h);
+
+              case 11:
+                ctx = this.canvas.getContext('2d');
+                ctx.clearRect(0, 0, w, h);
+                ctx.drawImage(this.image, 0, 0, w, h);
+
+              case 14:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function resize(_x3, _x4) {
         return _resize.apply(this, arguments);
       }
 
@@ -6237,6 +6413,12 @@ var Page = /*#__PURE__*/function () {
     get: function get() {
       return this.layer.gl !== undefined;
     }
+  }, {
+    key: "active",
+    set: function set(v) {
+      var method = v ? 'add' : 'remove';
+      this.element.classList[method]('xslider-page-active');
+    }
   }]);
 
   return Page;
@@ -6254,7 +6436,7 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
 
     _this = _super.call(this);
     _this.list = [];
-    _this.width = _this.height = -1;
+    _this.width = _this.height = undefined;
 
     _this._bindMethods(['_onChangePage']);
 
@@ -6280,12 +6462,13 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
   }, {
     key: "ready",
     value: function () {
-      var _ready2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(i0, i1) {
+      var _ready2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(i0, i1) {
         var page0, page1, arr;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
+                console.log('ready');
                 page0 = this.list[i0];
                 page1 = undefined;
                 arr = [page0.ready()];
@@ -6295,24 +6478,24 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
                   arr.push(page1.ready());
                 }
 
-                _context3.next = 6;
+                _context4.next = 7;
                 return Promise.all(arr);
 
-              case 6:
+              case 7:
                 this.set({
                   page0: page0,
                   page1: page1
                 });
 
-              case 7:
+              case 8:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
-      function ready(_x3, _x4) {
+      function ready(_x5, _x6) {
         return _ready2.apply(this, arguments);
       }
 
@@ -6328,72 +6511,44 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
       this.off('page1', this._onChangePage);
       var page0 = this.get('page0');
       var page1 = this.get('page1');
-      page0.element.classList.remove('xslider-page-active');
-      page1 && page1.element.classList.remove('xslider-page-active');
+      page0.active = false;
+      page1 && (page1.active = false);
     }
   }, {
     key: "resize",
-    value: function resize(w, h) {
-      this.width = w;
-      this.height = h;
-
-      if (this.mesh) {
-        this.uniforms.resolution.value.set(w, h);
-      }
-
-      this.list.forEach(function (page) {
-        page.needsResize = true;
-      });
-      return Promise.all([this.updatePage(0), this.updatePage(1)]);
-    }
-  }, {
-    key: "updatePage",
     value: function () {
-      var _updatePage = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(pageIndex) {
-        var page, texture;
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      var _resize2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(w, h) {
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
-                if (!(this.width == -1 && this.height == -1)) {
-                  _context4.next = 2;
-                  break;
+                console.log('resize', w, h);
+                this.width = w;
+                this.height = h;
+
+                if (this.mesh) {
+                  this.uniforms.resolution.value.set(w, h);
                 }
 
-                return _context4.abrupt("return");
-
-              case 2:
-                page = this.get('page' + pageIndex);
-
-                if (!page) {
-                  _context4.next = 7;
-                  break;
-                }
-
-                page.element.classList.add('xslider-page-active');
-                _context4.next = 7;
-                return page.resize(this.width, this.height);
+                this.list.forEach(function (page) {
+                  page.needsResize = true;
+                });
+                _context5.next = 7;
+                return Promise.all([this._updatePage(0), this._updatePage(1)]);
 
               case 7:
-                if (this.uniforms) {
-                  texture = this.uniforms['texture' + pageIndex].value;
-                  texture.image = page ? page.canvas : undefined;
-                  texture.needsUpdate = true;
-                }
-
-              case 8:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
 
-      function updatePage(_x5) {
-        return _updatePage.apply(this, arguments);
+      function resize(_x7, _x8) {
+        return _resize2.apply(this, arguments);
       }
 
-      return updatePage;
+      return resize;
     }()
   }, {
     key: "_onChangePage",
@@ -6402,20 +6557,76 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
 
       switch (e.type) {
         case 'page0':
-          this.updatePage(0);
+          this._updatePage(0);
+
           removeOld = e.value0 !== undefined;
           break;
 
         case 'page1':
-          this.updatePage(1);
+          this._updatePage(1);
+
           removeOld = e.value0 !== undefined && e.value0 !== this.get('page0');
           break;
       }
 
       if (removeOld) {
-        e.value0.element.classList.remove('xslider-page-active');
+        e.value0.active = false;
       }
     }
+  }, {
+    key: "_updatePage",
+    value: function () {
+      var _updatePage2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(pageIndex) {
+        var page, texture;
+        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
+                if (!(this.width === undefined && this.height === undefined)) {
+                  _context6.next = 2;
+                  break;
+                }
+
+                return _context6.abrupt("return");
+
+              case 2:
+                console.log('_updatePage', pageIndex);
+                page = this.get('page' + pageIndex);
+
+                if (!page) {
+                  _context6.next = 10;
+                  break;
+                }
+
+                page.active = true;
+                _context6.next = 8;
+                return wait(100);
+
+              case 8:
+                _context6.next = 10;
+                return page.resize(this.width, this.height);
+
+              case 10:
+                if (this.uniforms) {
+                  texture = this.uniforms['texture' + pageIndex].value;
+                  texture.image = page ? page.canvas : undefined;
+                  texture.needsUpdate = true;
+                }
+
+              case 11:
+              case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6, this);
+      }));
+
+      function _updatePage(_x9) {
+        return _updatePage2.apply(this, arguments);
+      }
+
+      return _updatePage;
+    }()
   }]);
 
   return Slide;
@@ -6456,15 +6667,10 @@ var Dom = /*#__PURE__*/function () {
       this.container.removeChild(this.canvas);
     }
   }, {
-    key: "touchDisabled",
+    key: "slideTouchDisabled",
     set: function set(v) {
-      console.log('touchDisabled', v);
-
-      if (v) {
-        this.list.classList.add('xslider-disabled');
-      } else {
-        this.list.classList.remove('xslider-disabled');
-      }
+      var method = v ? 'add' : 'remove';
+      this.list.classList[method]('xslider-disabled');
     }
   }]);
 
@@ -9079,7 +9285,7 @@ var XRenderer = /*#__PURE__*/function (_BaseRenderer) {
     }
   }, {
     key: "render",
-    value: function render(i0, i1, progress) {
+    value: function render() {
       GLGraphics.clear(this.scene.context);
       GLGraphics.renderModel(this.model);
     }
@@ -9173,37 +9379,6 @@ var View = /*#__PURE__*/function (_EventDispatcher) {
       this.renderer["default"].dispose();
       this.dom.dispose();
     }
-  }, {
-    key: "resize",
-    value: function () {
-      var _resize = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var w, h;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                w = this.dom.width, h = this.dom.height;
-                this.dom.canvas.setAttribute('width', w);
-                this.dom.canvas.setAttribute('height', h);
-                this.renderer["default"].resize(w, h);
-                this.renderer.gl.resize(w, h);
-                _context.next = 7;
-                return this.slide.resize(w, h);
-
-              case 7:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function resize() {
-        return _resize.apply(this, arguments);
-      }
-
-      return resize;
-    }()
   }]);
 
   return View;

@@ -1,5 +1,6 @@
 import { EventDispatcher } from '../core/EventDispatcher';
 import { Option } from '../domain/Option';
+import { wait } from '../components/Utils';
 
 export class StagePresenter extends EventDispatcher {
   constructor(state, view) {
@@ -10,12 +11,17 @@ export class StagePresenter extends EventDispatcher {
     this._bindMethods(['time', 'resize', 'drag']);
   }
 
-  setup() {
-    const { dom } = this.view;
+  async setup() {
+    const { dom, slide } = this.view;
 
     if (this.state.option.debug == Option.Debug.DISPLAY.DOM) {
       dom.container.classList.add('xslider-debug');
     }
+
+    const i0 = this.state.get('i0'),
+      i1 = this.state.get('i1');
+
+    await slide.ready(i0, i1);
   }
 
   async time() {

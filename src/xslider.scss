@@ -24,7 +24,7 @@ $color: #00ff7a;
   }
 
   &-page {
-    display: none;
+    visibility: hidden;
     overflow: hidden;
     position: absolute;
     top: 0;
@@ -33,7 +33,7 @@ $color: #00ff7a;
     height: 100%;
 
     &-active {
-      display: block;
+      visibility: visible;
     }
 
     > img,
