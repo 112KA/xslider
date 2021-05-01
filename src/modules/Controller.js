@@ -31,15 +31,10 @@ export class Controller {
   }
 
   async setup() {
-    //indexser setup
-    //slide setup
-    //resize
-    await this.usecases.stage.ready();
+    await this.usecases.stage.setup();
     await this.presenters.stage.setup();
 
-    const { autoplay, indexer, tick, touch, resize } = this.services;
-    resize.setup();
-    tick.start();
+    const { autoplay, indexer, touch } = this.services;
     autoplay.on(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
     indexer.on('complete', this.usecases.slide.complete);
     touch.on(TouchEvent.START, this.usecases.touch.start);
@@ -56,6 +51,8 @@ export class Controller {
     this.state.on('tail', this.presenters.index.tail);
     this.state.on('time', this.presenters.stage.time);
     this.state.on('isDrag', this.presenters.stage.drag);
+
+    this.usecases.stage.start();
   }
 
   dispose() {

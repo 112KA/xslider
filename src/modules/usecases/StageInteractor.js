@@ -7,22 +7,26 @@ export class StageInteractor {
     this.services = services;
   }
 
-  async ready() {
+  async setup() {
     try {
       await Inliner.resolveFonts();
 
-      const { indexer, resize, tick, touch } = this.services;
+      const { indexer, tick } = this.services;
 
       indexer.setup();
-      tick.setup(indexer);
-      // tick.start();
-      touch.start('on');
       const { i0, i1 } = indexer;
       this.state.set({ i0, i1 });
-      // resize.setup();
+      tick.setup(indexer);
     } catch (err) {
       console.warn('first ready rejected : ', err);
     }
+  }
+
+  start() {
+    const { resize, tick, touch } = this.services;
+    touch.start('on');
+    tick.start();
+    resize.setup();
   }
 
   dispose() {
