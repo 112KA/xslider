@@ -50,7 +50,7 @@ A minimum sample is [Here](https://112ka.github.io/xslider/samples/base/).
 
 ```html
 <div class="xslider">
-  <div class="xslider-page">
+  <div class="xslider-slide">
     <div class="xslider-page">
       <div class="xslider-layer-gl">Elements as texture</div>
       <div class="xslider-layer-ui">Elements as DOM</div>
