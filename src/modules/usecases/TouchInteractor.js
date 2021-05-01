@@ -22,11 +22,13 @@ export class TouchInteractor extends EventDispatcher {
     const dx = (e.clientX - e.clientX0) / this.state.get('width');
     const { indexer } = this.services;
     indexer.move(-dx);
+    this.state.set({ isDrag: true });
   }
 
   end() {
     const { indexer, touch } = this.services;
     indexer.up();
     touch.move('off');
+    this.state.set({ isDrag: false });
   }
 }

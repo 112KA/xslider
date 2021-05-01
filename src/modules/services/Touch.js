@@ -22,6 +22,5 @@ export class Touch extends EventDispatcher {
   move(flag) {
     stage[flag](TouchEvent.MOVE, this._onBubble);
     stage[flag](TouchEvent.END, this._onBubble);
-    this.state.set({ isDrag: flag === 'on' });
   }
 }
