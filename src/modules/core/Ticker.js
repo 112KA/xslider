@@ -1,15 +1,11 @@
 import { EventDispatcher } from '../core/EventDispatcher';
 
-export const Ticker = class extends EventDispatcher {
+export class Ticker extends EventDispatcher {
   constructor() {
     super();
 
     this.fps = 30;
 
-    this._defineFunctions();
-  }
-
-  _defineFunctions() {
     const prefixes = ['ms', 'moz', 'webkit', 'o'];
     let i = prefixes.length;
 
@@ -20,23 +16,25 @@ export const Ticker = class extends EventDispatcher {
         window[prefixes[i] + 'CancelRequestAnimationFrame'];
     }
 
-    this._tickHandler = () => {
-      this._requestId = window.requestAnimationFrame(this._tickHandler);
+    this._bindMethods(['_tickHandler']);
+  }
 
-      this._lastMs = this.time;
+  _tickHandler() {
+    this._requestId = window.requestAnimationFrame(this._tickHandler);
 
-      let overlap = this._lastMs - this._nextMs;
+    this._lastMs = this.time;
 
-      if (overlap >= 0) {
-        const t0 = this._nextMs;
-        this._nextMs += overlap + (overlap >= this._gap ? 1 : this._gap - overlap);
-        this.dispatch('tick', {
-          type: 'tick',
-          time: this._lastMs - this._startMs,
-          dt: this._nextMs - t0,
-        });
-      }
-    };
+    let overlap = this._lastMs - this._nextMs;
+
+    if (overlap >= 0) {
+      const t0 = this._nextMs;
+      this._nextMs += overlap + (overlap >= this._gap ? 1 : this._gap - overlap);
+      this.dispatch('tick', {
+        type: 'tick',
+        time: this._lastMs - this._startMs,
+        dt: this._nextMs - t0,
+      });
+    }
   }
 
   get fps() {
@@ -61,16 +59,4 @@ export const Ticker = class extends EventDispatcher {
   stop() {
     window.cancelAnimationFrame(this._requestId);
   }
-};
-
-export const TweenMaxTicker = class extends Ticker {
-  constructor() {
-    super();
-  }
-
-  setFps() {}
-
-  start() {}
-
-  stop() {}
-};
+}

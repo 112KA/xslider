@@ -11,9 +11,11 @@ export class SlideInteractor extends EventDispatcher {
   }
 
   index(e) {
-    const { indexer, tick } = this.services;
-    indexer.to(e.value);
+    const { autoplay, indexer, tick, touch } = this.services;
     tick.start();
+    touch.start('off');
+    autoplay.stop();
+    indexer.to(e.value);
   }
 
   next(e) {

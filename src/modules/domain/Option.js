@@ -11,7 +11,7 @@ export const Option = {
   },
   renderer: undefined,
   debug: false,
-  easing: 0.15,
+  duration: 1000,
 
   transition: BaseTransition,
 

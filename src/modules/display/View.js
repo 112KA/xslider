@@ -60,18 +60,9 @@ export class View extends EventDispatcher {
   }
 
   dispose() {
-    if (this.pager) {
-      this.pager.off('index', this._onBubble);
-      this.pager.dispose();
-    }
-
-    if (this.prev) {
-      this.prev.dispose();
-    }
-
-    if (this.next) {
-      this.next.dispose();
-    }
+    this.pager && this.pager.dispose();
+    this.prev && this.prev.dispose();
+    this.next && this.next.dispose();
 
     this.slide.dispose();
 

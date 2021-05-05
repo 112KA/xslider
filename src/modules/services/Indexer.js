@@ -1,11 +1,13 @@
 import { EventDispatcher } from '../core/EventDispatcher';
 import { clamp } from '../components/Utils';
+import { Tween } from '../components/Tween';
 
 export class Indexer extends EventDispatcher {
   constructor(state) {
     super();
 
     this.state = state;
+    this._tween = new Tween();
   }
   setup() {
     this._target = this.state.option.initialSlideIndex;
@@ -32,12 +34,16 @@ export class Indexer extends EventDispatcher {
     this._target--;
 
     !this.state.option.loop && (this._target = this.constrain(this._target));
+
+    this._tween.to(this, this.state.option.duration, { _v: this._target });
   }
 
   next() {
     this._target++;
 
     !this.state.option.loop && (this._target = this.constrain(this._target));
+
+    this._tween.to(this, this.state.option.duration, { _v: this._target });
   }
 
   to(index) {
@@ -58,6 +64,8 @@ export class Indexer extends EventDispatcher {
     } else {
       this._target = index;
     }
+
+    this._tween.to(this, this.state.option.duration, { _v: this._target });
   }
 
   down() {
@@ -122,13 +130,17 @@ export class Indexer extends EventDispatcher {
         break;
 
       default:
-        !this.state.option.loop && (this._target = this.constrain(this._target));
+        if (this._tween.running) {
+          complete = this._tween.tick();
+        } else {
+          !this.state.option.loop && (this._target = this.constrain(this._target));
 
-        this._v += (this._target - this._v) * this.state.option.easing;
+          this._v += (this._target - this._v) * 0.15;
 
-        if (Math.abs(this._target - this._v) < 0.001) {
-          this._v = this._target;
-          complete = true;
+          if (Math.abs(this._target - this._v) < 0.001) {
+            this._v = this._target;
+            complete = true;
+          }
         }
         break;
     }

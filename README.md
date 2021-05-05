@@ -93,14 +93,14 @@ new XSlider(selector, options);
 
 #### options
 
-| Name              | Type              | Default                     | Description                                                                           |
-| ----------------- | ----------------- | --------------------------- | ------------------------------------------------------------------------------------- |
-| transition        | Object            | Xslider.BaseTransition      | Transition effect.                                                                    |
-| easing            | Number            | 0.15                        | Easing coefficient of transition. <br>Adjust the transition time with this parameter. |
-| initialSlideIndex | Number            | 0                           | Index number of initial slide.                                                        |
-| loop              | Boolean           | true                        | Loop slide flag.                                                                      |
-| touchMove         | Boolean or Object | { <br> throwable:true <br>} | Object with touch parameters.                                                         |
-| autoplay          | Boolean or Object | false                       | Object with autoplay parameters.<br> { <br>delay:3000 <br> }                          |
+| Name              | Type              | Default                     | Description                                                  |
+| ----------------- | ----------------- | --------------------------- | ------------------------------------------------------------ |
+| transition        | Object            | Xslider.BaseTransition      | Transition effect.                                           |
+| duration          | Number            | 1000                        | Duration of transition between pages                         |
+| initialSlideIndex | Number            | 0                           | Index number of initial page.                                |
+| loop              | Boolean           | true                        | Loop page flag.                                              |
+| touchMove         | Boolean or Object | { <br> throwable:true <br>} | Object with touch parameters.                                |
+| autoplay          | Boolean or Object | false                       | Object with autoplay parameters.<br> { <br>delay:3000 <br> } |
 
 ## Browser Supports
 

@@ -23,7 +23,7 @@ export class StageInteractor {
   }
 
   start() {
-    const { resize, tick, touch } = this.services;
+    const { indexer, resize, tick, touch } = this.services;
     touch.start('on');
     tick.start();
     resize.setup();
