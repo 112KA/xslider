@@ -1,4 +1,4 @@
-var XSLIDER_VERSION = "1.1.0"
+var XSLIDER_VERSION = "1.1.3"
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -3043,37 +3043,12 @@ _export({
   setInterval: wrap(global$1.setInterval)
 });
 
-var wait = function wait(ms) {
-  return new Promise(function (resolve) {
-    return setTimeout(resolve, ms);
-  });
-}; // export const getQuery = (key, cached = true) => {
-//   if (!this._query || !cached) {
-//     this._query = {};
-//     //最初の?を除いた文字列を取得
-//     let query = window.location.search.substring(1);
-//     let parameters = query.split('&');
-//     for (let i = 0; i < parameters.length; i++) {
-//       let element = parameters[i].split('=');
-//       let paramName = decodeURIComponent(element[0]);
-//       let paramValue = decodeURIComponent(element[1]);
-//       this._query[paramName] = paramValue;
-//     }
-//   }
-//   return this._query[key];
-// };
-// toSvg(dom) {
-// 	return new Promise((resolve, reject) => {
-// 		domtoimage.toSvg(dom)
-// 			.then((uri) => {
-// 				// console.log('uri: ', uri);
-// 				const svgString = uri.replace("data:image/svg+xml;charset=utf-8,","");
-// 				const parser = new DOMParser();
-// 				const svg = parser.parseFromString(svgString, "image/svg+xml");
-// 				resolve(svg);
-// 			});
-// 	});
-// }
+var clamp = function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+};
+var expoOut = function expoOut(t) {
+  return 1 - Math.exp(-6.931471805599453 * t);
+};
 
 var InteractiveObject = /*#__PURE__*/function (_EventDispatcher) {
   _inherits(InteractiveObject, _EventDispatcher);
@@ -3252,41 +3227,35 @@ var Ticker = /*#__PURE__*/function (_EventDispatcher) {
 
     _this = _super.call(this);
     _this.fps = 30;
+    var prefixes = ['ms', 'moz', 'webkit', 'o'];
+    var i = prefixes.length;
 
-    _this._defineFunctions();
+    while (--i > -1 && !window.requestAnimationFrame) {
+      window.requestAnimationFrame = window[prefixes[i] + 'RequestAnimationFrame'];
+      window.cancelAnimationFrame = window[prefixes[i] + 'CancelAnimationFrame'] || window[prefixes[i] + 'CancelRequestAnimationFrame'];
+    }
+
+    _this._bindMethods(['_tickHandler']);
 
     return _this;
   }
 
   _createClass(Ticker, [{
-    key: "_defineFunctions",
-    value: function _defineFunctions() {
-      var _this2 = this;
+    key: "_tickHandler",
+    value: function _tickHandler() {
+      this._requestId = window.requestAnimationFrame(this._tickHandler);
+      this._lastMs = this.time;
+      var overlap = this._lastMs - this._nextMs;
 
-      var prefixes = ['ms', 'moz', 'webkit', 'o'];
-      var i = prefixes.length;
-
-      while (--i > -1 && !window.requestAnimationFrame) {
-        window.requestAnimationFrame = window[prefixes[i] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[prefixes[i] + 'CancelAnimationFrame'] || window[prefixes[i] + 'CancelRequestAnimationFrame'];
+      if (overlap >= 0) {
+        var t0 = this._nextMs;
+        this._nextMs += overlap + (overlap >= this._gap ? 1 : this._gap - overlap);
+        this.dispatch('tick', {
+          type: 'tick',
+          time: this._lastMs - this._startMs,
+          dt: this._nextMs - t0
+        });
       }
-
-      this._tickHandler = function () {
-        _this2._requestId = window.requestAnimationFrame(_this2._tickHandler);
-        _this2._lastMs = _this2.time;
-        var overlap = _this2._lastMs - _this2._nextMs;
-
-        if (overlap >= 0) {
-          var t0 = _this2._nextMs;
-          _this2._nextMs += overlap + (overlap >= _this2._gap ? 1 : _this2._gap - overlap);
-
-          _this2.dispatch('tick', {
-            type: 'tick',
-            time: _this2._lastMs - _this2._startMs,
-            dt: _this2._nextMs - t0
-          });
-        }
-      };
     }
   }, {
     key: "fps",
@@ -3458,6 +3427,95 @@ var AutoPlay = /*#__PURE__*/function (_EventDispatcher) {
   return AutoPlay;
 }(EventDispatcher);
 
+var FAILS_ON_PRIMITIVES$1 = fails(function () {
+  objectKeys(1);
+}); // `Object.keys` method
+// https://tc39.es/ecma262/#sec-object.keys
+
+_export({
+  target: 'Object',
+  stat: true,
+  forced: FAILS_ON_PRIMITIVES$1
+}, {
+  keys: function keys(it) {
+    return objectKeys(toObject(it));
+  }
+});
+
+var TweenProperty = /*#__PURE__*/function () {
+  function TweenProperty(targetObject, key, value) {
+    _classCallCheck(this, TweenProperty);
+
+    this.targetObject = targetObject;
+    this.key = key;
+    this.startValue = targetObject[key];
+    this.diff = value - this.startValue;
+  }
+
+  _createClass(TweenProperty, [{
+    key: "update",
+    value: function update(t) {
+      this.targetObject[this.key] = this.startValue + this.diff * expoOut(t);
+    }
+  }, {
+    key: "complete",
+    value: function complete() {
+      this.targetObject[this.key] = this.startValue + this.diff;
+    }
+  }]);
+
+  return TweenProperty;
+}();
+
+var Tween = /*#__PURE__*/function () {
+  function Tween() {
+    _classCallCheck(this, Tween);
+  }
+
+  _createClass(Tween, [{
+    key: "to",
+    value: function to(targetObject, duration, props) {
+      var _this = this;
+
+      this.running = true;
+      this._duration = duration;
+      this._startMs = this.time;
+      this._props = [];
+      Object.keys(props).forEach(function (key) {
+        _this._props.push(new TweenProperty(targetObject, key, props[key]));
+      });
+    }
+  }, {
+    key: "tick",
+    value: function tick() {
+      this._time = this.time - this._startMs;
+      var t = this._time / this._duration;
+
+      if (t < 1) {
+        this._props.forEach(function (p) {
+          return p.update(t);
+        });
+      } else {
+        this._props.forEach(function (p) {
+          return p.complete();
+        });
+
+        this.running = false;
+        return true;
+      }
+
+      return false;
+    }
+  }, {
+    key: "time",
+    get: function get() {
+      return Date.now() || new Date().getTime();
+    }
+  }]);
+
+  return Tween;
+}();
+
 var Indexer = /*#__PURE__*/function (_EventDispatcher) {
   _inherits(Indexer, _EventDispatcher);
 
@@ -3470,6 +3528,7 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
 
     _this = _super.call(this);
     _this.state = state;
+    _this._tween = new Tween();
     return _this;
   }
 
@@ -3494,12 +3553,20 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
     value: function prev() {
       this._target--;
       !this.state.option.loop && (this._target = this.constrain(this._target));
+
+      this._tween.to(this, this.state.option.duration, {
+        _v: this._target
+      });
     }
   }, {
     key: "next",
     value: function next() {
       this._target++;
       !this.state.option.loop && (this._target = this.constrain(this._target));
+
+      this._tween.to(this, this.state.option.duration, {
+        _v: this._target
+      });
     }
   }, {
     key: "to",
@@ -3521,6 +3588,10 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
       } else {
         this._target = index;
       }
+
+      this._tween.to(this, this.state.option.duration, {
+        _v: this._target
+      });
     }
   }, {
     key: "down",
@@ -3561,10 +3632,9 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
   }, {
     key: "constrain",
     value: function constrain(v) {
-      var ret = v < 0 ? 0 : this._numPages - 1 < v ? this._numPages - 1 : v;
+      var ret = clamp(v, 0, this._numPages - 1);
       this.head = ret === 0;
-      this.tail = ret === this._numPages - 1; // console.log(ret == 0, ret == this._numPages - 1);
-
+      this.tail = ret === this._numPages - 1;
       return ret;
     }
   }, {
@@ -3590,12 +3660,16 @@ var Indexer = /*#__PURE__*/function (_EventDispatcher) {
           break;
 
         default:
-          !this.state.option.loop && (this._target = this.constrain(this._target));
-          this._v += (this._target - this._v) * this.state.option.easing;
+          if (this._tween.running) {
+            complete = this._tween.tick();
+          } else {
+            !this.state.option.loop && (this._target = this.constrain(this._target));
+            this._v += (this._target - this._v) * 0.15;
 
-          if (Math.abs(this._target - this._v) < 0.001) {
-            this._v = this._target;
-            complete = true;
+            if (Math.abs(this._target - this._v) < 0.001) {
+              this._v = this._target;
+              complete = true;
+            }
           }
 
           break;
@@ -3653,7 +3727,6 @@ var Resize = /*#__PURE__*/function (_EventDispatcher) {
   }, {
     key: "_onResize",
     value: function _onResize() {
-      console.log('_onResize');
       this.state.setTogether('resize', {
         width: this.view.dom.width,
         height: this.view.dom.height
@@ -3756,9 +3829,6 @@ var Touch = /*#__PURE__*/function (_EventDispatcher) {
     value: function move(flag) {
       stage[flag](TouchEvent.MOVE, this._onBubble);
       stage[flag](TouchEvent.END, this._onBubble);
-      this.state.set({
-        isDrag: flag === 'on'
-      });
     }
   }]);
 
@@ -3788,10 +3858,14 @@ var SlideInteractor = /*#__PURE__*/function (_EventDispatcher) {
     key: "index",
     value: function index(e) {
       var _this$services = this.services,
+          autoplay = _this$services.autoplay,
           indexer = _this$services.indexer,
-          tick = _this$services.tick;
-      indexer.to(e.value);
+          tick = _this$services.tick,
+          touch = _this$services.touch;
       tick.start();
+      touch.start('off');
+      autoplay.stop();
+      indexer.to(e.value);
     }
   }, {
     key: "next",
@@ -4843,7 +4917,7 @@ var objectGetOwnPropertyNamesExternal = {
 
 var getOwnPropertyNames$1 = objectGetOwnPropertyNamesExternal.f; // eslint-disable-next-line es/no-object-getownpropertynames -- required for testing
 
-var FAILS_ON_PRIMITIVES$1 = fails(function () {
+var FAILS_ON_PRIMITIVES = fails(function () {
   return !Object.getOwnPropertyNames(1);
 }); // `Object.getOwnPropertyNames` method
 // https://tc39.es/ecma262/#sec-object.getownpropertynames
@@ -4851,7 +4925,7 @@ var FAILS_ON_PRIMITIVES$1 = fails(function () {
 _export({
   target: 'Object',
   stat: true,
-  forced: FAILS_ON_PRIMITIVES$1
+  forced: FAILS_ON_PRIMITIVES
 }, {
   getOwnPropertyNames: getOwnPropertyNames$1
 });
@@ -5346,10 +5420,10 @@ var StageInteractor = /*#__PURE__*/function () {
   }
 
   _createClass(StageInteractor, [{
-    key: "ready",
+    key: "setup",
     value: function () {
-      var _ready = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this$services, indexer, tick, touch, i0, i1;
+      var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var _this$services, indexer, tick, i0, i1;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -5360,48 +5434,56 @@ var StageInteractor = /*#__PURE__*/function () {
                 return Inliner.resolveFonts();
 
               case 3:
-                _this$services = this.services, indexer = _this$services.indexer, _this$services.resize, tick = _this$services.tick, touch = _this$services.touch;
-                console.log('StageInteractor ready', 'Font resolved');
+                _this$services = this.services, indexer = _this$services.indexer, tick = _this$services.tick;
                 indexer.setup();
-                tick.setup(indexer); // tick.start();
-
-                touch.start('on');
                 i0 = indexer.i0, i1 = indexer.i1;
                 this.state.set({
                   i0: i0,
                   i1: i1
-                }); // resize.setup();
-
-                _context.next = 15;
+                });
+                tick.setup(indexer);
+                _context.next = 13;
                 break;
 
-              case 12:
-                _context.prev = 12;
+              case 10:
+                _context.prev = 10;
                 _context.t0 = _context["catch"](0);
                 console.warn('first ready rejected : ', _context.t0);
 
-              case 15:
+              case 13:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 12]]);
+        }, _callee, this, [[0, 10]]);
       }));
 
-      function ready() {
-        return _ready.apply(this, arguments);
+      function setup() {
+        return _setup.apply(this, arguments);
       }
 
-      return ready;
+      return setup;
     }()
+  }, {
+    key: "start",
+    value: function start() {
+      var _this$services2 = this.services;
+          _this$services2.indexer;
+          var resize = _this$services2.resize,
+          tick = _this$services2.tick,
+          touch = _this$services2.touch;
+      touch.start('on');
+      tick.start();
+      resize.setup();
+    }
   }, {
     key: "dispose",
     value: function dispose() {
-      var _this$services2 = this.services,
-          autoplay = _this$services2.autoplay,
-          resize = _this$services2.resize,
-          tick = _this$services2.tick,
-          touch = _this$services2.touch;
+      var _this$services3 = this.services,
+          autoplay = _this$services3.autoplay,
+          resize = _this$services3.resize,
+          tick = _this$services3.tick,
+          touch = _this$services3.touch;
       autoplay.stop();
       resize.dispose();
       tick.stop();
@@ -5450,6 +5532,9 @@ var TouchInteractor = /*#__PURE__*/function (_EventDispatcher) {
       var dx = (e.clientX - e.clientX0) / this.state.get('width');
       var indexer = this.services.indexer;
       indexer.move(-dx);
+      this.state.set({
+        isDrag: true
+      });
     }
   }, {
     key: "end",
@@ -5459,6 +5544,9 @@ var TouchInteractor = /*#__PURE__*/function (_EventDispatcher) {
           touch = _this$services2.touch;
       indexer.up();
       touch.move('off');
+      this.state.set({
+        isDrag: false
+      });
     }
   }]);
 
@@ -5713,7 +5801,7 @@ var Option = {
   },
   renderer: undefined,
   debug: false,
-  easing: 0.15,
+  duration: 1000,
   transition: BaseTransition,
   get: function get(property, module) {
     if (module) {
@@ -5754,26 +5842,23 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
     key: "setup",
     value: function () {
       var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var dom, i0, i1;
+        var _this$view, dom, slide, i0, i1;
+
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                dom = this.view.dom;
+                _this$view = this.view, dom = _this$view.dom, slide = _this$view.slide;
 
                 if (this.state.option.debug == Option.Debug.DISPLAY.DOM) {
                   dom.container.classList.add('xslider-debug');
                 }
 
                 i0 = this.state.get('i0'), i1 = this.state.get('i1');
-                console.log('slide ready', i0, i1);
-                _context.next = 6;
-                return this.view.slide.ready(i0, i1);
+                _context.next = 5;
+                return slide.ready(i0, i1);
 
-              case 6:
-                console.log('slide readied');
-
-              case 7:
+              case 5:
               case "end":
                 return _context.stop();
             }
@@ -5791,18 +5876,17 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
     key: "time",
     value: function () {
       var _time = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var _this$view, renderer, slide, i0, i1, progress, time;
+        var _this$view2, renderer, slide, i0, i1, progress, time;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _this$view = this.view, renderer = _this$view.renderer, slide = _this$view.slide, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress'), time = this.state.get('time');
-                console.log('time', i0, i1);
-                _context2.next = 4;
+                _this$view2 = this.view, renderer = _this$view2.renderer, slide = _this$view2.slide, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress'), time = this.state.get('time');
+                _context2.next = 3;
                 return slide.ready(i0, i1);
 
-              case 4:
+              case 3:
                 slide.uniforms.progress.value = progress;
 
                 if (slide.uniforms.time) {
@@ -5811,9 +5895,8 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
 
                 renderer["default"].render(i0, i1, progress);
                 renderer.gl.render();
-                console.log('complete time');
 
-              case 9:
+              case 7:
               case "end":
                 return _context2.stop();
             }
@@ -5831,13 +5914,13 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
     key: "resize",
     value: function () {
       var _resize = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-        var _this$view2, renderer, slide, dom, width, height;
+        var _this$view3, renderer, slide, dom, width, height;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _this$view2 = this.view, renderer = _this$view2.renderer, slide = _this$view2.slide, dom = _this$view2.dom, width = dom.width, height = dom.height;
+                _this$view3 = this.view, renderer = _this$view3.renderer, slide = _this$view3.slide, dom = _this$view3.dom, width = dom.width, height = dom.height;
                 dom.canvas.setAttribute('width', width);
                 dom.canvas.setAttribute('height', height);
                 renderer["default"].resize(width, height);
@@ -5846,7 +5929,6 @@ var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
                 return slide.resize(width, height);
 
               case 7:
-                // await wait(2000);
                 renderer.gl.render();
 
               case 8:
@@ -5905,25 +5987,21 @@ var Controller = /*#__PURE__*/function () {
       var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var _this$view$pager, _this$view$prev, _this$view$next;
 
-        var _this$services, autoplay, indexer, tick, touch, resize;
+        var _this$services, autoplay, indexer, touch;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return this.usecases.stage.ready();
+                return this.usecases.stage.setup();
 
               case 2:
                 _context.next = 4;
                 return this.presenters.stage.setup();
 
               case 4:
-                _this$services = this.services, autoplay = _this$services.autoplay, indexer = _this$services.indexer, tick = _this$services.tick, touch = _this$services.touch, resize = _this$services.resize; // await wait(2000);
-
-                resize.setup();
-                this.state.on('resize', this.presenters.stage.resize);
-                tick.start();
+                _this$services = this.services, autoplay = _this$services.autoplay, indexer = _this$services.indexer, touch = _this$services.touch;
                 autoplay.on(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
                 indexer.on('complete', this.usecases.slide.complete);
                 touch.on(TouchEvent.START, this.usecases.touch.start);
@@ -5932,13 +6010,15 @@ var Controller = /*#__PURE__*/function () {
                 (_this$view$pager = this.view.pager) === null || _this$view$pager === void 0 ? void 0 : _this$view$pager.on('index', this.usecases.slide.index);
                 (_this$view$prev = this.view.prev) === null || _this$view$prev === void 0 ? void 0 : _this$view$prev.on('click', this.usecases.slide.prev);
                 (_this$view$next = this.view.next) === null || _this$view$next === void 0 ? void 0 : _this$view$next.on('click', this.usecases.slide.next);
+                this.state.on('resize', this.presenters.stage.resize);
                 this.state.on('index', this.presenters.index.index);
                 this.state.on('head', this.presenters.index.head);
                 this.state.on('tail', this.presenters.index.tail);
                 this.state.on('time', this.presenters.stage.time);
                 this.state.on('isDrag', this.presenters.stage.drag);
+                this.usecases.stage.start();
 
-              case 21:
+              case 20:
               case "end":
                 return _context.stop();
             }
@@ -5993,18 +6073,7 @@ var State = /*#__PURE__*/function (_EventDispatcher) {
 
     _this = _super.call(this);
 
-    _this.set({
-      i0: 0,
-      i1: 1,
-      progress: 0,
-      width: 0,
-      height: 0,
-      head: false,
-      tail: false,
-      time: 0,
-      numPages: 0,
-      isDrag: false
-    });
+    _this.dispose();
 
     return _this;
   }
@@ -6018,6 +6087,18 @@ var State = /*#__PURE__*/function (_EventDispatcher) {
     key: "dispose",
     value: function dispose() {
       this.option = undefined;
+      this.set({
+        i0: 0,
+        i1: 1,
+        progress: 0,
+        width: 0,
+        height: 0,
+        head: false,
+        tail: false,
+        time: 0,
+        numPages: 0,
+        isDrag: false
+      });
     }
   }]);
 
@@ -6266,27 +6347,18 @@ var Page = /*#__PURE__*/function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                console.log('ready');
-
                 if (!(!this.isReadied && this.hasTexture)) {
-                  _context.next = 6;
+                  _context.next = 4;
                   break;
                 }
 
-                _context.next = 4;
+                _context.next = 3;
                 return Inliner.inlineNode(this.layer.gl);
 
-              case 4:
+              case 3:
                 this.inlinedNode = _context.sent;
-                // // Utils.toSvg(this.layer.gl)
-                // const svg = await converter.from(this.layer.gl)
-                // this.svg = svg;
-                // this.layer.gl.classList.remove("xslider-capture");
-                // this.needsResize = true;
-                // // document.querySelector('#xslider').appendChild(this.svg.documentElement.cloneNode(true));
-                console.log('complete ready'); // await wait(1000);
 
-              case 6:
+              case 4:
               case "end":
                 return _context.stop();
             }
@@ -6349,15 +6421,13 @@ var Page = /*#__PURE__*/function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                console.log('resize', this.element);
-
                 if (!this.hasTexture) {
-                  _context3.next = 14;
+                  _context3.next = 13;
                   break;
                 }
 
                 if (!this.needsResize) {
-                  _context3.next = 14;
+                  _context3.next = 13;
                   break;
                 }
 
@@ -6367,15 +6437,15 @@ var Page = /*#__PURE__*/function () {
                 this.layer.gl.classList.add('xslider-capture');
                 cloner.cloneStyle(this.layer.gl, this.inlinedNode, Page.EXCLUDES);
                 this.layer.gl.classList.remove('xslider-capture');
-                _context3.next = 11;
+                _context3.next = 10;
                 return this._loadSvg(w, h);
 
-              case 11:
+              case 10:
                 ctx = this.canvas.getContext('2d');
                 ctx.clearRect(0, 0, w, h);
                 ctx.drawImage(this.image, 0, 0, w, h);
 
-              case 14:
+              case 13:
               case "end":
                 return _context3.stop();
             }
@@ -6462,7 +6532,6 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                console.log('ready');
                 page0 = this.list[i0];
                 page1 = undefined;
                 arr = [page0.ready()];
@@ -6472,16 +6541,16 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
                   arr.push(page1.ready());
                 }
 
-                _context4.next = 7;
+                _context4.next = 6;
                 return Promise.all(arr);
 
-              case 7:
+              case 6:
                 this.set({
                   page0: page0,
                   page1: page1
                 });
 
-              case 8:
+              case 7:
               case "end":
                 return _context4.stop();
             }
@@ -6516,7 +6585,6 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                console.log('resize', w, h);
                 this.width = w;
                 this.height = h;
 
@@ -6527,10 +6595,10 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
                 this.list.forEach(function (page) {
                   page.needsResize = true;
                 });
-                _context5.next = 7;
+                _context5.next = 6;
                 return Promise.all([this._updatePage(0), this._updatePage(1)]);
 
-              case 7:
+              case 6:
               case "end":
                 return _context5.stop();
             }
@@ -6584,30 +6652,25 @@ var Slide = /*#__PURE__*/function (_InteractiveObject) {
                 return _context6.abrupt("return");
 
               case 2:
-                console.log('_updatePage', pageIndex);
                 page = this.get('page' + pageIndex);
 
                 if (!page) {
-                  _context6.next = 10;
+                  _context6.next = 7;
                   break;
                 }
 
                 page.active = true;
-                _context6.next = 8;
-                return wait(100);
-
-              case 8:
-                _context6.next = 10;
+                _context6.next = 7;
                 return page.resize(this.width, this.height);
 
-              case 10:
+              case 7:
                 if (this.uniforms) {
                   texture = this.uniforms['texture' + pageIndex].value;
                   texture.image = page ? page.canvas : undefined;
                   texture.needsUpdate = true;
                 }
 
-              case 11:
+              case 8:
               case "end":
                 return _context6.stop();
             }
@@ -9129,21 +9192,6 @@ var Scene3D = /*#__PURE__*/function (_Node) {
   return Scene3D;
 }(Node);
 
-var FAILS_ON_PRIMITIVES = fails(function () {
-  objectKeys(1);
-}); // `Object.keys` method
-// https://tc39.es/ecma262/#sec-object.keys
-
-_export({
-  target: 'Object',
-  stat: true,
-  forced: FAILS_ON_PRIMITIVES
-}, {
-  keys: function keys(it) {
-    return objectKeys(toObject(it));
-  }
-});
-
 var Material = function Material(option) {
   var _this = this;
 
@@ -9355,19 +9403,9 @@ var View = /*#__PURE__*/function (_EventDispatcher) {
   }, {
     key: "dispose",
     value: function dispose() {
-      if (this.pager) {
-        this.pager.off('index', this._onBubble);
-        this.pager.dispose();
-      }
-
-      if (this.prev) {
-        this.prev.dispose();
-      }
-
-      if (this.next) {
-        this.next.dispose();
-      }
-
+      this.pager && this.pager.dispose();
+      this.prev && this.prev.dispose();
+      this.next && this.next.dispose();
       this.slide.dispose();
       this.renderer.gl.dispose();
       this.renderer["default"].dispose();
