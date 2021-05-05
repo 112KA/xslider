@@ -1,4 +1,5 @@
 import { EventDispatcher } from '../core/EventDispatcher';
+import { clamp } from '../components/Utils';
 
 export class Indexer extends EventDispatcher {
   constructor(state) {
@@ -93,10 +94,9 @@ export class Indexer extends EventDispatcher {
   }
 
   constrain(v) {
-    const ret = v < 0 ? 0 : this._numPages - 1 < v ? this._numPages - 1 : v;
+    const ret = clamp(v, 0, this._numPages - 1);
     this.head = ret === 0;
     this.tail = ret === this._numPages - 1;
-    // console.log(ret == 0, ret == this._numPages - 1);
     return ret;
   }
 
