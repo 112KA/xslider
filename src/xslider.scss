@@ -121,6 +121,17 @@ $color: #00ff7a;
     right: 10px;
   }
 
+  &-vertical {
+    .xslider {
+      &-prev {
+        transform: translate(10px, 0) rotate(90deg);
+      }
+      &-next {
+        transform: translate(-10px, 0) rotate(90deg);
+      }
+    }
+  }
+
   &-debug {
     .xslider-layer-gl {
       display: block;

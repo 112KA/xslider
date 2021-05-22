@@ -19,9 +19,14 @@ export class TouchInteractor extends EventDispatcher {
   }
 
   move(e) {
-    const dx = (e.clientX - e.clientX0) / this.state.get('width');
+    let diff;
+    if (this.state.option.direction === 'vertical') {
+      diff = (e.clientY - e.clientY0) / this.state.get('height');
+    } else {
+      diff = (e.clientX - e.clientX0) / this.state.get('width');
+    }
     const { indexer } = this.services;
-    indexer.move(-dx);
+    indexer.move(-diff);
     this.state.set({ isDrag: true });
   }
 

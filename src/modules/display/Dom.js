@@ -1,3 +1,5 @@
+import { Option } from '../domain/Option';
+
 export class Dom {
   get width() {
     return this.container.clientWidth;
@@ -7,7 +9,7 @@ export class Dom {
     return this.container.clientHeight;
   }
 
-  setup(selector) {
+  setup(selector, option) {
     this.container = document.querySelector(selector);
     this.container.classList.add('xslider-container');
 
@@ -20,10 +22,18 @@ export class Dom {
 
     this.canvas = document.createElement('canvas');
     this.container.insertBefore(this.canvas, this.list);
+
+    if (option.direction === 'vertical') {
+      this.container.classList.add('xslider-vertical');
+    }
+
+    if (option.debug === Option.Debug.DISPLAY.DOM) {
+      this.container.classList.add('xslider-debug');
+    }
   }
 
   dispose() {
-    this.container.classList.remove('xslider-container', 'xslider-debug');
+    this.container.classList.remove('xslider-container', 'xslider-vertical', 'xslider-debug');
     this.container.removeChild(this.canvas);
   }
 

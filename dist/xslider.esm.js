@@ -1,4 +1,4 @@
-var XSLIDER_VERSION = "1.1.3"
+var XSLIDER_VERSION = "1.1.4"
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -5529,9 +5529,16 @@ var TouchInteractor = /*#__PURE__*/function (_EventDispatcher) {
   }, {
     key: "move",
     value: function move(e) {
-      var dx = (e.clientX - e.clientX0) / this.state.get('width');
+      var diff;
+
+      if (this.state.option.direction === 'vertical') {
+        diff = (e.clientY - e.clientY0) / this.state.get('height');
+      } else {
+        diff = (e.clientX - e.clientX0) / this.state.get('width');
+      }
+
       var indexer = this.services.indexer;
-      indexer.move(-dx);
+      indexer.move(-diff);
       this.state.set({
         isDrag: true
       });
@@ -5615,6 +5622,242 @@ var IndexPresenter = /*#__PURE__*/function (_EventDispatcher) {
 
   return IndexPresenter;
 }(EventDispatcher);
+
+var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
+  _inherits(StagePresenter, _EventDispatcher);
+
+  var _super = _createSuper(StagePresenter);
+
+  function StagePresenter(state, view) {
+    var _this;
+
+    _classCallCheck(this, StagePresenter);
+
+    _this = _super.call(this);
+    _this.state = state;
+    _this.view = view;
+
+    _this._bindMethods(['time', 'resize', 'drag']);
+
+    return _this;
+  }
+
+  _createClass(StagePresenter, [{
+    key: "setup",
+    value: function () {
+      var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var slide, i0, i1;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                slide = this.view.slide;
+                i0 = this.state.get('i0'), i1 = this.state.get('i1');
+                _context.next = 4;
+                return slide.ready(i0, i1);
+
+              case 4:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function setup() {
+        return _setup.apply(this, arguments);
+      }
+
+      return setup;
+    }()
+  }, {
+    key: "time",
+    value: function () {
+      var _time = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+        var _this$view, renderer, slide, i0, i1, progress, time;
+
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _this$view = this.view, renderer = _this$view.renderer, slide = _this$view.slide, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress'), time = this.state.get('time');
+                _context2.next = 3;
+                return slide.ready(i0, i1);
+
+              case 3:
+                slide.uniforms.progress.value = progress;
+
+                if (slide.uniforms.time) {
+                  slide.uniforms.time.value = time;
+                }
+
+                renderer["default"].render(i0, i1, progress);
+                renderer.gl.render();
+
+              case 7:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function time() {
+        return _time.apply(this, arguments);
+      }
+
+      return time;
+    }()
+  }, {
+    key: "resize",
+    value: function () {
+      var _resize = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+        var _this$view2, renderer, slide, dom, width, height;
+
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _this$view2 = this.view, renderer = _this$view2.renderer, slide = _this$view2.slide, dom = _this$view2.dom, width = dom.width, height = dom.height;
+                dom.canvas.setAttribute('width', width);
+                dom.canvas.setAttribute('height', height);
+                renderer["default"].resize(width, height);
+                renderer.gl.resize(width, height);
+                _context3.next = 7;
+                return slide.resize(width, height);
+
+              case 7:
+                renderer.gl.render();
+
+              case 8:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function resize() {
+        return _resize.apply(this, arguments);
+      }
+
+      return resize;
+    }()
+  }, {
+    key: "drag",
+    value: function drag() {
+      var isDrag = this.state.get('isDrag');
+      var dom = this.view.dom;
+      dom.slideTouchDisabled = isDrag;
+    }
+  }]);
+
+  return StagePresenter;
+}(EventDispatcher);
+
+var Controller = /*#__PURE__*/function () {
+  function Controller(state, view) {
+    _classCallCheck(this, Controller);
+
+    this.state = state;
+    this.view = view;
+    this.services = {
+      indexer: new Indexer(state),
+      autoplay: new AutoPlay(state),
+      resize: new Resize(state, view),
+      tick: new Tick(state),
+      touch: new Touch(state, view)
+    };
+    this.usecases = {
+      stage: new StageInteractor(this.state, this.services),
+      slide: new SlideInteractor(this.state, this.services),
+      touch: new TouchInteractor(this.state, this.services)
+    };
+    this.presenters = {
+      stage: new StagePresenter(this.state, this.view),
+      index: new IndexPresenter(this.state, this.view)
+    };
+  }
+
+  _createClass(Controller, [{
+    key: "setup",
+    value: function () {
+      var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var _this$view$pager, _this$view$prev, _this$view$next;
+
+        var _this$services, autoplay, indexer, touch;
+
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return this.usecases.stage.setup();
+
+              case 2:
+                _context.next = 4;
+                return this.presenters.stage.setup();
+
+              case 4:
+                _this$services = this.services, autoplay = _this$services.autoplay, indexer = _this$services.indexer, touch = _this$services.touch;
+                autoplay.on(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
+                indexer.on('complete', this.usecases.slide.complete);
+                touch.on(TouchEvent.START, this.usecases.touch.start);
+                touch.on(TouchEvent.MOVE, this.usecases.touch.move);
+                touch.on(TouchEvent.END, this.usecases.touch.end);
+                (_this$view$pager = this.view.pager) === null || _this$view$pager === void 0 ? void 0 : _this$view$pager.on('index', this.usecases.slide.index);
+                (_this$view$prev = this.view.prev) === null || _this$view$prev === void 0 ? void 0 : _this$view$prev.on('click', this.usecases.slide.prev);
+                (_this$view$next = this.view.next) === null || _this$view$next === void 0 ? void 0 : _this$view$next.on('click', this.usecases.slide.next);
+                this.state.on('resize', this.presenters.stage.resize);
+                this.state.on('index', this.presenters.index.index);
+                this.state.on('head', this.presenters.index.head);
+                this.state.on('tail', this.presenters.index.tail);
+                this.state.on('time', this.presenters.stage.time);
+                this.state.on('isDrag', this.presenters.stage.drag);
+                this.usecases.stage.start();
+
+              case 20:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function setup() {
+        return _setup.apply(this, arguments);
+      }
+
+      return setup;
+    }()
+  }, {
+    key: "dispose",
+    value: function dispose() {
+      var _this$view$pager2, _this$view$prev2, _this$view$next2;
+
+      this.usecases.stage.dispose();
+      var _this$services2 = this.services,
+          autoplay = _this$services2.autoplay,
+          indexer = _this$services2.indexer,
+          touch = _this$services2.touch;
+      autoplay.off(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
+      indexer.off('complete', this.usecases.slide.complete);
+      touch.off(TouchEvent.MOVE, this.usecases.touch.move);
+      touch.off(TouchEvent.END, this.usecases.touch.end);
+      (_this$view$pager2 = this.view.pager) === null || _this$view$pager2 === void 0 ? void 0 : _this$view$pager2.off('index', this.usecases.slide.index);
+      (_this$view$prev2 = this.view.prev) === null || _this$view$prev2 === void 0 ? void 0 : _this$view$prev2.off('click', this.usecases.slide.prev);
+      (_this$view$next2 = this.view.next) === null || _this$view$next2 === void 0 ? void 0 : _this$view$next2.off('click', this.usecases.slide.next);
+      this.state.off('index', this.presenters.index.index);
+      this.state.off('head', this.presenters.index.head);
+      this.state.off('tail', this.presenters.index.tail);
+      this.state.off('time', this.presenters.stage.time);
+      this.state.off('resize', this.presenters.stage.resize);
+      this.state.off('isDrag', this.presenters.stage.drag);
+    }
+  }]);
+
+  return Controller;
+}();
 
 var Vec2 = /*#__PURE__*/function () {
   function Vec2() {
@@ -5802,6 +6045,7 @@ var Option = {
   renderer: undefined,
   debug: false,
   duration: 1000,
+  direction: 'horizontal',
   transition: BaseTransition,
   get: function get(property, module) {
     if (module) {
@@ -5818,248 +6062,6 @@ Option.Debug = {
     IMG: 'DEBUG_DISPLAY_IMG'
   }
 };
-
-var StagePresenter = /*#__PURE__*/function (_EventDispatcher) {
-  _inherits(StagePresenter, _EventDispatcher);
-
-  var _super = _createSuper(StagePresenter);
-
-  function StagePresenter(state, view) {
-    var _this;
-
-    _classCallCheck(this, StagePresenter);
-
-    _this = _super.call(this);
-    _this.state = state;
-    _this.view = view;
-
-    _this._bindMethods(['time', 'resize', 'drag']);
-
-    return _this;
-  }
-
-  _createClass(StagePresenter, [{
-    key: "setup",
-    value: function () {
-      var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this$view, dom, slide, i0, i1;
-
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _this$view = this.view, dom = _this$view.dom, slide = _this$view.slide;
-
-                if (this.state.option.debug == Option.Debug.DISPLAY.DOM) {
-                  dom.container.classList.add('xslider-debug');
-                }
-
-                i0 = this.state.get('i0'), i1 = this.state.get('i1');
-                _context.next = 5;
-                return slide.ready(i0, i1);
-
-              case 5:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function setup() {
-        return _setup.apply(this, arguments);
-      }
-
-      return setup;
-    }()
-  }, {
-    key: "time",
-    value: function () {
-      var _time = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var _this$view2, renderer, slide, i0, i1, progress, time;
-
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                _this$view2 = this.view, renderer = _this$view2.renderer, slide = _this$view2.slide, i0 = this.state.get('i0'), i1 = this.state.get('i1'), progress = this.state.get('progress'), time = this.state.get('time');
-                _context2.next = 3;
-                return slide.ready(i0, i1);
-
-              case 3:
-                slide.uniforms.progress.value = progress;
-
-                if (slide.uniforms.time) {
-                  slide.uniforms.time.value = time;
-                }
-
-                renderer["default"].render(i0, i1, progress);
-                renderer.gl.render();
-
-              case 7:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2, this);
-      }));
-
-      function time() {
-        return _time.apply(this, arguments);
-      }
-
-      return time;
-    }()
-  }, {
-    key: "resize",
-    value: function () {
-      var _resize = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-        var _this$view3, renderer, slide, dom, width, height;
-
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                _this$view3 = this.view, renderer = _this$view3.renderer, slide = _this$view3.slide, dom = _this$view3.dom, width = dom.width, height = dom.height;
-                dom.canvas.setAttribute('width', width);
-                dom.canvas.setAttribute('height', height);
-                renderer["default"].resize(width, height);
-                renderer.gl.resize(width, height);
-                _context3.next = 7;
-                return slide.resize(width, height);
-
-              case 7:
-                renderer.gl.render();
-
-              case 8:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this);
-      }));
-
-      function resize() {
-        return _resize.apply(this, arguments);
-      }
-
-      return resize;
-    }()
-  }, {
-    key: "drag",
-    value: function drag() {
-      var isDrag = this.state.get('isDrag');
-      var dom = this.view.dom;
-      dom.slideTouchDisabled = isDrag;
-    }
-  }]);
-
-  return StagePresenter;
-}(EventDispatcher);
-
-var Controller = /*#__PURE__*/function () {
-  function Controller(state, view) {
-    _classCallCheck(this, Controller);
-
-    this.state = state;
-    this.view = view;
-    this.services = {
-      indexer: new Indexer(state),
-      autoplay: new AutoPlay(state),
-      resize: new Resize(state, view),
-      tick: new Tick(state),
-      touch: new Touch(state, view)
-    };
-    this.usecases = {
-      stage: new StageInteractor(this.state, this.services),
-      slide: new SlideInteractor(this.state, this.services),
-      touch: new TouchInteractor(this.state, this.services)
-    };
-    this.presenters = {
-      stage: new StagePresenter(this.state, this.view),
-      index: new IndexPresenter(this.state, this.view)
-    };
-  }
-
-  _createClass(Controller, [{
-    key: "setup",
-    value: function () {
-      var _setup = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this$view$pager, _this$view$prev, _this$view$next;
-
-        var _this$services, autoplay, indexer, touch;
-
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _context.next = 2;
-                return this.usecases.stage.setup();
-
-              case 2:
-                _context.next = 4;
-                return this.presenters.stage.setup();
-
-              case 4:
-                _this$services = this.services, autoplay = _this$services.autoplay, indexer = _this$services.indexer, touch = _this$services.touch;
-                autoplay.on(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
-                indexer.on('complete', this.usecases.slide.complete);
-                touch.on(TouchEvent.START, this.usecases.touch.start);
-                touch.on(TouchEvent.MOVE, this.usecases.touch.move);
-                touch.on(TouchEvent.END, this.usecases.touch.end);
-                (_this$view$pager = this.view.pager) === null || _this$view$pager === void 0 ? void 0 : _this$view$pager.on('index', this.usecases.slide.index);
-                (_this$view$prev = this.view.prev) === null || _this$view$prev === void 0 ? void 0 : _this$view$prev.on('click', this.usecases.slide.prev);
-                (_this$view$next = this.view.next) === null || _this$view$next === void 0 ? void 0 : _this$view$next.on('click', this.usecases.slide.next);
-                this.state.on('resize', this.presenters.stage.resize);
-                this.state.on('index', this.presenters.index.index);
-                this.state.on('head', this.presenters.index.head);
-                this.state.on('tail', this.presenters.index.tail);
-                this.state.on('time', this.presenters.stage.time);
-                this.state.on('isDrag', this.presenters.stage.drag);
-                this.usecases.stage.start();
-
-              case 20:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function setup() {
-        return _setup.apply(this, arguments);
-      }
-
-      return setup;
-    }()
-  }, {
-    key: "dispose",
-    value: function dispose() {
-      var _this$view$pager2, _this$view$prev2, _this$view$next2;
-
-      this.usecases.stage.dispose();
-      var _this$services2 = this.services,
-          autoplay = _this$services2.autoplay,
-          indexer = _this$services2.indexer,
-          touch = _this$services2.touch;
-      autoplay.off(Event.AUTOPLAY_NEXT, this.usecases.slide.next);
-      indexer.off('complete', this.usecases.slide.complete);
-      touch.off(TouchEvent.MOVE, this.usecases.touch.move);
-      touch.off(TouchEvent.END, this.usecases.touch.end);
-      (_this$view$pager2 = this.view.pager) === null || _this$view$pager2 === void 0 ? void 0 : _this$view$pager2.off('index', this.usecases.slide.index);
-      (_this$view$prev2 = this.view.prev) === null || _this$view$prev2 === void 0 ? void 0 : _this$view$prev2.off('click', this.usecases.slide.prev);
-      (_this$view$next2 = this.view.next) === null || _this$view$next2 === void 0 ? void 0 : _this$view$next2.off('click', this.usecases.slide.next);
-      this.state.off('index', this.presenters.index.index);
-      this.state.off('head', this.presenters.index.head);
-      this.state.off('tail', this.presenters.index.tail);
-      this.state.off('time', this.presenters.stage.time);
-      this.state.off('resize', this.presenters.stage.resize);
-      this.state.off('isDrag', this.presenters.stage.drag);
-    }
-  }]);
-
-  return Controller;
-}();
 
 var State = /*#__PURE__*/function (_EventDispatcher) {
   _inherits(State, _EventDispatcher);
@@ -6706,7 +6708,7 @@ var Dom = /*#__PURE__*/function () {
     }
   }, {
     key: "setup",
-    value: function setup(selector) {
+    value: function setup(selector, option) {
       this.container = document.querySelector(selector);
       this.container.classList.add('xslider-container');
       this.list = this.container.querySelector('.xslider-slide');
@@ -6716,11 +6718,19 @@ var Dom = /*#__PURE__*/function () {
       this.next = this.container.querySelector('.xslider-next');
       this.canvas = document.createElement('canvas');
       this.container.insertBefore(this.canvas, this.list);
+
+      if (option.direction === 'vertical') {
+        this.container.classList.add('xslider-vertical');
+      }
+
+      if (option.debug === Option.Debug.DISPLAY.DOM) {
+        this.container.classList.add('xslider-debug');
+      }
     }
   }, {
     key: "dispose",
     value: function dispose() {
-      this.container.classList.remove('xslider-container', 'xslider-debug');
+      this.container.classList.remove('xslider-container', 'xslider-vertical', 'xslider-debug');
       this.container.removeChild(this.canvas);
     }
   }, {
@@ -6774,16 +6784,19 @@ var DefaultRenderer = /*#__PURE__*/function (_BaseRenderer) {
   var _super = _createSuper(DefaultRenderer);
 
   function DefaultRenderer() {
-    var _this;
-
     _classCallCheck(this, DefaultRenderer);
 
-    _this = _super.call(this);
-    _this.dx = 0;
-    return _this;
+    return _super.apply(this, arguments);
   }
 
   _createClass(DefaultRenderer, [{
+    key: "setup",
+    value: function setup(option, slide) {
+      _get(_getPrototypeOf(DefaultRenderer.prototype), "setup", this).call(this, option, slide);
+
+      this.direction = this.option.direction === 'vertical' ? new Vec2(0, 1) : new Vec2(1, 0);
+    }
+  }, {
     key: "render",
     value: function render(i0, i1, progress) {
       _get(_getPrototypeOf(DefaultRenderer.prototype), "render", this).call(this, i0, i1, progress);
@@ -6791,26 +6804,26 @@ var DefaultRenderer = /*#__PURE__*/function (_BaseRenderer) {
       var page0 = this.slide.list[i0],
           page1 = this.slide.list[i1]; // let opacity = 1.0 - Utils.clamp(progress, 0, 0.5) / 0.5;
 
-      var dx = -progress * this.width;
+      var diff = -progress;
 
-      this._updatePage(page0, dx
+      this._updatePage(page0, diff
       /*, opacity*/
       );
 
       if (page0 != page1) {
         // opacity = Utils.clamp(progress - 0.5, 0, 0.5) / 0.5;
-        dx = (1 - progress) * this.width;
+        diff = 1 - progress;
 
-        this._updatePage(page1, dx
+        this._updatePage(page1, diff
         /*, opacity*/
         );
       }
     }
   }, {
     key: "_updatePage",
-    value: function _updatePage(slide, dx, opacity) {
+    value: function _updatePage(slide, diff, opacity) {
       if (!slide || !slide.layer.ui) return;
-      slide.layer.ui.style.webkitTransform = 'translate(' + dx + 'px, 0) scale(1)'; // slide.layer.ui.style.opacity = opacity;
+      slide.layer.ui.style.webkitTransform = "translate(".concat(this.direction.x * diff * this.width, "px, ").concat(this.direction.y * diff * this.height, "px) scale(1)"); // slide.layer.ui.style.opacity = opacity;
     }
   }]);
 
@@ -9364,7 +9377,7 @@ var View = /*#__PURE__*/function (_EventDispatcher) {
   _createClass(View, [{
     key: "setup",
     value: function setup(selector, state) {
-      this.dom.setup(selector);
+      this.dom.setup(selector, state.option);
       state.set({
         numPages: this.dom.pages.length
       });

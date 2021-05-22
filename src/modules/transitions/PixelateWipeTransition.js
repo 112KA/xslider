@@ -11,6 +11,7 @@ precision highp float;
 uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform float progress;
+uniform vec2 direction;
 uniform vec2 resolution;
 uniform vec2 gradient;
 
@@ -18,7 +19,8 @@ void main(void) {
 	vec2 p = gl_FragCoord.xy /resolution;
 	float aspect = resolution.x / resolution.y;
 
-	float v = mix(0.0, 1.0, progress * (1.0+gradient.x+gradient.y) - ((1.0-p.x)*gradient.x+p.y*gradient.y));
+	float diff = dot(p, direction);
+	float v = mix(0.0, 1.0, progress * (1.0+gradient.x+gradient.y) - ((1.0-diff)*gradient.x+p.y*gradient.y));
 	v = clamp(v, 0.0, 1.0);
 	v = floor(v * 16.0) / 16.0;
 

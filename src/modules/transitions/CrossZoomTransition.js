@@ -13,14 +13,10 @@ precision highp float;
 uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform float progress;
+uniform vec2 direction;
 uniform vec2 resolution;
 // uniform vec2 fade;
 uniform float strength;
-
-
-float Linear_ease(in float begin, in float change, in float duration, in float time) {
-    return change * time / duration + begin;
-}
 
 float Exponential_easeInOut(in float begin, in float change, in float duration, in float time) {
     if (time == 0.0)
@@ -50,7 +46,9 @@ vec3 crossFade(in vec2 uv, in float dissolve) {
 void main(void) {
 	vec2 p = gl_FragCoord.xy /resolution.xy;
 
-	vec2 center = vec2(Linear_ease(0.25, 0.5, 1.0, progress), 0.5);
+  float diff = smoothstep(0.1, 0.9, progress);
+	vec2 center = vec2(mix(0.5, diff, direction.x), mix(0.5, diff, direction.y));
+	// vec2 center = vec2(mix(0.5, diff, 0.0), mix(0.5, diff, 1.0));
 	float dissolve = Exponential_easeInOut(0.0, 1.0, 1.0, progress);
 	float strength = Sinusoidal_easeInOut(0.0, strength, 0.5, progress);
 	vec3 color = vec3(0.0);

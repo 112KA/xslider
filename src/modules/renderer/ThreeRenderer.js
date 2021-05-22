@@ -74,6 +74,7 @@ export class ThreeRenderer extends GLRenderer {
       },
       progress: { value: 0 },
       resolution: { value: new THREE.Vector2(0.0, 0.0) },
+      direction: { value: new THREE.Vector2(1.0, 0.0) },
     };
 
     Object.keys(setting).forEach(key => {

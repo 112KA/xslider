@@ -22,6 +22,7 @@ export class XRenderer extends BaseRenderer {
       texture1: { value: new Texture() },
       progress: { value: 0 },
       resolution: { value: new Vec2(0.0, 0.0) },
+      direction: { value: new Vec2(1.0, 0.0) },
     };
   }
 
@@ -31,6 +32,12 @@ export class XRenderer extends BaseRenderer {
     GLGraphics.setup(this.canvas);
 
     const transition = option.transition;
+
+    if (option.direction === 'vertical') {
+      this._uniforms.direction.value.set(0, 1);
+    } else {
+      this._uniforms.direction.value.set(1, 0);
+    }
 
     this.mesh.material = new XMaterial({
       vertexShader: transition.vertexShader,

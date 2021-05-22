@@ -22,7 +22,7 @@ export class View extends EventDispatcher {
   }
 
   setup(selector, state) {
-    this.dom.setup(selector);
+    this.dom.setup(selector, state.option);
 
     state.set({ numPages: this.dom.pages.length });
 

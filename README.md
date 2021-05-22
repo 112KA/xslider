@@ -93,14 +93,15 @@ new XSlider(selector, options);
 
 #### options
 
-| Name              | Type              | Default                     | Description                                                  |
-| ----------------- | ----------------- | --------------------------- | ------------------------------------------------------------ |
-| transition        | Object            | Xslider.BaseTransition      | Transition effect.                                           |
-| duration          | Number            | 1000                        | Duration of transition between pages                         |
-| initialSlideIndex | Number            | 0                           | Index number of initial page.                                |
-| loop              | Boolean           | true                        | Loop page flag.                                              |
-| touchMove         | Boolean or Object | { <br> throwable:true <br>} | Object with touch parameters.                                |
-| autoplay          | Boolean or Object | false                       | Object with autoplay parameters.<br> { <br>delay:3000 <br> } |
+| Name              | Type                       | Default                     | Description                                                  |
+| ----------------- | -------------------------- | --------------------------- | ------------------------------------------------------------ |
+| transition        | Object                     | Xslider.BaseTransition      | Transition effect.                                           |
+| duration          | Number                     | 1000                        | Duration of transition between pages                         |
+| initialSlideIndex | Number                     | 0                           | Index number of initial page.                                |
+| loop              | Boolean                    | true                        | Loop page flag.                                              |
+| touchMove         | Boolean or Object          | { <br> throwable:true <br>} | Object with touch parameters.                                |
+| autoplay          | Boolean or Object          | false                       | Object with autoplay parameters.<br> { <br>delay:3000 <br> } |
+| direction         | 'horizontal' or 'vertical' | 'horizontal'                | Slide direction                                              |
 
 ## Browser Supports
 

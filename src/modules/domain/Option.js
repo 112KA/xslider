@@ -12,6 +12,7 @@ export const Option = {
   renderer: undefined,
   debug: false,
   duration: 1000,
+  direction: 'horizontal',
 
   transition: BaseTransition,
 
